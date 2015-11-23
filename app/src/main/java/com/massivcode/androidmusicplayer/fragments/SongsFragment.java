@@ -1,0 +1,45 @@
+package com.massivcode.androidmusicplayer.fragments;
+
+import android.database.Cursor;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
+
+import com.massivcode.androidmusicplayer.R;
+import com.massivcode.androidmusicplayer.Util.MusicInfoUtil;
+import com.massivcode.androidmusicplayer.adapters.SongAdapter;
+
+/**
+ * Created by Ray Choe on 2015-11-23.
+ */
+public class SongsFragment extends Fragment {
+
+    private ListView mListView;
+    private SongAdapter mAdapter;
+
+    public SongsFragment() {
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_songs, container, false);
+        mListView = (ListView) view.findViewById(R.id.songs_listView);
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MusicInfoUtil.projection, null, null, null);
+        mAdapter = new SongAdapter(getActivity().getApplicationContext(), cursor, true);
+        mListView.setAdapter(mAdapter);
+//        mListView.setOnItemClickListener((AdapterView.OnItemClickListener) getActivity());
+    }
+}

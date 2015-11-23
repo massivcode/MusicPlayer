@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">AndroidMusicPlayer</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: 네비게이션 드로워 메뉴 순서대로 작성, ViewPager 순서와 맞춤 -->
+    <string name="nav_menu_title_1">즐겨찾기</string>
+    <string name="nav_menu_title_2">아티스트</string>
+    <string name="nav_menu_title_3">노래</string>
+
+
+    <string-array name="nav_menu_array">
+        <item>@string/nav_menu_title_1</item>
+        <item>@string/nav_menu_title_2</item>
+        <item>@string/nav_menu_title_3</item>
+    </string-array>
+
+</resources>
