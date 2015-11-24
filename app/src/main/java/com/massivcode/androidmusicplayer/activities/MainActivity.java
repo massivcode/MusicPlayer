@@ -31,7 +31,6 @@ import android.widget.Toast;
 
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.interfaces.Event;
-import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.managers.Manager;
 import com.massivcode.androidmusicplayer.model.MusicInfo;
 import com.massivcode.androidmusicplayer.services.MusicService;
@@ -100,9 +99,6 @@ public class MainActivity extends AppCompatActivity
 
     // EventBus 용 이벤트 수신
     public void onEvent(Event event) {
-        Toast.makeText(MainActivity.this, "액티비티 : 이벤트 수신함", Toast.LENGTH_SHORT).show();
-        MusicEvent musicEvent = (MusicEvent)event;
-        Log.d(TAG, "test : " + musicEvent.getMusicInfo().getTitle());
     }
 
     private void initViews() {
@@ -251,6 +247,21 @@ public class MainActivity extends AppCompatActivity
                 mViewPager.setCurrentItem(0);
                 break;
             case R.id.player_previous_ib:
+                if(mMusicService != null & mMusicService.isReady()) {
+
+                    int position = mMusicService.getCurrentPosition();
+
+                    if(position > 0) {
+                        position -= 1;
+                    } else {
+                        position = mMusicService.getCurrentPlaylistSize();
+                    }
+
+                    Intent nextIntent = new Intent(MainActivity.this, MusicService.class);
+                    nextIntent.setAction(MusicService.ACTION_PLAY_PREVIOUS);
+                    nextIntent.putExtra("position", position);
+                    startService(nextIntent);
+                }
                 break;
             case R.id.player_play_ib:
                 if(mMusicService != null & mMusicService.isReady()) {
@@ -260,12 +271,35 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case R.id.player_next_ib:
+                if(mMusicService != null & mMusicService.isReady()) {
+
+                    int position = mMusicService.getCurrentPosition();
+
+                    if(position < mMusicService.getCurrentPlaylistSize()) {
+                        position += 1;
+                    } else {
+                        position = 0;
+                    }
+
+                    Intent nextIntent = new Intent(MainActivity.this, MusicService.class);
+                    nextIntent.setAction(MusicService.ACTION_PLAY_NEXT);
+                    nextIntent.putExtra("position", position);
+                    startService(nextIntent);
+                }
                 break;
             case R.id.player_shuffle_ib:
                 break;
             case R.id.player_repeat_ib:
                 break;
             case R.id.player_favorite_ib:
+                break;
+            case R.id.songs_playAll_btn:
+                Toast.makeText(MainActivity.this, "모두 재생 헤더 버튼 눌림", Toast.LENGTH_SHORT).show();
+                Intent playAllIntent = new Intent(MainActivity.this, MusicService.class);
+                playAllIntent.setAction(MusicService.ACTION_PLAY);
+                playAllIntent.putExtra("list", MusicInfoUtil.makePlaylist(mMusicService.getDataMap()));
+                playAllIntent.putExtra("position", 0);
+                startService(playAllIntent);
                 break;
         }
 

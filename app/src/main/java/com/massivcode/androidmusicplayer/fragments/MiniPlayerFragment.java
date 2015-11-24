@@ -2,19 +2,21 @@ package com.massivcode.androidmusicplayer.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
+import com.massivcode.androidmusicplayer.interfaces.Playback;
 import com.massivcode.androidmusicplayer.model.MusicInfo;
 import com.massivcode.androidmusicplayer.util.MusicInfoUtil;
 
@@ -32,6 +34,8 @@ public class MiniPlayerFragment extends Fragment {
     private ImageButton mPlayerPreviousImageButton;
     private ImageButton mPlayerPlayImageButton;
     private ImageButton mPlayerNextImageButton;
+
+    private Handler mHandler = new Handler();
 
     public MiniPlayerFragment() {
     }
@@ -86,13 +90,33 @@ public class MiniPlayerFragment extends Fragment {
 
     // EventBus 용 이벤트 수신
     public void onEvent(Event event) {
-        Toast.makeText(getActivity(), "미니플레이어 : 이벤트 수신함", Toast.LENGTH_SHORT).show();
-        MusicEvent musicEvent = (MusicEvent)event;
-        MusicInfo musicInfo = musicEvent.getMusicInfo();
+        // 미니 플레이어 : 앨범아트, 제목, 아티스트 -> 최초 업데이트
 
-        mPlayerMiniAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
-        mPlayerArtistTextView.setText(musicInfo.getArtist());
-        mPlayerTitleTextView.setText(musicInfo.getTitle());
+        if(event instanceof MusicEvent) {
+            MusicEvent musicEvent = (MusicEvent)event;
+            MusicInfo musicInfo = musicEvent.getMusicInfo();
+
+            mPlayerMiniAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
+            mPlayerArtistTextView.setText(musicInfo.getArtist());
+            mPlayerTitleTextView.setText(musicInfo.getTitle());
+        } else if(event instanceof Playback) {
+            Log.d(TAG, "Playback is coming");
+            final Playback playback = (Playback) event;
+
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if(playback.isPlaying()) {
+                        Log.d(TAG, "playback.isPlaying() : true");
+                        mPlayerPlayImageButton.setSelected(true);
+                    } else {
+                        Log.d(TAG, "playback.isPlaying() : false");
+                        mPlayerPlayImageButton.setSelected(false);
+                    }
+                }
+            });
+
+        }
 
 
     }

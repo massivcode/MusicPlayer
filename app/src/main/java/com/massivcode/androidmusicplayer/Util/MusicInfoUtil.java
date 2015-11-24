@@ -8,8 +8,8 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import com.massivcode.androidmusicplayer.model.MusicInfo;
 import com.massivcode.androidmusicplayer.R;
+import com.massivcode.androidmusicplayer.model.MusicInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +59,7 @@ public class MusicInfoUtil {
         // 앨범 아트 이미지를 byte 배열로 얻어옴.
         byte[] albumArt = retriever.getEmbeddedPicture();
 
-        musicInfo = new MusicInfo(_id, uri, artist, title, album, albumArt, duration);
+        musicInfo = new MusicInfo(_id, uri, artist, title, album, albumArt, Integer.parseInt(duration));
 
         return musicInfo;
 
@@ -77,8 +77,7 @@ public class MusicInfoUtil {
             String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
             String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
             String duration = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
-
-            MusicInfo musicInfo = new MusicInfo(_id, uri, artist, title, album, duration);
+            MusicInfo musicInfo = new MusicInfo(_id, uri, artist, title, album, Integer.parseInt(duration));
             map.put(uri, musicInfo);
 
         }

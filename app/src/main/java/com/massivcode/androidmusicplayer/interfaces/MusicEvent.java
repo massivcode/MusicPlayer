@@ -1,5 +1,7 @@
 package com.massivcode.androidmusicplayer.interfaces;
 
+import android.media.MediaPlayer;
+
 import com.massivcode.androidmusicplayer.model.MusicInfo;
 
 /**
@@ -7,9 +9,8 @@ import com.massivcode.androidmusicplayer.model.MusicInfo;
  */
 public class MusicEvent implements Event {
 
-   private MusicInfo mMusicInfo;
-    private boolean mPlaying;
-    private int mCurrentTime;
+    private MusicInfo mMusicInfo;
+    private MediaPlayer mMediaPlayer;
 
     public MusicInfo getMusicInfo() {
         return mMusicInfo;
@@ -19,20 +20,11 @@ public class MusicEvent implements Event {
         this.mMusicInfo = mMusicInfo;
     }
 
-
-    public boolean isPlaying() {
-        return mPlaying;
+    public MediaPlayer getMediaPlayer() {
+        return mMediaPlayer;
     }
 
-    public void setPlaying(boolean mPlaying) {
-        this.mPlaying = mPlaying;
-    }
-
-    public int getCurrentTime() {
-        return mCurrentTime;
-    }
-
-    public void setCurrentTime(int mCurrentTime) {
-        this.mCurrentTime = mCurrentTime;
+    public void setMediaPlayer(MediaPlayer mMediaPlayer) {
+        this.mMediaPlayer = mMediaPlayer;
     }
 }

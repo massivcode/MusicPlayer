@@ -40,6 +40,9 @@ public class SongsFragment extends Fragment {
 
         Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MusicInfoUtil.projection, null, null, null);
         mAdapter = new SongAdapter(getActivity().getApplicationContext(), cursor, true);
+        View header = getActivity().getLayoutInflater().inflate(R.layout.header, null, false);
+        header.findViewById(R.id.songs_playAll_btn).setOnClickListener((View.OnClickListener) getActivity());
+        mListView.addHeaderView(header);
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener((AdapterView.OnItemClickListener) getActivity());
     }

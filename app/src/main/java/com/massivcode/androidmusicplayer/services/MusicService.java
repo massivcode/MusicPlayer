@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
+import com.massivcode.androidmusicplayer.interfaces.Playback;
 import com.massivcode.androidmusicplayer.model.MusicInfo;
 import com.massivcode.androidmusicplayer.util.MusicInfoUtil;
 
@@ -33,11 +34,42 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     private boolean isReady = false;
 
+    private class UIRefresher extends Thread {
+        @Override
+        public void run() {
+            super.run();
+            while(true) {
+                if(mMediaPlayer.isPlaying()) {
+                    Log.d(TAG, "UIRefresher is running");
+                    Playback playback = new Playback();
+                    playback.setPlaying(mMediaPlayer.isPlaying());
+                    playback.setCurrentTime(mMediaPlayer.getCurrentPosition());
+                    EventBus.getDefault().post(playback);
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Log.d(TAG, "UIRefresher is stopped");
+                    Playback playback = new Playback();
+                    playback.setPlaying(mMediaPlayer.isPlaying());
+                    playback.setCurrentTime(mMediaPlayer.getCurrentPosition());
+                    EventBus.getDefault().post(playback);
+                    break;
+                }
+            }
+        }
+    }
+
 
     private final IBinder mBinder = new LocalBinder();
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+
+        // 현재 노래 재생이 끝났을 경우 호출되는 리스너
 
         int lastPosition = mp.getCurrentPosition();
         int duration = mp.getDuration();
@@ -61,8 +93,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             // TODO 프래그먼트들에 메세지 보내기
             MusicEvent musicEvent = new MusicEvent();
             musicEvent.setMusicInfo(getCurrentInfo());
-            musicEvent.setPlaying(mMediaPlayer.isPlaying());
-            musicEvent.setCurrentTime(mMediaPlayer.getCurrentPosition());
             EventBus.getDefault().post(musicEvent);
         } catch (IOException e) {
             e.printStackTrace();
@@ -135,10 +165,10 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         // TODO 프래그먼트들에 메세지 보내기
                         MusicEvent musicEvent = new MusicEvent();
                         musicEvent.setMusicInfo(getCurrentInfo());
-                        musicEvent.setPlaying(mMediaPlayer.isPlaying());
-                        musicEvent.setCurrentTime(mMediaPlayer.getCurrentPosition());
-
                         EventBus.getDefault().post(musicEvent);
+
+                        UIRefresher uiRefresher = new UIRefresher();
+                        uiRefresher.start();
 
                         mMediaPlayer.start();
                     } catch (IOException e) {
@@ -153,10 +183,11 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         // TODO 프래그먼트들에 메세지 보내기
                         MusicEvent musicEvent = new MusicEvent();
                         musicEvent.setMusicInfo(getCurrentInfo());
-                        musicEvent.setPlaying(mMediaPlayer.isPlaying());
-                        musicEvent.setCurrentTime(mMediaPlayer.getCurrentPosition());
-
                         EventBus.getDefault().post(musicEvent);
+
+                        UIRefresher uiRefresher = new UIRefresher();
+                        uiRefresher.start();
+
                         mMediaPlayer.start();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -166,8 +197,20 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             case ACTION_PAUSE:
                 if(mMediaPlayer.isPlaying()) {
                     mMediaPlayer.pause();
+                    MusicEvent musicEvent = new MusicEvent();
+                    musicEvent.setMusicInfo(getCurrentInfo());
+                    EventBus.getDefault().post(musicEvent);
+
+                    UIRefresher uiRefresher = new UIRefresher();
+                    uiRefresher.start();
                 } else {
                     mMediaPlayer.start();
+                    MusicEvent musicEvent = new MusicEvent();
+                    musicEvent.setMusicInfo(getCurrentInfo());
+                    EventBus.getDefault().post(musicEvent);
+
+                    UIRefresher uiRefresher = new UIRefresher();
+                    uiRefresher.start();
                 }
                 break;
             case ACTION_PLAY_NEXT:
@@ -182,10 +225,11 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         // TODO 프래그먼트들에 메세지 보내기
                         MusicEvent musicEvent = new MusicEvent();
                         musicEvent.setMusicInfo(getCurrentInfo());
-                        musicEvent.setPlaying(mMediaPlayer.isPlaying());
-                        musicEvent.setCurrentTime(mMediaPlayer.getCurrentPosition());
-
                         EventBus.getDefault().post(musicEvent);
+
+                        UIRefresher uiRefresher = new UIRefresher();
+                        uiRefresher.start();
+
                         mMediaPlayer.start();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -200,10 +244,11 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         // TODO 프래그먼트들에 메세지 보내기
                         MusicEvent musicEvent = new MusicEvent();
                         musicEvent.setMusicInfo(getCurrentInfo());
-                        musicEvent.setPlaying(mMediaPlayer.isPlaying());
-                        musicEvent.setCurrentTime(mMediaPlayer.getCurrentPosition());
-
                         EventBus.getDefault().post(musicEvent);
+
+                        UIRefresher uiRefresher = new UIRefresher();
+                        uiRefresher.start();
+
                         mMediaPlayer.start();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -223,10 +268,10 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         // TODO 프래그먼트들에 메세지 보내기
                         MusicEvent musicEvent = new MusicEvent();
                         musicEvent.setMusicInfo(getCurrentInfo());
-                        musicEvent.setPlaying(mMediaPlayer.isPlaying());
-                        musicEvent.setCurrentTime(mMediaPlayer.getCurrentPosition());
-
                         EventBus.getDefault().post(musicEvent);
+
+                        UIRefresher uiRefresher = new UIRefresher();
+                        uiRefresher.start();
                         mMediaPlayer.start();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -241,10 +286,10 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         // TODO 프래그먼트들에 메세지 보내기
                         MusicEvent musicEvent = new MusicEvent();
                         musicEvent.setMusicInfo(getCurrentInfo());
-                        musicEvent.setPlaying(mMediaPlayer.isPlaying());
-                        musicEvent.setCurrentTime(mMediaPlayer.getCurrentPosition());
-
                         EventBus.getDefault().post(musicEvent);
+
+                        UIRefresher uiRefresher = new UIRefresher();
+                        uiRefresher.start();
                         mMediaPlayer.start();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -275,8 +320,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     // EventBus 용 이벤트 수신
     public void onEvent(Event event) {
-        MusicEvent musicEvent = (MusicEvent)event;
-        Log.d(TAG, "test : " + musicEvent.getMusicInfo().getTitle());
     }
 
     @Nullable

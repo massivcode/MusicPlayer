@@ -15,9 +15,9 @@ public class MusicInfo implements Parcelable{
     private String title;
     private String album;
     private byte[] albumArt;
-    private String duration;
+    private int duration;
 
-    public MusicInfo(long _id, Uri uri, String artist, String title, String album, String duration) {
+    public MusicInfo(long _id, Uri uri, String artist, String title, String album, int duration) {
         this._id = _id;
         this.uri = uri;
         this.artist = artist;
@@ -27,7 +27,7 @@ public class MusicInfo implements Parcelable{
     }
 
 
-    public MusicInfo(long _id, Uri uri, String artist, String title, String album, byte[] albumArt, String duration) {
+    public MusicInfo(long _id, Uri uri, String artist, String title, String album, byte[] albumArt, int duration) {
         this._id = _id;
         this.uri = uri;
         this.artist = artist;
@@ -85,11 +85,11 @@ public class MusicInfo implements Parcelable{
         this.albumArt = albumArt;
     }
 
-    public String getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(String duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
@@ -106,7 +106,7 @@ public class MusicInfo implements Parcelable{
         dest.writeString(this.title);
         dest.writeString(this.album);
         dest.writeByteArray(this.albumArt);
-        dest.writeString(this.duration);
+        dest.writeInt(this.duration);
     }
 
     public MusicInfo() {
@@ -119,7 +119,7 @@ public class MusicInfo implements Parcelable{
         this.title = in.readString();
         this.album = in.readString();
         this.albumArt = in.createByteArray();
-        this.duration = in.readString();
+        this.duration = in.readInt();
     }
 
     public static final Creator<MusicInfo> CREATOR = new Creator<MusicInfo>() {
