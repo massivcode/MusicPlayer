@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity
 
         mViewPager = (ViewPager)findViewById(R.id.view_pager);
         mViewPager.setAdapter(mNavigationAdapter);
+        mViewPager.setOffscreenPageLimit(4);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
