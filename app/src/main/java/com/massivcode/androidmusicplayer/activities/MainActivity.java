@@ -1,8 +1,14 @@
 package com.massivcode.androidmusicplayer.activities;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -19,15 +25,26 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.massivcode.androidmusicplayer.R;
+import com.massivcode.androidmusicplayer.interfaces.Event;
+import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.managers.Manager;
+import com.massivcode.androidmusicplayer.model.MusicInfo;
+import com.massivcode.androidmusicplayer.services.MusicService;
+import com.massivcode.androidmusicplayer.util.MusicInfoUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private ViewPager mViewPager;
@@ -37,15 +54,55 @@ public class MainActivity extends AppCompatActivity
 
     private List<String> mMemuTitleList;
 
+    private Intent mServiceIntent;
+
+    private MusicService mMusicService;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.LocalBinder binder = (MusicService.LocalBinder) service;
+            mMusicService = binder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // EventBus 등록이 되어서 모든 이벤트를 수신 가능
+        EventBus.getDefault().register(this);
+
         checkPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, 1);
+
+        mServiceIntent = new Intent(MainActivity.this, MusicService.class);
+        bindService(mServiceIntent, mConnection, BIND_AUTO_CREATE);
+
         initViews();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // 해제 꼭 해주세요
+        EventBus.getDefault().unregister(this);
+    }
+
+    // EventBus 용 이벤트 수신
+    public void onEvent(Event event) {
+        Toast.makeText(MainActivity.this, "액티비티 : 이벤트 수신함", Toast.LENGTH_SHORT).show();
+        MusicEvent musicEvent = (MusicEvent)event;
+        Log.d(TAG, "test : " + musicEvent.getMusicInfo().getTitle());
     }
 
     private void initViews() {
@@ -65,9 +122,10 @@ public class MainActivity extends AppCompatActivity
         mNavigationAdapter = new NavigationAdapter(getSupportFragmentManager());
 
         mTabLayout = (TabLayout)findViewById(R.id.tab_layout);
-        mTabLayout.addTab(mTabLayout.newTab().setText("Playlist"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("Artist"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("Songs"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("플레이어"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("재생목록"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("아티스트"));
+        mTabLayout.addTab(mTabLayout.newTab().setText("노래"));
 
         mViewPager = (ViewPager)findViewById(R.id.view_pager);
         mViewPager.setAdapter(mNavigationAdapter);
@@ -179,6 +237,43 @@ public class MainActivity extends AppCompatActivity
             Log.d(TAG, "사용자가 이전에 승인을 했을 경우");
         }
 
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+            // 하단 미니 플레이어의 미니앨범아트, 노래제목, 아티스트를 클릭하면 플레이어 페이지로 이동
+            case R.id.player_miniAlbumArt_iv:
+            case R.id.player_title_tv:
+            case R.id.player_artist_tv:
+                mViewPager.setCurrentItem(0);
+                break;
+            case R.id.player_previous_ib:
+                break;
+            case R.id.player_play_ib:
+                break;
+            case R.id.player_next_ib:
+                break;
+            case R.id.player_shuffle_ib:
+                break;
+            case R.id.player_repeat_ib:
+                break;
+            case R.id.player_favorite_ib:
+                break;
+        }
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        MusicInfo info = MusicInfoUtil.getSelectedMusicInfo(MainActivity.this, (Cursor) parent.getAdapter().getItem(position));
+        ArrayList<Uri> list = MusicInfoUtil.makePlaylist(info);
+        Intent intent = new Intent(MainActivity.this, MusicService.class);
+        intent.setAction(MusicService.ACTION_PLAY);
+        intent.putExtra("list", list);
+        intent.putExtra("position", 0);
+        startService(intent);
     }
 
 

@@ -5,6 +5,7 @@
     android:orientation="horizontal">
 
     <ImageView
+        android:id="@+id/player_miniAlbumArt_iv"
         android:layout_marginTop="5dp"
         android:scaleType="centerCrop"
         android:src="@mipmap/ic_launcher"
@@ -19,6 +20,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/player_title_tv"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             android:text="Title"
@@ -26,6 +28,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
+            android:id="@+id/player_artist_tv"
             android:text="Artist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -33,18 +36,21 @@
     </LinearLayout>
 
     <ImageButton
+        android:id="@+id/player_previous_ib"
         android:background="@null"
         android:src="@mipmap/ic_previous"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <ImageButton
+        android:id="@+id/player_play_ib"
         android:background="@null"
-        android:src="@mipmap/ic_play"
+        android:src="@drawable/selector_play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <ImageButton
+        android:id="@+id/player_next_ib"
         android:background="@null"
         android:src="@mipmap/ic_next"
         android:layout_width="wrap_content"

@@ -1,4 +1,4 @@
-package com.massivcode.androidmusicplayer.Util;
+package com.massivcode.androidmusicplayer.util;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,7 +8,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import com.massivcode.androidmusicplayer.Model.MusicInfo;
+import com.massivcode.androidmusicplayer.model.MusicInfo;
 import com.massivcode.androidmusicplayer.R;
 
 import java.util.ArrayList;

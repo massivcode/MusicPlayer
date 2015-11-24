@@ -1,18 +1,37 @@
 package com.massivcode.androidmusicplayer.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.massivcode.androidmusicplayer.R;
+import com.massivcode.androidmusicplayer.interfaces.Event;
+import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
+import com.massivcode.androidmusicplayer.model.MusicInfo;
+import com.massivcode.androidmusicplayer.util.MusicInfoUtil;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by Ray Choe on 2015-11-23.
  */
 public class MiniPlayerFragment extends Fragment {
+
+    private static final String TAG = MiniPlayerFragment.class.getSimpleName();
+    private ImageView mPlayerMiniAlbumArtImageView;
+    private TextView mPlayerTitleTextView;
+    private TextView mPlayerArtistTextView;
+    private ImageButton mPlayerPreviousImageButton;
+    private ImageButton mPlayerPlayImageButton;
+    private ImageButton mPlayerNextImageButton;
 
     public MiniPlayerFragment() {
     }
@@ -22,12 +41,60 @@ public class MiniPlayerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_miniplayer, container, false);
 
+        initView(view);
 
         return view;
+    }
+
+    private void initView(View v) {
+        mPlayerMiniAlbumArtImageView = (ImageView)v.findViewById(R.id.player_miniAlbumArt_iv);
+        mPlayerTitleTextView = (TextView)v.findViewById(R.id.player_title_tv);
+        mPlayerArtistTextView = (TextView)v.findViewById(R.id.player_artist_tv);
+        mPlayerPreviousImageButton = (ImageButton)v.findViewById(R.id.player_previous_ib);
+        mPlayerPlayImageButton = (ImageButton)v.findViewById(R.id.player_play_ib);
+        mPlayerNextImageButton = (ImageButton)v.findViewById(R.id.player_next_ib);
+
+        mPlayerMiniAlbumArtImageView.setOnClickListener((View.OnClickListener)getActivity());
+        mPlayerTitleTextView.setOnClickListener((View.OnClickListener)getActivity());
+        mPlayerArtistTextView.setOnClickListener((View.OnClickListener)getActivity());
+        mPlayerPreviousImageButton.setOnClickListener((View.OnClickListener)getActivity());
+        mPlayerPlayImageButton.setOnClickListener((View.OnClickListener)getActivity());
+        mPlayerNextImageButton.setOnClickListener((View.OnClickListener)getActivity());
+
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // EventBus 등록이 되어서 모든 이벤트를 수신 가능
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        // 해제 꼭 해주세요
+        EventBus.getDefault().unregister(this);
+    }
+
+    // EventBus 용 이벤트 수신
+    public void onEvent(Event event) {
+        Toast.makeText(getActivity(), "미니플레이어 : 이벤트 수신함", Toast.LENGTH_SHORT).show();
+        MusicEvent musicEvent = (MusicEvent)event;
+        MusicInfo musicInfo = musicEvent.getMusicInfo();
+
+        mPlayerMiniAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
+        mPlayerArtistTextView.setText(musicInfo.getArtist());
+        mPlayerTitleTextView.setText(musicInfo.getTitle());
+
+
+    }
+
 }
