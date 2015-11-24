@@ -252,6 +252,11 @@ public class MainActivity extends AppCompatActivity
             case R.id.player_previous_ib:
                 break;
             case R.id.player_play_ib:
+                if(mMusicService != null & mMusicService.isReady()) {
+                    Intent pauseIntent = new Intent(MainActivity.this, MusicService.class);
+                    pauseIntent.setAction(MusicService.ACTION_PAUSE);
+                    startService(pauseIntent);
+                }
                 break;
             case R.id.player_next_ib:
                 break;

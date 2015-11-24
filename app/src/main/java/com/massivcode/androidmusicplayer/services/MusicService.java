@@ -61,6 +61,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             // TODO 프래그먼트들에 메세지 보내기
             MusicEvent musicEvent = new MusicEvent();
             musicEvent.setMusicInfo(getCurrentInfo());
+            musicEvent.setPlaying(mMediaPlayer.isPlaying());
+            musicEvent.setCurrentTime(mMediaPlayer.getCurrentPosition());
             EventBus.getDefault().post(musicEvent);
         } catch (IOException e) {
             e.printStackTrace();
@@ -133,6 +135,9 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         // TODO 프래그먼트들에 메세지 보내기
                         MusicEvent musicEvent = new MusicEvent();
                         musicEvent.setMusicInfo(getCurrentInfo());
+                        musicEvent.setPlaying(mMediaPlayer.isPlaying());
+                        musicEvent.setCurrentTime(mMediaPlayer.getCurrentPosition());
+
                         EventBus.getDefault().post(musicEvent);
 
                         mMediaPlayer.start();
@@ -148,6 +153,9 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         // TODO 프래그먼트들에 메세지 보내기
                         MusicEvent musicEvent = new MusicEvent();
                         musicEvent.setMusicInfo(getCurrentInfo());
+                        musicEvent.setPlaying(mMediaPlayer.isPlaying());
+                        musicEvent.setCurrentTime(mMediaPlayer.getCurrentPosition());
+
                         EventBus.getDefault().post(musicEvent);
                         mMediaPlayer.start();
                     } catch (IOException e) {
@@ -174,6 +182,9 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         // TODO 프래그먼트들에 메세지 보내기
                         MusicEvent musicEvent = new MusicEvent();
                         musicEvent.setMusicInfo(getCurrentInfo());
+                        musicEvent.setPlaying(mMediaPlayer.isPlaying());
+                        musicEvent.setCurrentTime(mMediaPlayer.getCurrentPosition());
+
                         EventBus.getDefault().post(musicEvent);
                         mMediaPlayer.start();
                     } catch (IOException e) {
@@ -189,6 +200,9 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         // TODO 프래그먼트들에 메세지 보내기
                         MusicEvent musicEvent = new MusicEvent();
                         musicEvent.setMusicInfo(getCurrentInfo());
+                        musicEvent.setPlaying(mMediaPlayer.isPlaying());
+                        musicEvent.setCurrentTime(mMediaPlayer.getCurrentPosition());
+
                         EventBus.getDefault().post(musicEvent);
                         mMediaPlayer.start();
                     } catch (IOException e) {
@@ -209,6 +223,9 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         // TODO 프래그먼트들에 메세지 보내기
                         MusicEvent musicEvent = new MusicEvent();
                         musicEvent.setMusicInfo(getCurrentInfo());
+                        musicEvent.setPlaying(mMediaPlayer.isPlaying());
+                        musicEvent.setCurrentTime(mMediaPlayer.getCurrentPosition());
+
                         EventBus.getDefault().post(musicEvent);
                         mMediaPlayer.start();
                     } catch (IOException e) {
@@ -224,6 +241,9 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         // TODO 프래그먼트들에 메세지 보내기
                         MusicEvent musicEvent = new MusicEvent();
                         musicEvent.setMusicInfo(getCurrentInfo());
+                        musicEvent.setPlaying(mMediaPlayer.isPlaying());
+                        musicEvent.setCurrentTime(mMediaPlayer.getCurrentPosition());
+
                         EventBus.getDefault().post(musicEvent);
                         mMediaPlayer.start();
                     } catch (IOException e) {

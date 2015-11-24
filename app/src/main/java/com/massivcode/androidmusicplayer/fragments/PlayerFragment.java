@@ -37,6 +37,11 @@ public class PlayerFragment extends Fragment {
     private TextView mPlayerCurrentTimeTextView;
     private TextView mPlayerDurationTextView;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "PlayerFragment.onCreate()");
+    }
 
     @Nullable
     @Override
@@ -71,6 +76,8 @@ public class PlayerFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
+        Log.d(TAG, "PlayerFragment.onAttach");
+
         // EventBus 등록이 되어서 모든 이벤트를 수신 가능
         EventBus.getDefault().register(this);
     }
@@ -78,6 +85,8 @@ public class PlayerFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+
+        Log.d(TAG, "PlayerFragment.onDetach");
 
         // 해제 꼭 해주세요
         EventBus.getDefault().unregister(this);
@@ -91,7 +100,8 @@ public class PlayerFragment extends Fragment {
         Log.d(TAG, "event received");
         Log.d(TAG, "duration : " + musicInfo.getDuration());
 
-        mPlayerDurationTextView.setText(musicInfo.getDuration());
+        mPlayerCurrentTimeTextView.setText(MusicInfoUtil.getTime(String.valueOf(musicEvent.getCurrentTime())));
+        mPlayerDurationTextView.setText(MusicInfoUtil.getTime(musicInfo.getDuration()));
         mPlayerAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
 
     }
