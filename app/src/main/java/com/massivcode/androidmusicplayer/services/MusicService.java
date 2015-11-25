@@ -5,18 +5,22 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
+import com.massivcode.androidmusicplayer.interfaces.RequestEvent;
 import com.massivcode.androidmusicplayer.model.MusicInfo;
 import com.massivcode.androidmusicplayer.util.MusicInfoUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import de.greenrobot.event.EventBus;
 
@@ -32,6 +36,29 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public static final String ACTION_PAUSE = "ACTION_PAUSE";
 
     private boolean isReady = false;
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if(mMediaPlayer.isPlaying()) {
+                Log.d(TAG, "UIRefresher is running");
+                Playback playback = new Playback();
+                playback.setPlaying(mMediaPlayer.isPlaying());
+                playback.setCurrentTime(mMediaPlayer.getCurrentPosition());
+                EventBus.getDefault().post(playback);
+
+                sendEmptyMessageDelayed(0, 1000);
+
+            } else {
+                Log.d(TAG, "UIRefresher is stopped");
+                Playback playback = new Playback();
+                playback.setPlaying(mMediaPlayer.isPlaying());
+                playback.setCurrentTime(mMediaPlayer.getCurrentPosition());
+                EventBus.getDefault().post(playback);
+            }
+        }
+    };
+
 
     private class UIRefresher extends Thread {
         @Override
@@ -110,6 +137,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     private int mCurrentPosition;
     private MusicInfo mCurrentMusicInfo;
 
+    private HashMap<Long, MusicInfo> mAllMusicData;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -118,6 +147,13 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
         // EventBus 등록이 되어서 모든 이벤트를 수신 가능
         EventBus.getDefault().register(this);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mAllMusicData = MusicInfoUtil.getAllMusicInfo(getApplicationContext());
+            }
+        }).start();
 
         mMediaPlayer = new MediaPlayer();
 
@@ -280,6 +316,10 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     // EventBus 용 이벤트 수신
     public void onEvent(Event event) {
+        if(event instanceof RequestEvent) {
+            sendMusicEvent();
+            sendPlayback();
+        }
     }
 
     @Nullable
@@ -331,6 +371,13 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         return Uri.parse("content://media/external/audio/media/" + id);
     }
 
+    private void sendPlayback() {
+        Playback playback = new Playback();
+        playback.setCurrentTime(mMediaPlayer.getCurrentPosition());
+        playback.setPlaying(mMediaPlayer.isPlaying());
+        EventBus.getDefault().post(playback);
+    }
+
     private void sendMusicEvent()  {
         MusicEvent musicEvent = new MusicEvent();
         musicEvent.setMediaPlayer(getMediaPlayer());
@@ -341,11 +388,16 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     private void sendAllEvent() {
         sendMusicEvent();
 
-        UIRefresher uiRefresher = new UIRefresher();
-        uiRefresher.start();
+//        UIRefresher uiRefresher = new UIRefresher();
+//        uiRefresher.start();
+        mHandler.sendEmptyMessage(0);
     }
 
     public ArrayList<Long> getCurrentPlaylist() {
         return mCurrentPlaylist;
+    }
+
+    public HashMap<Long, MusicInfo> getAllMusicData() {
+        return mAllMusicData;
     }
 }

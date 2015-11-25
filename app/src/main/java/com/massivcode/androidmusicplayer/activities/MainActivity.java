@@ -202,6 +202,7 @@ public class MainActivity extends AppCompatActivity
                 CurrentPlaylistFragment dialogFragment = new CurrentPlaylistFragment();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("data", mMusicService.getCurrentPlaylist());
+                bundle.putSerializable("map", mMusicService.getAllMusicData());
                 dialogFragment.setArguments(bundle);
                 dialogFragment.show(getSupportFragmentManager(), "ManageDbFragment");
             } else {

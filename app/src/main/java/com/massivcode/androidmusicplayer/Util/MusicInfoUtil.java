@@ -12,6 +12,7 @@ import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.model.MusicInfo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by massivCode on 2015-10-11.
@@ -51,6 +52,53 @@ public class MusicInfoUtil {
             MediaStore.Audio.Media.DURATION};
 
     public static String selection = "_id=?";
+
+    public static HashMap<Long, MusicInfo> getAllMusicInfo(Context context) {
+        HashMap<Long, MusicInfo> map = new HashMap<>();
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+
+        while (cursor.moveToNext()) {
+
+            long _id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+            Uri uri = Uri.parse("content://media/external/audio/media/" + _id);
+            String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+            String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+            String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
+            String duration = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+            MusicInfo musicInfo = new MusicInfo(_id, uri, artist, title, album, Integer.parseInt(duration));
+            map.put(_id, musicInfo);
+
+        }
+
+        return map;
+    }
+
+    public static ArrayList<MusicInfo> switchAllMusicInfoToSelectedMusicInfo(HashMap<Long, MusicInfo> origin, ArrayList<Long> keys) {
+        ArrayList<MusicInfo> list = new ArrayList<>();
+
+            for (int i = 0; i < origin.size(); i++) {
+
+                long key;
+
+                if(keys.size() > 1) {
+                    key = keys.get(i);
+                    if(origin.get(key) != null) {
+                        list.add(origin.get(key));
+                    }
+                } else {
+                    key = keys.get(0);
+                    if(origin.get(key) != null) {
+                        list.add(origin.get(key));
+                        break;
+                    }
+                }
+
+
+
+            }
+
+        return list;
+    }
 
 
     /**
