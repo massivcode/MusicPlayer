@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.model.MusicInfo;
@@ -25,7 +26,7 @@ public class MusicInfoUtil {
     private static final String TAG = MusicInfoUtil.class.getSimpleName();
 
     /**
-     *  음원 ID, 음원 제목, 음원 가수, 음원 앨범, 음원 길이
+     * 음원 ID, 음원 제목, 음원 가수, 음원 앨범, 음원 길이
      */
     public static String[] projection = new String[]{
             MediaStore.Audio.Media._ID,
@@ -34,11 +35,14 @@ public class MusicInfoUtil {
             MediaStore.Audio.Media.ALBUM,
             MediaStore.Audio.Media.DURATION};
 
+    public static String selection = "_id=?";
+
     /**
      * 해당 포지션의 cursor를 받아서 음원 정보를 얻은 후 반환한다.
+     * SongsFragment의 Song ListView를 클릭했을 때 사용한다.
      *
      * @param context : Context
-     * @param cursor : 해당 위치의 음원 정보가 담겨있음.
+     * @param cursor  : 해당 위치의 음원 정보가 담겨있음.
      * @return MusicInfo
      */
     public static MusicInfo getSelectedMusicInfo(Context context, Cursor cursor) {
@@ -48,6 +52,7 @@ public class MusicInfoUtil {
         // cursor 로부터 정보들을 읽어옴.
         long _id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
         Uri uri = Uri.parse("content://media/external/audio/media/" + _id);
+        Log.d(TAG, "uri : " + uri);
         String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
         String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
         String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
@@ -63,6 +68,75 @@ public class MusicInfoUtil {
 
         return musicInfo;
 
+    }
+
+    /**
+     * 서비스에서 해당 곡의 정보를 얻을 때 사용한다.
+     * 곡을 재생할 때, 다음/이전 곡으로 넘길 때 마다 사용된다.
+     * @param context
+     * @param id
+     * @return
+     */
+    public static MusicInfo getSelectedMusicInfo(Context context, long id) {
+        MusicInfo musicInfo;
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, new String[]{String.valueOf(id)}, null);
+
+        cursor.moveToFirst();
+        long _id = id;
+        Uri uri = Uri.parse("content://media/external/audio/media/" + _id);
+        String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+        String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+        String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
+        String duration = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(context, uri);
+
+        byte[] albumArt = retriever.getEmbeddedPicture();
+
+        musicInfo = new MusicInfo(_id, uri, artist, title, album, albumArt, Integer.parseInt(duration));
+
+//        private long _id;
+//        private Uri uri;
+//        private String artist;
+//        private String title;
+//        private String album;
+//        private byte[] albumArt;
+//        private int duration;
+
+        return musicInfo;
+
+
+    }
+
+    /**
+     * 단일 재생 시, SongsFragment의 ListView에서 선택한 아이템으로부터 _id 정보를 얻어와 그것을 list에 담아 리턴한다.
+     * @param context
+     * @param cursor
+     * @return
+     */
+    public static ArrayList<Long> getSelectedSongPlaylist(Context context, Cursor cursor) {
+        ArrayList<Long> list = new ArrayList<>();
+        list.add(cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)));
+        return list;
+    }
+
+    /**
+     * 모두 재생 시, 기기 내에 존재하는 모든 로컬 파일들로부터 _id 정보를 얻어와 그것을 list에 담아 리턴한다.
+     * @param context
+     * @return
+     */
+    public static ArrayList<Long> getPlayAllList(Context context) {
+        ArrayList<Long> list = new ArrayList<>();
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+
+        while (cursor.moveToNext()) {
+            list.add(cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)));
+        }
+
+        cursor.close();
+
+        return list;
     }
 
     public static Map<Uri, MusicInfo> getAllMusicInfo(Context context) {
@@ -132,6 +206,7 @@ public class MusicInfoUtil {
 
     /**
      * 계산된 시/분/초 를 지정한 형태의 문자열로 반환함.
+     *
      * @param hour
      * @param minute
      * @param second
@@ -161,6 +236,7 @@ public class MusicInfoUtil {
 
     /**
      * MusicInfo 들을 받아서 ArrayList<Uri> 로 반환함.
+     *
      * @param infos
      * @return
      */
@@ -176,6 +252,7 @@ public class MusicInfoUtil {
 
     /**
      * MusicInfo가 담긴 Map을 받아서 ArrayList<Uri>로 반환함.
+     *
      * @param map
      * @return
      */

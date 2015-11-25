@@ -16,8 +16,7 @@ import com.massivcode.androidmusicplayer.model.MusicInfo;
 import com.massivcode.androidmusicplayer.util.MusicInfoUtil;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
 
@@ -81,9 +80,9 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         try {
             if(mCurrentPosition < getCurrentPlaylistSize()) {
                 mCurrentPosition += 1;
-                mp.setDataSource(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
+                mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
             } else {
-                mp.setDataSource(getApplicationContext(), mCurrentPlaylist.get(0));
+                mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(0)));
             }
 
 
@@ -91,9 +90,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             isReady = true;
             mp.start();
             // TODO 프래그먼트들에 메세지 보내기
-            MusicEvent musicEvent = new MusicEvent();
-            musicEvent.setMusicInfo(getCurrentInfo());
-            EventBus.getDefault().post(musicEvent);
+            sendMusicEvent();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -109,9 +106,9 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     private MediaPlayer mMediaPlayer;
     private String mAction = null;
-    private Map<Uri, MusicInfo> mDataMap;
-    private List<Uri> mCurrentPlaylist;
+    private ArrayList<Long> mCurrentPlaylist;
     private int mCurrentPosition;
+    private MusicInfo mCurrentMusicInfo;
 
     @Override
     public void onCreate() {
@@ -124,13 +121,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
         mMediaPlayer = new MediaPlayer();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mDataMap = MusicInfoUtil.getAllMusicInfo(getApplicationContext());
-            }
-        }).start();
-
         mMediaPlayer.setOnCompletionListener(this);
 
     }
@@ -142,8 +132,9 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
         switch (mAction) {
             case ACTION_PLAY:
-                mCurrentPlaylist = intent.getParcelableArrayListExtra("list");
+                mCurrentPlaylist = (ArrayList<Long>) intent.getSerializableExtra("list");
                 mCurrentPosition = intent.getIntExtra("position", 0);
+                mCurrentMusicInfo = MusicInfoUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
                 break;
             case ACTION_PLAY_NEXT:
             case ACTION_PLAY_PREVIOUS:
@@ -158,17 +149,12 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                     mMediaPlayer.pause();
                     mMediaPlayer.reset();
                     try {
-                        mMediaPlayer.setDataSource(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
+                        mMediaPlayer.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
                         mMediaPlayer.prepare();
                         isReady = true;
 
                         // TODO 프래그먼트들에 메세지 보내기
-                        MusicEvent musicEvent = new MusicEvent();
-                        musicEvent.setMusicInfo(getCurrentInfo());
-                        EventBus.getDefault().post(musicEvent);
-
-                        UIRefresher uiRefresher = new UIRefresher();
-                        uiRefresher.start();
+                        sendAllEvent();
 
                         mMediaPlayer.start();
                     } catch (IOException e) {
@@ -177,16 +163,11 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 } else {
                     mMediaPlayer.reset();
                     try {
-                        mMediaPlayer.setDataSource(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
+                        mMediaPlayer.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
                         mMediaPlayer.prepare();
                         isReady = true;
                         // TODO 프래그먼트들에 메세지 보내기
-                        MusicEvent musicEvent = new MusicEvent();
-                        musicEvent.setMusicInfo(getCurrentInfo());
-                        EventBus.getDefault().post(musicEvent);
-
-                        UIRefresher uiRefresher = new UIRefresher();
-                        uiRefresher.start();
+                        sendAllEvent();
 
                         mMediaPlayer.start();
                     } catch (IOException e) {
@@ -197,20 +178,10 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             case ACTION_PAUSE:
                 if(mMediaPlayer.isPlaying()) {
                     mMediaPlayer.pause();
-                    MusicEvent musicEvent = new MusicEvent();
-                    musicEvent.setMusicInfo(getCurrentInfo());
-                    EventBus.getDefault().post(musicEvent);
-
-                    UIRefresher uiRefresher = new UIRefresher();
-                    uiRefresher.start();
+                    sendAllEvent();
                 } else {
                     mMediaPlayer.start();
-                    MusicEvent musicEvent = new MusicEvent();
-                    musicEvent.setMusicInfo(getCurrentInfo());
-                    EventBus.getDefault().post(musicEvent);
-
-                    UIRefresher uiRefresher = new UIRefresher();
-                    uiRefresher.start();
+                    sendAllEvent();
                 }
                 break;
             case ACTION_PLAY_NEXT:
@@ -219,16 +190,11 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                     mMediaPlayer.stop();
                     mMediaPlayer.reset();
                     try {
-                        mMediaPlayer.setDataSource(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
+                        mMediaPlayer.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
                         mMediaPlayer.prepare();
                         isReady = true;
                         // TODO 프래그먼트들에 메세지 보내기
-                        MusicEvent musicEvent = new MusicEvent();
-                        musicEvent.setMusicInfo(getCurrentInfo());
-                        EventBus.getDefault().post(musicEvent);
-
-                        UIRefresher uiRefresher = new UIRefresher();
-                        uiRefresher.start();
+                       sendAllEvent();
 
                         mMediaPlayer.start();
                     } catch (IOException e) {
@@ -238,16 +204,11 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 } else {
                     mMediaPlayer.reset();
                     try {
-                        mMediaPlayer.setDataSource(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
+                        mMediaPlayer.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
                         mMediaPlayer.prepare();
                         isReady = true;
                         // TODO 프래그먼트들에 메세지 보내기
-                        MusicEvent musicEvent = new MusicEvent();
-                        musicEvent.setMusicInfo(getCurrentInfo());
-                        EventBus.getDefault().post(musicEvent);
-
-                        UIRefresher uiRefresher = new UIRefresher();
-                        uiRefresher.start();
+                       sendAllEvent();
 
                         mMediaPlayer.start();
                     } catch (IOException e) {
@@ -262,16 +223,11 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                     mMediaPlayer.stop();
                     mMediaPlayer.reset();
                     try {
-                        mMediaPlayer.setDataSource(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
+                        mMediaPlayer.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
                         mMediaPlayer.prepare();
                         isReady = true;
                         // TODO 프래그먼트들에 메세지 보내기
-                        MusicEvent musicEvent = new MusicEvent();
-                        musicEvent.setMusicInfo(getCurrentInfo());
-                        EventBus.getDefault().post(musicEvent);
-
-                        UIRefresher uiRefresher = new UIRefresher();
-                        uiRefresher.start();
+                        sendAllEvent();
                         mMediaPlayer.start();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -280,16 +236,11 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 } else {
                     mMediaPlayer.reset();
                     try {
-                        mMediaPlayer.setDataSource(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
+                        mMediaPlayer.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
                         mMediaPlayer.prepare();
                         isReady = true;
                         // TODO 프래그먼트들에 메세지 보내기
-                        MusicEvent musicEvent = new MusicEvent();
-                        musicEvent.setMusicInfo(getCurrentInfo());
-                        EventBus.getDefault().post(musicEvent);
-
-                        UIRefresher uiRefresher = new UIRefresher();
-                        uiRefresher.start();
+                        sendAllEvent();
                         mMediaPlayer.start();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -345,7 +296,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public MusicInfo getCurrentInfo() {
         if(mCurrentPlaylist != null) {
             Log.d(TAG, "case1");
-            return  mDataMap.get(mCurrentPlaylist.get(mCurrentPosition));
+            return  MusicInfoUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
         } else {
             Log.d(TAG, "case2");
             return null;
@@ -358,9 +309,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         return isReady;
     }
 
-    public Map<Uri, MusicInfo> getDataMap() {
-        return mDataMap;
-    }
 
     public int getCurrentPosition() {
         return mCurrentPosition;
@@ -368,5 +316,22 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     public int getCurrentPlaylistSize() {
         return mCurrentPlaylist.size()-1;
+    }
+
+    private Uri switchIdToUri(long id) {
+        return Uri.parse("content://media/external/audio/media/" + id);
+    }
+
+    private void sendMusicEvent()  {
+        MusicEvent musicEvent = new MusicEvent();
+        musicEvent.setMusicInfo(getCurrentInfo());
+        EventBus.getDefault().post(musicEvent);
+    }
+
+    private void sendAllEvent() {
+        sendMusicEvent();
+
+        UIRefresher uiRefresher = new UIRefresher();
+        uiRefresher.start();
     }
 }

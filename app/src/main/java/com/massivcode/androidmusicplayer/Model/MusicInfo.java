@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Arrays;
+
 /**
  * Created by massivCode on 2015-10-11.
  */
@@ -35,6 +37,19 @@ public class MusicInfo implements Parcelable{
         this.album = album;
         this.albumArt = albumArt;
         this.duration = duration;
+    }
+
+    @Override
+    public String toString() {
+        return "MusicInfo{" +
+                "_id=" + _id +
+                ", uri=" + uri +
+                ", artist='" + artist + '\'' +
+                ", title='" + title + '\'' +
+                ", album='" + album + '\'' +
+                ", albumArt=" + Arrays.toString(albumArt) +
+                ", duration=" + duration +
+                '}';
     }
 
     public long get_id() {

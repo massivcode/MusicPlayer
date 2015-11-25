@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.NavigationView;
@@ -30,9 +29,9 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.massivcode.androidmusicplayer.R;
+import com.massivcode.androidmusicplayer.fragments.CurrentPlaylistFragment;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.managers.Manager;
-import com.massivcode.androidmusicplayer.model.MusicInfo;
 import com.massivcode.androidmusicplayer.services.MusicService;
 import com.massivcode.androidmusicplayer.util.MusicInfoUtil;
 
@@ -87,6 +86,7 @@ public class MainActivity extends AppCompatActivity
 
         initViews();
 
+
     }
 
     @Override
@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity
 
         mViewPager = (ViewPager)findViewById(R.id.view_pager);
         mViewPager.setAdapter(mNavigationAdapter);
+        // 뷰페이져에서 프래그먼트 4개까지 메모리에 올려놓는다.
         mViewPager.setOffscreenPageLimit(4);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -182,6 +183,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
         return true;
     }
 
@@ -194,6 +196,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            CurrentPlaylistFragment dialogFragment = new CurrentPlaylistFragment();
+            dialogFragment.show(getSupportFragmentManager(), "ManageDbFragment");
             return true;
         }
 
@@ -278,7 +282,7 @@ public class MainActivity extends AppCompatActivity
                     if(position < mMusicService.getCurrentPlaylistSize()) {
                         position += 1;
                     } else {
-                        position = 0;
+                        position = mMusicService.getCurrentPlaylistSize();
                     }
 
                     Intent nextIntent = new Intent(MainActivity.this, MusicService.class);
@@ -297,7 +301,7 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(MainActivity.this, "모두 재생 헤더 버튼 눌림", Toast.LENGTH_SHORT).show();
                 Intent playAllIntent = new Intent(MainActivity.this, MusicService.class);
                 playAllIntent.setAction(MusicService.ACTION_PLAY);
-                playAllIntent.putExtra("list", MusicInfoUtil.makePlaylist(mMusicService.getDataMap()));
+                playAllIntent.putExtra("list", MusicInfoUtil.getPlayAllList(MainActivity.this));
                 playAllIntent.putExtra("position", 0);
                 startService(playAllIntent);
                 break;
@@ -307,8 +311,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        MusicInfo info = MusicInfoUtil.getSelectedMusicInfo(MainActivity.this, (Cursor) parent.getAdapter().getItem(position));
-        ArrayList<Uri> list = MusicInfoUtil.makePlaylist(info);
+
+//        public static List<Long> getSelectedSongPlaylist(Context context, Cursor cursor)
+
+        ArrayList<Long> list = (ArrayList)MusicInfoUtil.getSelectedSongPlaylist(MainActivity.this, (Cursor) parent.getAdapter().getItem(position));
         Intent intent = new Intent(MainActivity.this, MusicService.class);
         intent.setAction(MusicService.ACTION_PLAY);
         intent.putExtra("list", list);
