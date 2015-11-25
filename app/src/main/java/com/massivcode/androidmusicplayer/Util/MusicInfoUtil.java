@@ -7,19 +7,34 @@ import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.model.MusicInfo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by massivCode on 2015-10-11.
  * <p/>
  * 음원 정보를 얻거나, 현재 재생 중인 음악 목록을 반환하는 것을 도와주는 클래스
+ *
+ *
+ *
+ * 로컬에 존재하는 모든 음원 가져오는 쿼리 예시.
+ * Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+
+ while (cursor.moveToNext()) {
+
+ long _id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+ Uri uri = Uri.parse("content://media/external/audio/media/" + _id);
+ String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+ String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+ String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
+ String duration = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+ MusicInfo musicInfo = new MusicInfo(_id, uri, artist, title, album, Integer.parseInt(duration));
+ map.put(uri, musicInfo);
+
+ }
  */
 public class MusicInfoUtil {
 
@@ -37,38 +52,6 @@ public class MusicInfoUtil {
 
     public static String selection = "_id=?";
 
-    /**
-     * 해당 포지션의 cursor를 받아서 음원 정보를 얻은 후 반환한다.
-     * SongsFragment의 Song ListView를 클릭했을 때 사용한다.
-     *
-     * @param context : Context
-     * @param cursor  : 해당 위치의 음원 정보가 담겨있음.
-     * @return MusicInfo
-     */
-    public static MusicInfo getSelectedMusicInfo(Context context, Cursor cursor) {
-
-        MusicInfo musicInfo;
-
-        // cursor 로부터 정보들을 읽어옴.
-        long _id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
-        Uri uri = Uri.parse("content://media/external/audio/media/" + _id);
-        Log.d(TAG, "uri : " + uri);
-        String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
-        String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
-        String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
-        String duration = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
-
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(context, uri);
-
-        // 앨범 아트 이미지를 byte 배열로 얻어옴.
-        byte[] albumArt = retriever.getEmbeddedPicture();
-
-        musicInfo = new MusicInfo(_id, uri, artist, title, album, albumArt, Integer.parseInt(duration));
-
-        return musicInfo;
-
-    }
 
     /**
      * 서비스에서 해당 곡의 정보를 얻을 때 사용한다.
@@ -139,27 +122,6 @@ public class MusicInfoUtil {
         return list;
     }
 
-    public static Map<Uri, MusicInfo> getAllMusicInfo(Context context) {
-        Map<Uri, MusicInfo> map = new HashMap<>();
-        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
-
-        while (cursor.moveToNext()) {
-
-            long _id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
-            Uri uri = Uri.parse("content://media/external/audio/media/" + _id);
-            String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
-            String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
-            String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
-            String duration = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
-            MusicInfo musicInfo = new MusicInfo(_id, uri, artist, title, album, Integer.parseInt(duration));
-            map.put(uri, musicInfo);
-
-        }
-
-        cursor.close();
-
-        return map;
-    }
 
     public static Bitmap getBitmap(Context context, Uri uri, int quality) {
 
@@ -234,35 +196,6 @@ public class MusicInfoUtil {
         return result;
     }
 
-    /**
-     * MusicInfo 들을 받아서 ArrayList<Uri> 로 반환함.
-     *
-     * @param infos
-     * @return
-     */
-    public static ArrayList<Uri> makePlaylist(MusicInfo... infos) {
-        ArrayList<Uri> uriList = new ArrayList<>();
-
-        for (MusicInfo info : infos) {
-            uriList.add(info.getUri());
-        }
-
-        return uriList;
-    }
-
-    /**
-     * MusicInfo가 담긴 Map을 받아서 ArrayList<Uri>로 반환함.
-     *
-     * @param map
-     * @return
-     */
-    public static ArrayList<Uri> makePlaylist(Map<Uri, MusicInfo> map) {
-        ArrayList<Uri> uriList = new ArrayList<>();
-
-        uriList.addAll(map.keySet());
-
-        return uriList;
-    }
 
 
 }
