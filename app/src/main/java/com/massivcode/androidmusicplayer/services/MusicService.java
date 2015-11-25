@@ -128,7 +128,14 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        mAction = intent.getAction();
+        if(intent != null && intent.getAction() != null) {
+            mAction = intent.getAction();
+        }
+
+        if(mAction == null) {
+            onDestroy();
+            return 0;
+        }
 
         switch (mAction) {
             case ACTION_PLAY:
@@ -141,6 +148,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 mCurrentPosition = intent.getIntExtra("position", 0);
                 break;
         }
+
+
 
 
         switch (mAction) {
@@ -334,5 +343,9 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
         UIRefresher uiRefresher = new UIRefresher();
         uiRefresher.start();
+    }
+
+    public ArrayList<Long> getCurrentPlaylist() {
+        return mCurrentPlaylist;
     }
 }

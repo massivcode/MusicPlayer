@@ -79,17 +79,39 @@ public class MusicInfoUtil {
 
         musicInfo = new MusicInfo(_id, uri, artist, title, album, albumArt, Integer.parseInt(duration));
 
-//        private long _id;
-//        private Uri uri;
-//        private String artist;
-//        private String title;
-//        private String album;
-//        private byte[] albumArt;
-//        private int duration;
+        cursor.close();
 
         return musicInfo;
 
 
+    }
+
+    public static ArrayList<MusicInfo> getMusicInfoList(Context context, ArrayList<Long> idList) {
+        ArrayList<MusicInfo> musicInfoList = new ArrayList<>();
+
+        for(Long id : idList) {
+            Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, new String[]{String.valueOf(id)}, null);
+            cursor.moveToFirst();
+
+            long _id = id;
+            Uri uri = Uri.parse("content://media/external/audio/media/" + _id);
+            String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+            String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+            String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
+            String duration = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            retriever.setDataSource(context, uri);
+
+            byte[] albumArt = retriever.getEmbeddedPicture();
+
+            musicInfoList.add(new MusicInfo(_id, uri, artist, title, album, albumArt, Integer.parseInt(duration)));
+
+            cursor.close();
+        }
+
+
+        return musicInfoList;
     }
 
     /**

@@ -93,6 +93,8 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
 
+        unbindService(mConnection);
+
         // 해제 꼭 해주세요
         EventBus.getDefault().unregister(this);
     }
@@ -196,8 +198,15 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            CurrentPlaylistFragment dialogFragment = new CurrentPlaylistFragment();
-            dialogFragment.show(getSupportFragmentManager(), "ManageDbFragment");
+            if(mMusicService != null && mMusicService.getCurrentPlaylist() != null) {
+                CurrentPlaylistFragment dialogFragment = new CurrentPlaylistFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("data", mMusicService.getCurrentPlaylist());
+                dialogFragment.setArguments(bundle);
+                dialogFragment.show(getSupportFragmentManager(), "ManageDbFragment");
+            } else {
+                Toast.makeText(MainActivity.this, "재생 중인 노래가 없습니다.", Toast.LENGTH_SHORT).show();
+            }
             return true;
         }
 
