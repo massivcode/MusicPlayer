@@ -324,6 +324,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     private void sendMusicEvent()  {
         MusicEvent musicEvent = new MusicEvent();
+        musicEvent.setMediaPlayer(getMediaPlayer());
         musicEvent.setMusicInfo(getCurrentInfo());
         EventBus.getDefault().post(musicEvent);
     }
