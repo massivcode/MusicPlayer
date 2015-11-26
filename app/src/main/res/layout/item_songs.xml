@@ -20,7 +20,6 @@
 
     <LinearLayout
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="8dp"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -29,6 +28,7 @@
         <TextView
             android:layout_weight="1"
             android:id="@+id/item_songs_title_tv"
+            android:layout_marginBottom="8dp"
             android:text="Title"
             android:textSize="15sp"
             android:textColor="#000000"
