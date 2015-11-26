@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import android.widget.ExpandableListView;
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.adapters.ArtistAdapter;
 import com.massivcode.androidmusicplayer.interfaces.Event;
+import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
+import com.massivcode.androidmusicplayer.interfaces.Playback;
 import com.massivcode.androidmusicplayer.util.MusicInfoUtil;
 
 import de.greenrobot.event.EventBus;
@@ -32,6 +35,7 @@ public class ArtistFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAdapter = new ArtistAdapter(MusicInfoUtil.getArtistInfo(getActivity()), getActivity(), true);
+
     }
 
     @Nullable
@@ -65,15 +69,15 @@ public class ArtistFragment extends Fragment {
     // EventBus 용 이벤트 수신
     public void onEvent(Event event) {
 
-//        if (event instanceof MusicEvent) {
-//            Log.d(TAG, "재생목록에서 뮤직이벤트를 받았습니다.");
-//            mAdapter.swapMusicEvent((MusicEvent) event);
-//            mAdapter.notifyDataSetChanged();
-//        } else if(event instanceof Playback) {
-//            Log.d(TAG, "재생목록에서 플레이백이벤트를 받았습니다.");
-//            mAdapter.swapPlayback((Playback) event);
-//            mAdapter.notifyDataSetChanged();
-//        }
+        if (event instanceof MusicEvent) {
+            Log.d(TAG, "아티스트에서 뮤직이벤트를 받았습니다.");
+            mAdapter.swapMusicEvent((MusicEvent) event);
+            mAdapter.notifyDataSetChanged();
+        } else if(event instanceof Playback) {
+            Log.d(TAG, "아티스트에서 플레이백이벤트를 받았습니다.");
+            mAdapter.swapPlayback((Playback) event);
+            mAdapter.notifyDataSetChanged();
+        }
 
     }
 

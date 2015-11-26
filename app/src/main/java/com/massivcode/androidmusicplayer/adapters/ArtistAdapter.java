@@ -110,7 +110,22 @@ public class ArtistAdapter extends CursorTreeAdapter implements AsyncBitmapLoade
         viewHolder.mChildTitleTextView.setText(title);
         mAsyncBitmapLoader.loadBitmap(id, viewHolder.mChildAlbumArtImageView);
 
+        if (mMusicEvent != null && mPlayback != null) {
 
+            if (id == mMusicEvent.getMusicInfo().get_id()) {
+                viewHolder.mChildIsPlayingImageView.setVisibility(View.VISIBLE);
+
+                if (mPlayback.isPlaying()) {
+                    viewHolder.mChildIsPlayingImageView.setSelected(true);
+                } else {
+                    viewHolder.mChildIsPlayingImageView.setSelected(false);
+                }
+
+            } else {
+                viewHolder.mChildIsPlayingImageView.setVisibility(View.GONE);
+            }
+
+        }
     }
 
     @Override
