@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity
 
         checkPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, 1);
 
+
         mServiceIntent = new Intent(MainActivity.this, MusicService.class);
         bindService(mServiceIntent, mConnection, BIND_AUTO_CREATE);
 

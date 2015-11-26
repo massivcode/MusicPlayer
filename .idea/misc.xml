@@ -41,12 +41,6 @@
             <id>Android Lint</id>
           </State>
           <State>
-            <id>Internationalization issues</id>
-          </State>
-          <State>
-            <id>Internationalization issuesJava</id>
-          </State>
-          <State>
             <id>Java</id>
           </State>
           <State>

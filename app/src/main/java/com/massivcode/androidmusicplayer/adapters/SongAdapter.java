@@ -68,8 +68,6 @@ public class SongAdapter extends CursorAdapter implements AsyncBitmapLoader.Bitm
         // id 가져오기
         // DB의 _id == id
         long id = getItemId(position);
-        Cursor cursor = getCursor();
-
 
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(mContext, Uri.parse("content://media/external/audio/media/" + id));

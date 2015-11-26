@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.model.MusicInfo;
@@ -56,7 +57,7 @@ public class MusicInfoUtil {
 
     public static HashMap<Long, MusicInfo> getAllMusicInfo(Context context) {
         HashMap<Long, MusicInfo> map = new HashMap<>();
-        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, MediaStore.Audio.Media.ARTIST + " != ? ", new String[]{MediaStore.UNKNOWN_STRING}, null);
 
 
         while (cursor.moveToNext()) {
@@ -141,7 +142,7 @@ public class MusicInfoUtil {
                 MediaStore.Audio.Artists._ID, MediaStore.Audio.Artists.ARTIST, MediaStore.Audio.Artists.NUMBER_OF_TRACKS
         };
 
-        return context.getContentResolver().query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, projection, null, null, null);
+        return context.getContentResolver().query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, projection, MediaStore.Audio.Media.ARTIST + " != ?", new String[]{MediaStore.UNKNOWN_STRING}, null);
     }
 
     public static Cursor getArtistTrackInfo(Context context, String artist) {
@@ -149,65 +150,14 @@ public class MusicInfoUtil {
     }
 
 
-//    /**
-//     * ArtistAdapter 에서 사용하는 것으로 해당 아티스트의 음원 정보를 리턴한다.
-//     * @param context
-//     * @param artistList
-//     * @return
-//     */
-//    public static List<List<MusicInfo>> getArtistTrackInfo(Context context, List<ArtistInfo> artistList) {
-//        List<List<MusicInfo>> list = new ArrayList<>();
-//        List<MusicInfo> childContent = new ArrayList<>();
-//
-//        for(int i = 0; i < artistList.size(); i++) {
-//            String key = artistList.get(i).getArtist();
-//            Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection_artist, new String[]{key}, null);
-//
-//            while(cursor.moveToNext()) {
-//                long _id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
-//                Uri uri = Uri.parse("content://media/external/audio/media/" + _id);
-//                String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
-//                String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
-//                String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
-//                String duration = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
-//                MusicInfo musicInfo = new MusicInfo(_id, uri, artist, title, album, Integer.parseInt(duration));
-//                childContent.add(musicInfo);
-//            }
-//
-//            list.add(childContent);
-//            childContent = new ArrayList<>();
-//            cursor.close();
-//        }
-//
-//        return list;
-//    }
 
-    public static ArrayList<MusicInfo> getMusicInfoList(Context context, ArrayList<Long> idList) {
-        ArrayList<MusicInfo> musicInfoList = new ArrayList<>();
 
-        for(Long id : idList) {
-            Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, new String[]{String.valueOf(id)}, null);
-            cursor.moveToFirst();
-
-            long _id = id;
-            Uri uri = Uri.parse("content://media/external/audio/media/" + _id);
+    public static void test(Context context) {
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, MediaStore.Audio.Media.ARTIST + " != ? and " + MediaStore.Audio.Media.ARTIST + " != ? " , new String[]{MediaStore.UNKNOWN_STRING, "김경호"}, null);
+        while(cursor.moveToNext()) {
             String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
-            String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
-            String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
-            String duration = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
-
-            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-            retriever.setDataSource(context, uri);
-
-            byte[] albumArt = retriever.getEmbeddedPicture();
-
-            musicInfoList.add(new MusicInfo(_id, uri, artist, title, album, albumArt, Integer.parseInt(duration)));
-
-            cursor.close();
+            Log.d(TAG, "artist : " + artist);
         }
-
-
-        return musicInfoList;
     }
 
     /**
@@ -229,7 +179,7 @@ public class MusicInfoUtil {
      */
     public static ArrayList<Long> getPlayAllList(Context context) {
         ArrayList<Long> list = new ArrayList<>();
-        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, MediaStore.Audio.Media.ARTIST + " != ? ", new String[]{MediaStore.UNKNOWN_STRING}, null);
 
         while (cursor.moveToNext()) {
             list.add(cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)));
