@@ -335,7 +335,6 @@ public class MainActivity extends AppCompatActivity
             }
 
             case R.id.current_playlistView: {
-                Toast.makeText(MainActivity.this, "재생목록 눌림", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this, MusicService.class);
                 intent.setAction(MusicService.ACTION_PLAY_SELECTED);
                 intent.putExtra("position", position);

@@ -394,9 +394,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     private void sendAllEvent() {
         sendMusicEvent();
-
-//        UIRefresher uiRefresher = new UIRefresher();
-//        uiRefresher.start();
         mHandler.sendEmptyMessage(0);
     }
 
