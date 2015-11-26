@@ -19,6 +19,7 @@ import com.massivcode.androidmusicplayer.model.MusicInfo;
 import com.massivcode.androidmusicplayer.util.MusicInfoUtil;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -34,60 +35,31 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public static final String ACTION_PLAY_NEXT = "ACTION_PLAY_NEXT";
     public static final String ACTION_PLAY_PREVIOUS = "ACTION_PLAY_PREVIOUS";
     public static final String ACTION_PAUSE = "ACTION_PAUSE";
+    public static final String ACTION_PLAY_SELECTED = "ACTION_PLAY_SELECTED";
 
     private boolean isReady = false;
 
-    private Handler mHandler = new Handler() {
+
+    // 수행하는 곳
+    private static class UiRefresher extends Handler {
+        private final WeakReference<MusicService> mService;
+
+        UiRefresher(MusicService service) {
+            mService = new WeakReference<MusicService>(service);
+        }
+
         @Override
         public void handleMessage(Message msg) {
-            if(mMediaPlayer.isPlaying()) {
-                Log.d(TAG, "UIRefresher is running");
-                Playback playback = new Playback();
-                playback.setPlaying(mMediaPlayer.isPlaying());
-                playback.setCurrentTime(mMediaPlayer.getCurrentPosition());
-                EventBus.getDefault().post(playback);
-
-                sendEmptyMessageDelayed(0, 1000);
-
-            } else {
-                Log.d(TAG, "UIRefresher is stopped");
-                Playback playback = new Playback();
-                playback.setPlaying(mMediaPlayer.isPlaying());
-                playback.setCurrentTime(mMediaPlayer.getCurrentPosition());
-                EventBus.getDefault().post(playback);
-            }
-        }
-    };
-
-
-    private class UIRefresher extends Thread {
-        @Override
-        public void run() {
-            super.run();
-            while(true) {
-                if(mMediaPlayer.isPlaying()) {
-                    Log.d(TAG, "UIRefresher is running");
-                    Playback playback = new Playback();
-                    playback.setPlaying(mMediaPlayer.isPlaying());
-                    playback.setCurrentTime(mMediaPlayer.getCurrentPosition());
-                    EventBus.getDefault().post(playback);
-
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    Log.d(TAG, "UIRefresher is stopped");
-                    Playback playback = new Playback();
-                    playback.setPlaying(mMediaPlayer.isPlaying());
-                    playback.setCurrentTime(mMediaPlayer.getCurrentPosition());
-                    EventBus.getDefault().post(playback);
-                    break;
-                }
+            MusicService service = mService.get();
+            if(service != null) {
+                service.sendEvents();
             }
         }
     }
+
+
+   UiRefresher mHandler = new UiRefresher(this);
+
 
 
     private final IBinder mBinder = new LocalBinder();
@@ -174,6 +146,10 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         }
 
         switch (mAction) {
+            case ACTION_PLAY_SELECTED:
+                mCurrentPosition = intent.getIntExtra("position", 0);
+                mCurrentMusicInfo = MusicInfoUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
+                break;
             case ACTION_PLAY:
                 mCurrentPlaylist = (ArrayList<Long>) intent.getSerializableExtra("list");
                 mCurrentPosition = intent.getIntExtra("position", 0);
@@ -189,6 +165,37 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
 
         switch (mAction) {
+            case ACTION_PLAY_SELECTED:
+                if(mMediaPlayer.isPlaying()) {
+                    mMediaPlayer.pause();
+                    mMediaPlayer.reset();
+                    try {
+                        mMediaPlayer.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
+                        mMediaPlayer.prepare();
+                        isReady = true;
+
+                        // TODO 프래그먼트들에 메세지 보내기
+                        sendAllEvent();
+
+                        mMediaPlayer.start();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    mMediaPlayer.reset();
+                    try {
+                        mMediaPlayer.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
+                        mMediaPlayer.prepare();
+                        isReady = true;
+                        // TODO 프래그먼트들에 메세지 보내기
+                        sendAllEvent();
+
+                        mMediaPlayer.start();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
             case ACTION_PLAY:
                 if(mMediaPlayer.isPlaying()) {
                     mMediaPlayer.pause();
@@ -400,4 +407,24 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public HashMap<Long, MusicInfo> getAllMusicData() {
         return mAllMusicData;
     }
+
+    private void sendEvents() {
+        if(mMediaPlayer.isPlaying()) {
+            Log.d(TAG, "UIRefresher is running");
+            Playback playback = new Playback();
+            playback.setPlaying(mMediaPlayer.isPlaying());
+            playback.setCurrentTime(mMediaPlayer.getCurrentPosition());
+            EventBus.getDefault().post(playback);
+
+            mHandler.sendEmptyMessageDelayed(0, 1000);
+
+        } else {
+            Log.d(TAG, "UIRefresher is stopped");
+            Playback playback = new Playback();
+            playback.setPlaying(mMediaPlayer.isPlaying());
+            playback.setCurrentTime(mMediaPlayer.getCurrentPosition());
+            EventBus.getDefault().post(playback);
+        }
+    }
+
 }

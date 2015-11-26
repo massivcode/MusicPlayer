@@ -322,14 +322,31 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-//        public static List<Long> getSelectedSongPlaylist(Context context, Cursor cursor)
 
-        ArrayList<Long> list = (ArrayList)MusicInfoUtil.getSelectedSongPlaylist(MainActivity.this, (Cursor) parent.getAdapter().getItem(position));
-        Intent intent = new Intent(MainActivity.this, MusicService.class);
-        intent.setAction(MusicService.ACTION_PLAY);
-        intent.putExtra("list", list);
-        intent.putExtra("position", 0);
-        startService(intent);
+        switch (parent.getId()) {
+            case R.id.songs_listView: {
+                ArrayList<Long> list = (ArrayList)MusicInfoUtil.getSelectedSongPlaylist(MainActivity.this, (Cursor) parent.getAdapter().getItem(position));
+                Intent intent = new Intent(MainActivity.this, MusicService.class);
+                intent.setAction(MusicService.ACTION_PLAY);
+                intent.putExtra("list", list);
+                intent.putExtra("position", 0);
+                startService(intent);
+                break;
+            }
+
+            case R.id.current_playlistView: {
+                Toast.makeText(MainActivity.this, "재생목록 눌림", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, MusicService.class);
+                intent.setAction(MusicService.ACTION_PLAY_SELECTED);
+                intent.putExtra("position", position);
+                startService(intent);
+                break;
+            }
+
+        }
+
+
+
     }
 
 

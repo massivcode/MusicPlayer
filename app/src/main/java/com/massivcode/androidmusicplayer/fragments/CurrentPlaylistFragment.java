@@ -40,7 +40,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by Ray Choe on 2015-11-25.
  */
-public class CurrentPlaylistFragment extends DialogFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class CurrentPlaylistFragment extends DialogFragment implements View.OnClickListener {
 
     private static final String TAG = CurrentPlaylistFragment.class.getSimpleName();
     private ListView mCurrentPlaylistListView;
@@ -132,7 +132,7 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
         mCurrentPlaylistCloseButton = (Button) view.findViewById(R.id.current_playlist_closeBtn);
 
         mCurrentPlaylistCloseButton.setOnClickListener(this);
-        mCurrentPlaylistListView.setOnItemClickListener(this);
+        mCurrentPlaylistListView.setOnItemClickListener((AdapterView.OnItemClickListener) getActivity());
 
         mCurrentPlaylistListView.setAdapter(mAdapter);
 
@@ -148,10 +148,6 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
         }
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-    }
 
     private class CurrentPlaylistAdapter extends BaseAdapter implements AsyncBitmapLoader.BitmapLoadListener {
 
