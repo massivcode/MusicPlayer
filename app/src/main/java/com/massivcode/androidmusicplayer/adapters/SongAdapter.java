@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.massivcode.androidmusicplayer.R;
+import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
+import com.massivcode.androidmusicplayer.interfaces.Playback;
 import com.suwonsmartapp.abl.AsyncBitmapLoader;
 
 /**
@@ -25,6 +27,9 @@ public class SongAdapter extends CursorAdapter implements AsyncBitmapLoader.Bitm
     private LayoutInflater mInflater;
     private AsyncBitmapLoader mAsyncBitmapLoader;
     private Context mContext;
+
+    private MusicEvent mMusicEvent;
+    private Playback mPlayback;
 
     public SongAdapter(Context context, Cursor c, boolean autoRequery) {
         super(context, c, autoRequery);
@@ -44,6 +49,7 @@ public class SongAdapter extends CursorAdapter implements AsyncBitmapLoader.Bitm
         holder.AlbumArtImageView = (ImageView)view.findViewById(R.id.item_songs_album_iv);
         holder.TitleTextView = (TextView)view.findViewById(R.id.item_songs_title_tv);
         holder.ArtistTextView = (TextView)view.findViewById(R.id.item_songs_artist_tv);
+        holder.IsPlayImageView = (ImageView)view.findViewById(R.id.item_songs_isPlay_iv);
         view.setTag(holder);
 
         return view;
@@ -53,14 +59,40 @@ public class SongAdapter extends CursorAdapter implements AsyncBitmapLoader.Bitm
     public void bindView(View view, Context context, Cursor cursor) {
 
         ViewHolder holder = (ViewHolder)view.getTag();
+        int id = (int) cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
         holder.TitleTextView.setText(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)));
         holder.ArtistTextView.setText(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)));
-
 
         // 이미지 셋팅
         mAsyncBitmapLoader.loadBitmap(cursor.getPosition(), holder.AlbumArtImageView);
 
 
+        if (mMusicEvent != null && mPlayback != null) {
+
+            if (id == mMusicEvent.getMusicInfo().get_id()) {
+                holder.IsPlayImageView.setVisibility(View.VISIBLE);
+
+                if (mPlayback.isPlaying()) {
+                    holder.IsPlayImageView.setSelected(true);
+                } else {
+                    holder.IsPlayImageView.setSelected(false);
+                }
+
+            } else {
+                holder.IsPlayImageView.setVisibility(View.GONE);
+            }
+
+        }
+
+
+    }
+
+    public void swapMusicEvent(MusicEvent musicEvent) {
+        mMusicEvent = musicEvent;
+    }
+
+    public void swapPlayback(Playback playback) {
+        mPlayback = playback;
     }
 
     @Override
@@ -92,5 +124,6 @@ public class SongAdapter extends CursorAdapter implements AsyncBitmapLoader.Bitm
     static class ViewHolder {
         ImageView AlbumArtImageView;
         TextView TitleTextView, ArtistTextView;
+        ImageView IsPlayImageView;
     }
 }

@@ -51,7 +51,7 @@
 
     <ImageView
         android:visibility="gone"
-        android:id="@+id/item_artist_child_isPlay_iv"
+        android:id="@+id/item_songs_isPlay_iv"
         android:scaleType="centerCrop"
         android:src="@drawable/selector_play"
         android:layout_width="48dp"

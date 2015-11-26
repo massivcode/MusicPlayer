@@ -186,7 +186,7 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
                 convertView = LayoutInflater.from(mContext).inflate(R.layout.item_current_playlist, parent, false);
 
                 viewHolder = new ViewHolder();
-                viewHolder.mCurrentPlaylistIsPlayingImageView = (ImageView) convertView.findViewById(R.id.item_artist_child_isPlay_iv);
+                viewHolder.mCurrentPlaylistIsPlayingImageView = (ImageView) convertView.findViewById(R.id.item_songs_isPlay_iv);
                 viewHolder.mCurrentPlaylistAlbumArtImageView = (ImageView) convertView.findViewById(R.id.item_artist_child_album_iv);
                 viewHolder.mCurrentPlaylistArtistTextView = (TextView) convertView.findViewById(R.id.item_artist_child_artist_tv);
                 viewHolder.mCurrentPlaylistTitleTextView = (TextView) convertView.findViewById(R.id.item_artist_child_title_tv);
