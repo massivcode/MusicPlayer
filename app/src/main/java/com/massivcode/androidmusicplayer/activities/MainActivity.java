@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.massivcode.androidmusicplayer.R;
@@ -42,7 +43,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener, ExpandableListView.OnChildClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private ViewPager mViewPager;
@@ -325,6 +326,7 @@ public class MainActivity extends AppCompatActivity
 
 
         switch (parent.getId()) {
+            // Songs ListView 를 클릭할 경우 : 해당 곡만 재생
             case R.id.songs_listView: {
                 ArrayList<Long> list = (ArrayList)MusicInfoUtil.getSelectedSongPlaylist(MainActivity.this, (Cursor) parent.getAdapter().getItem(position));
                 Intent intent = new Intent(MainActivity.this, MusicService.class);
@@ -335,6 +337,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             }
 
+            // 현재 재생목록의 리스트를 클릭할 경우 : 해당 포지션의 노래를 재생
             case R.id.current_playlistView: {
                 Intent intent = new Intent(MainActivity.this, MusicService.class);
                 intent.setAction(MusicService.ACTION_PLAY_SELECTED);
@@ -342,11 +345,29 @@ public class MainActivity extends AppCompatActivity
                 startService(intent);
                 break;
             }
-
+            
         }
 
 
 
+    }
+
+    @Override
+    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+        switch (parent.getId()) {
+
+            // 아티스트 프래그먼트의 확장 리스트뷰를 클릭하여 나오는 차일드 아이템을 클릭하면 해당 곡으로만 이루어진 리스트를 서비스에 전달하여 단일재생한다.
+            case R.id.artist_ExlistView: {
+                ArrayList<Long> list = MusicInfoUtil.getSelectedSongPlaylist(parent.getExpandableListAdapter().getChildId(groupPosition, childPosition));
+                Intent intent = new Intent(MainActivity.this, MusicService.class);
+                intent.setAction(MusicService.ACTION_PLAY);
+                intent.putExtra("list", list);
+                intent.putExtra("position", 0);
+                startService(intent);
+                break;
+            }
+        }
+        return false;
     }
 
 

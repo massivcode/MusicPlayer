@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +55,6 @@ public class ArtistAdapter extends CursorTreeAdapter implements AsyncBitmapLoade
 
     @Override
     protected Cursor getChildrenCursor(Cursor groupCursor) {
-        Log.d(TAG, "getChildrenCursor");
         return MusicInfoUtil.getArtistTrackInfo(mContext, groupCursor.getString(groupCursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST)));
     }
 
@@ -76,7 +74,6 @@ public class ArtistAdapter extends CursorTreeAdapter implements AsyncBitmapLoade
     protected void bindGroupView(View view, Context context, Cursor cursor, boolean isExpanded) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
         String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST));
-        Log.d(TAG, "artist : " + artist);
         String total = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.NUMBER_OF_TRACKS));
         viewHolder.mGroupArtistTextView.setText(artist);
         viewHolder.mGroupSongsNumberTextView.setText(total + " 곡");
@@ -103,7 +100,6 @@ public class ArtistAdapter extends CursorTreeAdapter implements AsyncBitmapLoade
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         int id = (int) cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
-        Log.d(TAG, "id : " + id);
         String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
         String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
         viewHolder.mChildArtistTextView.setText(artist);

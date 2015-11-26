@@ -173,6 +173,17 @@ public class MusicInfoUtil {
     }
 
     /**
+     * 아티스트 리스트뷰의 차일드 아이템을 클릭하면 단일 재생을 하는데, 그때 이것을 이용한다.
+     * @param id
+     * @return
+     */
+    public static ArrayList<Long> getSelectedSongPlaylist(long id) {
+        ArrayList<Long> list = new ArrayList<>();
+        list.add(id);
+        return list;
+    }
+
+    /**
      * 모두 재생 시, 기기 내에 존재하는 모든 로컬 파일들로부터 _id 정보를 얻어와 그것을 list에 담아 리턴한다.
      * @param context
      * @return
