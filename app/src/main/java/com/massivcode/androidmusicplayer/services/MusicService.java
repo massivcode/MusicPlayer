@@ -84,6 +84,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(0)));
             }
 
+
             mp.prepare();
             isReady = true;
             mp.start();
