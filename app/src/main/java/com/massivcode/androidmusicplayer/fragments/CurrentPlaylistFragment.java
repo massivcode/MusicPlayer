@@ -77,6 +77,7 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
 //        Log.d(TAG, "재생목록에서 이벤트가 요청되었습니다.");
 
 
+
     }
 
     @Nullable

@@ -48,6 +48,8 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "PlayerFragment.onCreate()");
+
+
     }
 
     @Nullable
@@ -74,6 +76,15 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         mPlayerShuffleImageButton.setOnClickListener((View.OnClickListener) getActivity());
 
         mPlayerSeekBar.setOnSeekBarChangeListener(this);
+
+        if(getActivity().getIntent() != null) {
+            MusicInfo musicInfo = getActivity().getIntent().getParcelableExtra("restore");
+            if(musicInfo != null) {
+                mPlayerSeekBar.setMax(musicInfo.getDuration());
+                mPlayerDurationTextView.setText(MusicInfoUtil.getTime(String.valueOf(musicInfo.getDuration())));
+                mPlayerAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
+            }
+        }
     }
 
     @Override

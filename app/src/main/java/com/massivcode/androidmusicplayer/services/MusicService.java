@@ -571,6 +571,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
         // Notification 터치 했을 때 실행할 PendingIntent 지정
         Intent activityStartIntent = new Intent(getApplicationContext(), MainActivity.class);
+        activityStartIntent.putExtra("restore", getCurrentInfo());
         PendingIntent activityStartPendingIntent = PendingIntent.getActivity(getApplicationContext(),
                 1,
                 activityStartIntent,

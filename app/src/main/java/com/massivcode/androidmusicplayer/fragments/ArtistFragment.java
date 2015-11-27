@@ -35,6 +35,7 @@ public class ArtistFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mAdapter = new ArtistAdapter(MusicInfoUtil.getArtistInfo(getActivity()), getActivity(), true);
 
+
     }
 
     @Nullable
