@@ -1,4 +1,4 @@
-package com.massivcode.androidmusicplayer.model;
+package com.massivcode.androidmusicplayer.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

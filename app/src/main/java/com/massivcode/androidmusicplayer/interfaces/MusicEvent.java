@@ -2,7 +2,7 @@ package com.massivcode.androidmusicplayer.interfaces;
 
 import android.media.MediaPlayer;
 
-import com.massivcode.androidmusicplayer.model.MusicInfo;
+import com.massivcode.androidmusicplayer.models.MusicInfo;
 
 /**
  * Created by Ray Choe on 2015-11-24.

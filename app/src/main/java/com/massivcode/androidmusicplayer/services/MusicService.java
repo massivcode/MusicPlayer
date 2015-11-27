@@ -15,7 +15,7 @@ import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
 import com.massivcode.androidmusicplayer.interfaces.RequestEvent;
-import com.massivcode.androidmusicplayer.model.MusicInfo;
+import com.massivcode.androidmusicplayer.models.MusicInfo;
 import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
 
 import java.io.IOException;
