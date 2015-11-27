@@ -25,6 +25,8 @@ import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
 import com.massivcode.androidmusicplayer.interfaces.RequestEvent;
+import com.massivcode.androidmusicplayer.interfaces.Restore;
+import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
 import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
 
@@ -50,6 +52,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     private boolean isReady = false;
     private MediaSessionCompat mSession;
     private MediaMetadataCompat mMetadata;
+
+    private SaveState mSaveState;
 
 
     // 수행하는 곳
@@ -395,6 +399,19 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         if (event instanceof RequestEvent) {
             sendMusicEvent();
             sendPlayback();
+        } else if(event instanceof SaveState) {
+                mSaveState = new SaveState();
+                MusicInfo musicInfo = getCurrentInfo();
+                ArrayList<Long> currentPlaylist = getCurrentPlaylist();
+                int currentPlayPosition = getCurrentPosition();
+                mSaveState.setMusicInfo(musicInfo);
+                mSaveState.setCurrentPlaylist(currentPlaylist);
+                mSaveState.setCurrentPositionAtPlaylist(currentPlayPosition);
+                mSaveState.setCurrentPlayTime(mMediaPlayer.getCurrentPosition());
+        } else if(event instanceof Restore) {
+            if(mSaveState != null) {
+                EventBus.getDefault().post(mSaveState);
+            }
         }
     }
 

@@ -19,6 +19,8 @@ import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
+import com.massivcode.androidmusicplayer.interfaces.Restore;
+import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
 import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
 
@@ -43,11 +45,11 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
     private MediaPlayer mMediaPlayer;
     private Playback mPlayback;
+    private SaveState mSaveState;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "PlayerFragment.onCreate()");
 
 
     }
@@ -77,6 +79,19 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
         mPlayerSeekBar.setOnSeekBarChangeListener(this);
 
+        refreshViewWhenActivityForcedTerminated();
+    }
+
+    private void refreshViewWhenActivityForcedTerminated() {
+        if(mSaveState != null) {
+            MusicInfo musicInfo = mSaveState.getMusicInfo();
+            mPlayerSeekBar.setMax(musicInfo.getDuration());
+            mPlayerDurationTextView.setText(MusicInfoUtil.getTime(String.valueOf(musicInfo.getDuration())));
+            mPlayerAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
+            mPlayerCurrentTimeTextView.setText(MusicInfoUtil.getTime(String.valueOf(mSaveState.getCurrentPlayTime())));
+            mPlayerSeekBar.setProgress(mSaveState.getCurrentPlayTime());
+        }
+
         if(getActivity().getIntent() != null) {
             MusicInfo musicInfo = getActivity().getIntent().getParcelableExtra("restore");
             if(musicInfo != null) {
@@ -100,6 +115,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
         // EventBus 등록이 되어서 모든 이벤트를 수신 가능
         EventBus.getDefault().register(this);
+        EventBus.getDefault().post(new Restore());
     }
 
     @Override
@@ -137,6 +153,10 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             mPlayerAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
             mPlayerSeekBar.setMax(musicInfo.getDuration());
 
+        } else if(event instanceof SaveState) {
+            if(((SaveState) event).getMusicInfo() != null) {
+                mSaveState = (SaveState) event;
+            }
         }
 
 

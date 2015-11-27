@@ -34,6 +34,7 @@ import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.fragments.CurrentPlaylistFragment;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.LastPlayedSongs;
+import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.managers.Manager;
 import com.massivcode.androidmusicplayer.services.MusicService;
 import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
@@ -78,7 +79,6 @@ public class MainActivity extends AppCompatActivity
     };
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,11 +95,12 @@ public class MainActivity extends AppCompatActivity
 
         initViews();
 
+
         // Restore preferences
         mPreferences = getSharedPreferences(PREFERENCES_NAME, 0);
         long lastPlayedSongId = mPreferences.getLong("lastPlayedSongId", 0);
 
-        if(lastPlayedSongId != 0) {
+        if (lastPlayedSongId != 0) {
 
         }
 
@@ -123,19 +124,27 @@ public class MainActivity extends AppCompatActivity
             editor.commit();
         }
 
-
-
-
         // 해제 꼭 해주세요
         EventBus.getDefault().unregister(this);
     }
 
     // EventBus 용 이벤트 수신
     public void onEvent(Event event) {
-        if(event instanceof LastPlayedSongs) {
+        if (event instanceof LastPlayedSongs) {
             mLastPlayedSongs = (LastPlayedSongs) event;
         }
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mMusicService != null) {
+            if (mMusicService.getCurrentInfo() != null & mMusicService.getCurrentPlaylist() != null & mMusicService.getCurrentPosition() != -1) {
+               EventBus.getDefault().post(new SaveState());
+            }
+        }
+    }
+
 
     private void initViews() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -153,13 +162,13 @@ public class MainActivity extends AppCompatActivity
         mMemuTitleList = Arrays.asList(getResources().getStringArray(R.array.nav_menu_array));
         mNavigationAdapter = new NavigationAdapter(getSupportFragmentManager());
 
-        mTabLayout = (TabLayout)findViewById(R.id.tab_layout);
+        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
         mTabLayout.addTab(mTabLayout.newTab().setText("플레이어"));
         mTabLayout.addTab(mTabLayout.newTab().setText("재생목록"));
         mTabLayout.addTab(mTabLayout.newTab().setText("아티스트"));
         mTabLayout.addTab(mTabLayout.newTab().setText("노래"));
 
-        mViewPager = (ViewPager)findViewById(R.id.view_pager);
+        mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager.setAdapter(mNavigationAdapter);
         // 뷰페이져에서 프래그먼트 4개까지 메모리에 올려놓는다.
         mViewPager.setOffscreenPageLimit(4);
@@ -202,7 +211,6 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-
     }
 
     @Override
@@ -232,7 +240,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            if(mMusicService != null && mMusicService.getCurrentPlaylist() != null) {
+            if (mMusicService != null && mMusicService.getCurrentPlaylist() != null) {
                 CurrentPlaylistFragment dialogFragment = new CurrentPlaylistFragment();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("data", mMusicService.getCurrentPlaylist());
@@ -295,7 +303,7 @@ public class MainActivity extends AppCompatActivity
                 mViewPager.setCurrentItem(0);
                 break;
             case R.id.player_previous_ib:
-                if(mMusicService != null & mMusicService.isReady()) {
+                if (mMusicService != null & mMusicService.isReady()) {
 
                     Intent nextIntent = new Intent(MainActivity.this, MusicService.class);
                     nextIntent.setAction(MusicService.ACTION_PLAY_PREVIOUS);
@@ -304,14 +312,14 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case R.id.player_play_ib:
-                if(mMusicService != null & mMusicService.isReady()) {
+                if (mMusicService != null & mMusicService.isReady()) {
                     Intent pauseIntent = new Intent(MainActivity.this, MusicService.class);
                     pauseIntent.setAction(MusicService.ACTION_PAUSE);
                     startService(pauseIntent);
                 }
                 break;
             case R.id.player_next_ib:
-                if(mMusicService != null & mMusicService.isReady()) {
+                if (mMusicService != null & mMusicService.isReady()) {
 
                     Intent nextIntent = new Intent(MainActivity.this, MusicService.class);
                     nextIntent.setAction(MusicService.ACTION_PLAY_NEXT);
@@ -344,7 +352,7 @@ public class MainActivity extends AppCompatActivity
         switch (parent.getId()) {
             // Songs ListView 를 클릭할 경우 : 해당 곡만 재생
             case R.id.songs_listView: {
-                ArrayList<Long> list = (ArrayList)MusicInfoUtil.getSelectedSongPlaylist(MainActivity.this, (Cursor) parent.getAdapter().getItem(position));
+                ArrayList<Long> list = (ArrayList) MusicInfoUtil.getSelectedSongPlaylist(MainActivity.this, (Cursor) parent.getAdapter().getItem(position));
                 Intent intent = new Intent(MainActivity.this, MusicService.class);
                 intent.setAction(MusicService.ACTION_PLAY);
                 intent.putExtra("list", list);
@@ -361,9 +369,8 @@ public class MainActivity extends AppCompatActivity
                 startService(intent);
                 break;
             }
-            
-        }
 
+        }
 
 
     }

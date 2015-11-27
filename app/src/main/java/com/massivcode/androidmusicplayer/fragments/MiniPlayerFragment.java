@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
+import com.massivcode.androidmusicplayer.interfaces.Restore;
+import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
 import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
 
@@ -33,6 +36,8 @@ public class MiniPlayerFragment extends Fragment {
     private ImageButton mPlayerPreviousImageButton;
     private ImageButton mPlayerPlayImageButton;
     private ImageButton mPlayerNextImageButton;
+
+    private SaveState mSaveState;
 
     private Handler mHandler = new Handler();
 
@@ -69,16 +74,9 @@ public class MiniPlayerFragment extends Fragment {
         mPlayerArtistTextView.setOnClickListener((View.OnClickListener)getActivity());
         mPlayerPreviousImageButton.setOnClickListener((View.OnClickListener)getActivity());
         mPlayerPlayImageButton.setOnClickListener((View.OnClickListener)getActivity());
-        mPlayerNextImageButton.setOnClickListener((View.OnClickListener)getActivity());
+        mPlayerNextImageButton.setOnClickListener((View.OnClickListener) getActivity());
 
-        if(getActivity().getIntent() != null) {
-            MusicInfo musicInfo = getActivity().getIntent().getParcelableExtra("restore");
-            if(musicInfo != null) {
-                mPlayerTitleTextView.setText(musicInfo.getTitle());
-                mPlayerArtistTextView.setText(musicInfo.getArtist());
-                mPlayerMiniAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
-            }
-        }
+        refreshViewWhenActivityForcedTerminated();
 
     }
 
@@ -91,14 +89,17 @@ public class MiniPlayerFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
+        Log.d(TAG, "MiniPlayerFragment onAttach");
         // EventBus 등록이 되어서 모든 이벤트를 수신 가능
         EventBus.getDefault().register(this);
+        EventBus.getDefault().post(new Restore());
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
 
+        Log.d(TAG, "MiniPlayerFragment onDetach");
         // 해제 꼭 해주세요
         EventBus.getDefault().unregister(this);
     }
@@ -131,9 +132,31 @@ public class MiniPlayerFragment extends Fragment {
                 }
             });
 
+        } else if(event instanceof SaveState) {
+            if(((SaveState) event).getMusicInfo() != null) {
+                mSaveState = (SaveState) event;
+            }
         }
 
 
+    }
+
+    private void refreshViewWhenActivityForcedTerminated() {
+        if(mSaveState != null) {
+            MusicInfo musicInfo = mSaveState.getMusicInfo();
+            mPlayerTitleTextView.setText(musicInfo.getTitle());
+            mPlayerArtistTextView.setText(musicInfo.getArtist());
+            mPlayerMiniAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
+        }
+
+        if(getActivity().getIntent() != null) {
+            MusicInfo musicInfo = getActivity().getIntent().getParcelableExtra("restore");
+            if(musicInfo != null) {
+                mPlayerTitleTextView.setText(musicInfo.getTitle());
+                mPlayerArtistTextView.setText(musicInfo.getArtist());
+                mPlayerMiniAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
+            }
+        }
     }
 
 }
