@@ -54,6 +54,8 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
 
     private CurrentPlaylistAdapter mAdapter;
 
+    private int mCurrentPlayingPosition;
+
     private Handler mHandler = new Handler();
 
 
@@ -119,11 +121,15 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
             Log.d(TAG, "재생목록에서 뮤직이벤트를 받았습니다.");
             mCurrentEvent = (MusicEvent) event;
             mAdapter.notifyDataSetChanged();
+
         } else if(event instanceof Playback) {
             Log.d(TAG, "재생목록에서 플레이백이벤트를 받았습니다.");
             mPlayback = (Playback) event;
             mAdapter.notifyDataSetChanged();
         }
+
+        mCurrentPlaylistListView.setSelection(mAdapter.getCurrentPlayingPosition());
+
 
     }
 
@@ -182,6 +188,8 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
         public View getView(int position, View convertView, ViewGroup parent) {
             final ViewHolder viewHolder;
 
+
+
             if (convertView == null) {
                 convertView = LayoutInflater.from(mContext).inflate(R.layout.item_current_playlist, parent, false);
 
@@ -199,7 +207,7 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
             MusicInfo musicInfo = (MusicInfo) getItem(position);
             if(musicInfo.get_id() == mCurrentEvent.getMusicInfo().get_id()) {
                 viewHolder.mCurrentPlaylistIsPlayingImageView.setVisibility(View.VISIBLE);
-
+                mCurrentPlayingPosition = position;
                 if(mPlayback.isPlaying()) {
                     viewHolder.mCurrentPlaylistIsPlayingImageView.setSelected(true);
                 } else {
@@ -214,6 +222,10 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
             viewHolder.mCurrentPlaylistTitleTextView.setText(musicInfo.getTitle());
 
             return convertView;
+        }
+
+        public int getCurrentPlayingPosition() {
+            return mCurrentPlayingPosition;
         }
 
 
