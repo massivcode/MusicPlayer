@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
-import com.massivcode.androidmusicplayer.util.MusicInfoUtil;
+import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
 import com.suwonsmartapp.abl.AsyncBitmapLoader;
 
 /**

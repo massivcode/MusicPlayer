@@ -34,7 +34,7 @@ import com.massivcode.androidmusicplayer.fragments.CurrentPlaylistFragment;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.managers.Manager;
 import com.massivcode.androidmusicplayer.services.MusicService;
-import com.massivcode.androidmusicplayer.util.MusicInfoUtil;
+import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
