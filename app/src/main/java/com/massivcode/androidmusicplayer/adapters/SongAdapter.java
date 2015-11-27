@@ -24,9 +24,12 @@ import com.suwonsmartapp.abl.AsyncBitmapLoader;
  */
 public class SongAdapter extends CursorAdapter implements AsyncBitmapLoader.BitmapLoadListener {
 
+    private static final String TAG = SongAdapter.class.getSimpleName();
     private LayoutInflater mInflater;
     private AsyncBitmapLoader mAsyncBitmapLoader;
     private Context mContext;
+
+    private int mCurrentPlayingPosition;
 
     private MusicEvent mMusicEvent;
     private Playback mPlayback;
@@ -71,7 +74,7 @@ public class SongAdapter extends CursorAdapter implements AsyncBitmapLoader.Bitm
 
             if (id == mMusicEvent.getMusicInfo().get_id()) {
                 holder.IsPlayImageView.setVisibility(View.VISIBLE);
-
+                mCurrentPlayingPosition = cursor.getPosition();
                 if (mPlayback.isPlaying()) {
                     holder.IsPlayImageView.setSelected(true);
                 } else {
@@ -85,6 +88,10 @@ public class SongAdapter extends CursorAdapter implements AsyncBitmapLoader.Bitm
         }
 
 
+    }
+
+    public int getCurrentPlayingPosition() {
+        return mCurrentPlayingPosition;
     }
 
     public void swapMusicEvent(MusicEvent musicEvent) {

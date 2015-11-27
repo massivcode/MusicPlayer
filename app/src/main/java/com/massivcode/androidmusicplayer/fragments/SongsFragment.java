@@ -80,5 +80,7 @@ public class SongsFragment extends Fragment {
             mAdapter.notifyDataSetChanged();
         }
 
+        mListView.setSelection(mAdapter.getCurrentPlayingPosition());
+
     }
 }
