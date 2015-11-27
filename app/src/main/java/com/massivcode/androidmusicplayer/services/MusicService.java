@@ -1,6 +1,7 @@
 package com.massivcode.androidmusicplayer.services;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -534,6 +535,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         builder.setContentText(mCurrentMusicInfo.getArtist());
 
 
+
         int icon;
         if (mMediaPlayer.isPlaying()) {
             Log.d(TAG, "is playing");
@@ -596,12 +598,24 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         builder.setContentIntent(activityStartPendingIntent);
 
 
-        Notification notification = builder.build();
+
+        Notification notification = builder.setAutoCancel(true).build();
+
+        if(mMediaPlayer.isPlaying()) {
+            notification.flags = Notification.FLAG_NO_CLEAR;
+            ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(1, notification);
+        } else {
+            notification.flags = Notification.FLAG_AUTO_CANCEL;
+            ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(1, notification);
+        }
+
+
+//        notification.flags = Notification.Flag
         // Notification 띄우기
-//        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(1, builder.build());
 
-        startForeground(1234, notification);
 
+
+//        startForeground(1234, notification);
     }
 
     public int getPositionAtPreviousOrNext(String flag) {
