@@ -297,17 +297,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.player_previous_ib:
                 if(mMusicService != null & mMusicService.isReady()) {
 
-                    int position = mMusicService.getCurrentPosition();
-
-                    if(position > 0) {
-                        position -= 1;
-                    } else {
-                        position = mMusicService.getCurrentPlaylistSize();
-                    }
-
                     Intent nextIntent = new Intent(MainActivity.this, MusicService.class);
                     nextIntent.setAction(MusicService.ACTION_PLAY_PREVIOUS);
-                    nextIntent.putExtra("position", position);
+                    nextIntent.putExtra("position", mMusicService.getPositionAtPreviousOrNext(MusicService.ACTION_PLAY_PREVIOUS));
                     startService(nextIntent);
                 }
                 break;
@@ -321,17 +313,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.player_next_ib:
                 if(mMusicService != null & mMusicService.isReady()) {
 
-                    int position = mMusicService.getCurrentPosition();
-
-                    if(position < mMusicService.getCurrentPlaylistSize()) {
-                        position += 1;
-                    } else {
-                        position = mMusicService.getCurrentPlaylistSize();
-                    }
-
                     Intent nextIntent = new Intent(MainActivity.this, MusicService.class);
                     nextIntent.setAction(MusicService.ACTION_PLAY_NEXT);
-                    nextIntent.putExtra("position", position);
+                    nextIntent.putExtra("position", mMusicService.getPositionAtPreviousOrNext(MusicService.ACTION_PLAY_NEXT));
                     startService(nextIntent);
                 }
                 break;

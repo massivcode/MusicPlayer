@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,11 +70,11 @@ public class SongsFragment extends Fragment {
     public void onEvent(Event event) {
 
         if (event instanceof MusicEvent) {
-            Log.d(TAG, "노래에서 뮤직이벤트를 받았습니다.");
+//            Log.d(TAG, "노래에서 뮤직이벤트를 받았습니다.");
             mAdapter.swapMusicEvent((MusicEvent) event);
             mAdapter.notifyDataSetChanged();
         } else if(event instanceof Playback) {
-            Log.d(TAG, "노래에서 플레이백이벤트를 받았습니다.");
+//            Log.d(TAG, "노래에서 플레이백이벤트를 받았습니다.");
             mAdapter.swapPlayback((Playback) event);
             mAdapter.notifyDataSetChanged();
         }

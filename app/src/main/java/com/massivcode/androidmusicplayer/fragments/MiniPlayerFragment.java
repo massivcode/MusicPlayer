@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,17 +99,17 @@ public class MiniPlayerFragment extends Fragment {
             mPlayerArtistTextView.setText(musicInfo.getArtist());
             mPlayerTitleTextView.setText(musicInfo.getTitle());
         } else if(event instanceof Playback) {
-            Log.d(TAG, "Playback is coming");
+//            Log.d(TAG, "Playback is coming");
             final Playback playback = (Playback) event;
 
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if(playback.isPlaying()) {
-                        Log.d(TAG, "playback.isPlaying() : true");
+//                        Log.d(TAG, "playback.isPlaying() : true");
                         mPlayerPlayImageButton.setSelected(true);
                     } else {
-                        Log.d(TAG, "playback.isPlaying() : false");
+//                        Log.d(TAG, "playback.isPlaying() : false");
                         mPlayerPlayImageButton.setSelected(false);
                     }
                 }

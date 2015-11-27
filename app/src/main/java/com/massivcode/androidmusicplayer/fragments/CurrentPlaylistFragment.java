@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,7 +74,7 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
         }).start();
 
         EventBus.getDefault().post(new RequestEvent());
-        Log.d(TAG, "재생목록에서 이벤트가 요청되었습니다.");
+//        Log.d(TAG, "재생목록에서 이벤트가 요청되었습니다.");
 
 
     }
@@ -83,7 +82,6 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView");
         View view = inflater.inflate(R.layout.fragment_current_playlist, container, false);
 
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -101,7 +99,7 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        Log.d(TAG, "CurrentPlaylistFragment is attached");
+//        Log.d(TAG, "CurrentPlaylistFragment is attached");
         // EventBus 등록이 되어서 모든 이벤트를 수신 가능
         EventBus.getDefault().register(this);
     }
@@ -109,7 +107,7 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.d(TAG, "CurrentPlaylistFragment is detached");
+//        Log.d(TAG, "CurrentPlaylistFragment is detached");
         // 해제 꼭 해주세요
         EventBus.getDefault().unregister(this);
     }
@@ -118,12 +116,12 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
     public void onEvent(Event event) {
 
         if (event instanceof MusicEvent) {
-            Log.d(TAG, "재생목록에서 뮤직이벤트를 받았습니다.");
+//            Log.d(TAG, "재생목록에서 뮤직이벤트를 받았습니다.");
             mCurrentEvent = (MusicEvent) event;
             mAdapter.notifyDataSetChanged();
 
         } else if(event instanceof Playback) {
-            Log.d(TAG, "재생목록에서 플레이백이벤트를 받았습니다.");
+//            Log.d(TAG, "재생목록에서 플레이백이벤트를 받았습니다.");
             mPlayback = (Playback) event;
             mAdapter.notifyDataSetChanged();
         }
