@@ -41,7 +41,6 @@ public class ArtistAdapter extends CursorTreeAdapter implements AsyncBitmapLoade
         mContext = context;
         mAsyncBitmapLoader = new AsyncBitmapLoader(context);
         mAsyncBitmapLoader.setBitmapLoadListener(this);
-
     }
 
 
