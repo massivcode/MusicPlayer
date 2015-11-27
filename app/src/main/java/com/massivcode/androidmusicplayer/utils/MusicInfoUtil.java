@@ -14,6 +14,8 @@ import com.massivcode.androidmusicplayer.models.MusicInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by massivCode on 2015-10-11.
@@ -55,6 +57,11 @@ public class MusicInfoUtil {
     public static String selection = "_id=?";
     public static String selection_artist = MediaStore.Audio.Media.ARTIST + "=?";
 
+    /**
+     * 앱이 실행하자마자 뮤직 서비스에서 실행하는 것으로, 기기내 모든 음원 정보를 담고 있는 맵을 리턴한다.
+     * @param context
+     * @return
+     */
     public static HashMap<Long, MusicInfo> getAllMusicInfo(Context context) {
         HashMap<Long, MusicInfo> map = new HashMap<>();
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, MediaStore.Audio.Media.ARTIST + " != ? ", new String[]{MediaStore.UNKNOWN_STRING}, null);
@@ -76,6 +83,13 @@ public class MusicInfoUtil {
         return map;
     }
 
+    /**
+     * 현재 재생목록 팝업에서 사용하는 것으로, 뮤직 서비스에서 가지고 있는 기기내 모든 음원 정보 중,
+     * 현재 플레이 중인 음원 리스트만을 리턴하는 것.
+     * @param origin
+     * @param keys
+     * @return
+     */
     public static ArrayList<MusicInfo> switchAllMusicInfoToSelectedMusicInfo(HashMap<Long, MusicInfo> origin, ArrayList<Long> keys) {
         ArrayList<MusicInfo> list = new ArrayList<>();
 
@@ -137,6 +151,11 @@ public class MusicInfoUtil {
 
     }
 
+    /**
+     * ArtistFragment에서 사용하는 것으로 기기내 모든 아티스트 정보를 얻어 Cursor로 리턴하는 것이다.
+     * @param context
+     * @return
+     */
     public static Cursor getArtistInfo(Context context) {
         String[] projection = new String[] {
                 MediaStore.Audio.Artists._ID, MediaStore.Audio.Artists.ARTIST, MediaStore.Audio.Artists.NUMBER_OF_TRACKS
@@ -145,9 +164,17 @@ public class MusicInfoUtil {
         return context.getContentResolver().query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, projection, MediaStore.Audio.Media.ARTIST + " != ?", new String[]{MediaStore.UNKNOWN_STRING}, null);
     }
 
+    /**
+     * ArtistFragment에서 사용하는 것으로 입력된 아티스트의 모든 음원 정보를 Cursor로 리턴한다.
+     * @param context
+     * @param artist
+     * @return
+     */
     public static Cursor getArtistTrackInfo(Context context, String artist) {
         return context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection_artist, new String[]{artist}, null);
     }
+
+
 
 
 
@@ -158,6 +185,35 @@ public class MusicInfoUtil {
             String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
             Log.d(TAG, "artist : " + artist);
         }
+    }
+
+    /**
+     * 앱 종료 후에 다시 실행했을 때, 최종 정보가 담긴 플레이 리스트를 리턴한다.
+     *
+     * @param values
+     * @return
+     */
+    public static ArrayList<Long> getLastPlayedSongs(Set<String> values) {
+        ArrayList<Long> list = new ArrayList<>();
+        for(String value : values) {
+            list.add(Long.getLong(value));
+        }
+        return list;
+    }
+
+    /**
+     * 앱 종료시 SharedPreference 에 StringSet을 저장해야하는데, 현재 플레이 리스트를 받아서 이것을 set으로 저장한다.
+     * @param values
+     * @return
+     */
+    public static Set<String> getPlaylistToSet(ArrayList<Long> values) {
+        Set<String> set = new HashSet<>();
+
+        for(Long value : values) {
+            set.add(String.valueOf(value));
+        }
+
+        return set;
     }
 
     /**

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import android.widget.Toast;
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.fragments.CurrentPlaylistFragment;
 import com.massivcode.androidmusicplayer.interfaces.Event;
+import com.massivcode.androidmusicplayer.interfaces.LastPlayedSongs;
 import com.massivcode.androidmusicplayer.managers.Manager;
 import com.massivcode.androidmusicplayer.services.MusicService;
 import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
@@ -46,6 +48,11 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener, ExpandableListView.OnChildClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    public static final String PREFERENCES_NAME = "LastPlayedSong";
+    private SharedPreferences mPreferences;
+    private LastPlayedSongs mLastPlayedSongs;
+
+
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
 
@@ -88,6 +95,14 @@ public class MainActivity extends AppCompatActivity
 
         initViews();
 
+        // Restore preferences
+        mPreferences = getSharedPreferences(PREFERENCES_NAME, 0);
+        long lastPlayedSongId = mPreferences.getLong("lastPlayedSongId", 0);
+
+        if(lastPlayedSongId != 0) {
+
+        }
+
 
     }
 
@@ -97,12 +112,29 @@ public class MainActivity extends AppCompatActivity
 
         unbindService(mConnection);
 
+        // We need an Editor object to make preference changes.
+        // All objects are from android.context.Context
+
+        if (mLastPlayedSongs != null) {
+            mPreferences = getSharedPreferences(PREFERENCES_NAME, 0);
+            SharedPreferences.Editor editor = mPreferences.edit();
+
+            // Commit the edits!
+            editor.commit();
+        }
+
+
+
+
         // 해제 꼭 해주세요
         EventBus.getDefault().unregister(this);
     }
 
     // EventBus 용 이벤트 수신
     public void onEvent(Event event) {
+        if(event instanceof LastPlayedSongs) {
+            mLastPlayedSongs = (LastPlayedSongs) event;
+        }
     }
 
     private void initViews() {
