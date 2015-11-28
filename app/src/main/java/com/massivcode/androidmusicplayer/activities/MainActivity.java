@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity
 
     private MusicService mMusicService;
 
+
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity
         EventBus.getDefault().register(this);
 
         checkPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, 1);
+
 
 
         mServiceIntent = new Intent(MainActivity.this, MusicService.class);

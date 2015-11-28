@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
@@ -29,6 +30,7 @@ import com.massivcode.androidmusicplayer.interfaces.RequestEvent;
 import com.massivcode.androidmusicplayer.interfaces.Restore;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
+import com.massivcode.androidmusicplayer.receiver.UnPlugReceiver;
 import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
 
 import java.io.IOException;
@@ -48,6 +50,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public static final String ACTION_PLAY_NEXT = "ACTION_PLAY_NEXT";
     public static final String ACTION_PLAY_PREVIOUS = "ACTION_PLAY_PREVIOUS";
     public static final String ACTION_PAUSE = "ACTION_PAUSE";
+    public static final String ACTION_PAUSE_UNPLUGGED = "ACTION_PAUSE_UNPLUGGED";
     public static final String ACTION_PLAY_SELECTED = "ACTION_PLAY_SELECTED";
     public static final String ACTION_FINISH = "ACTION_FINISH";
 
@@ -94,24 +97,28 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         mp.reset();
 
         try {
-            if (mCurrentPosition < getCurrentPlaylistSize()) {
-                mCurrentPosition += 1;
-                mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
-            } else {
-                mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(0)));
+            if (mCurrentPlaylist != null) {
+                if (mCurrentPosition < getCurrentPlaylistSize()) {
+                    mCurrentPosition += 1;
+                    mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
+                } else {
+                    mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(0)));
+                }
+                mp.prepare();
+                isReady = true;
+                mp.start();
+                // TODO 프래그먼트들에 메세지 보내기
+                sendMusicEvent();
             }
 
 
-            mp.prepare();
-            isReady = true;
-            mp.start();
-            // TODO 프래그먼트들에 메세지 보내기
-            sendMusicEvent();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            setMetaData();
-            showNotification(mMetadata);
+            if (mCurrentMusicInfo != null) {
+                setMetaData();
+                showNotification(mMetadata);
+            }
         }
 
     }
@@ -128,6 +135,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     private ArrayList<Long> mCurrentPlaylist;
     private int mCurrentPosition;
     private MusicInfo mCurrentMusicInfo;
+    private UnPlugReceiver mUnPlugReceiver;
 
     private HashMap<Long, MusicInfo> mAllMusicData;
 
@@ -150,6 +158,11 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         mMediaPlayer = new MediaPlayer();
 
         mMediaPlayer.setOnCompletionListener(this);
+
+        mUnPlugReceiver = new UnPlugReceiver();
+        IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(mUnPlugReceiver, filter);
+
 
     }
 
@@ -182,7 +195,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 break;
             case ACTION_FINISH:
 
-                if(mMediaPlayer.isPlaying()) {
+                if (mMediaPlayer.isPlaying()) {
                     mHandler.removeMessages(0);
                     mMediaPlayer.stop();
                     mMediaPlayer.release();
@@ -195,6 +208,16 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 EventBus.getDefault().post(new FinishActivity());
                 stopForeground(true);
                 stopService(new Intent(getApplicationContext(), MusicService.class));
+                break;
+            case ACTION_PAUSE_UNPLUGGED:
+                if(mMediaPlayer.isPlaying()) {
+                    mMediaPlayer.pause();
+                    if (mCurrentMusicInfo != null & mCurrentPlaylist != null) {
+                        sendAllEvent();
+                        setMetaData();
+                        showNotification(mMetadata);
+                    }
+                }
                 break;
         }
 
@@ -284,14 +307,18 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             case ACTION_PAUSE:
                 if (mMediaPlayer.isPlaying()) {
                     mMediaPlayer.pause();
-                    sendAllEvent();
-                    setMetaData();
-                    showNotification(mMetadata);
+                    if (mCurrentMusicInfo != null & mCurrentPlaylist != null) {
+                        sendAllEvent();
+                        setMetaData();
+                        showNotification(mMetadata);
+                    }
                 } else {
                     mMediaPlayer.start();
-                    sendAllEvent();
-                    setMetaData();
-                    showNotification(mMetadata);
+                    if (mCurrentMusicInfo != null & mCurrentPlaylist != null) {
+                        sendAllEvent();
+                        setMetaData();
+                        showNotification(mMetadata);
+                    }
                 }
                 break;
             case ACTION_PLAY_NEXT:
@@ -376,26 +403,28 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     }
 
     private void setMetaData() {
-        // 세션에 메타데이터 셋 (Notification 에서 사용할 것임)
-        Bitmap bitmap = MusicInfoUtil.getBitmap(getApplicationContext(), mCurrentMusicInfo.getUri(), 4);
+        if (mCurrentMusicInfo != null) {
+            Bitmap bitmap = MusicInfoUtil.getBitmap(getApplicationContext(), mCurrentMusicInfo.getUri(), 4);
 //        Log.d(TAG, "mCurrentMusicInfo.getTitle() : " + mCurrentMusicInfo.getTitle());
-        mMetadata = new MediaMetadataCompat.Builder().putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, mCurrentMusicInfo.getArtist())
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, mCurrentMusicInfo.getAlbum())
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, mCurrentMusicInfo.getTitle())
-                .build();
-        if (mSession == null) {
-            mSession = new MediaSessionCompat(this, "tag", null, null);
-            mSession.setMetadata(mMetadata);
-            mSession.setActive(true);
-            mSession.setCallback(new MediaSessionCompat.Callback() {
-                @Override
-                public void onPlay() {
-                    super.onPlay();
-                    Toast.makeText(MusicService.this, "onPlay", Toast.LENGTH_SHORT).show();
-                }
-            });
+            mMetadata = new MediaMetadataCompat.Builder().putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, mCurrentMusicInfo.getArtist())
+                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, mCurrentMusicInfo.getAlbum())
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, mCurrentMusicInfo.getTitle())
+                    .build();
+            if (mSession == null) {
+                mSession = new MediaSessionCompat(this, "tag", null, null);
+                mSession.setMetadata(mMetadata);
+                mSession.setActive(true);
+                mSession.setCallback(new MediaSessionCompat.Callback() {
+                    @Override
+                    public void onPlay() {
+                        super.onPlay();
+                        Toast.makeText(MusicService.this, "onPlay", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         }
+        // 세션에 메타데이터 셋 (Notification 에서 사용할 것임)
     }
 
 
@@ -406,6 +435,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             mMediaPlayer.release();
         }
         mMediaPlayer = null;
+
+        unregisterReceiver(mUnPlugReceiver);
 
         // 해제 꼭 해주세요
         EventBus.getDefault().unregister(this);
@@ -475,9 +506,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     }
 
     public int getCurrentPlaylistSize() {
-        Log.d(TAG, "mCurrentPlaylist.size @ getCurrentPlaylistSize() : " + mCurrentPlaylist.size());
-        Log.d(TAG, "getCurrentPosition @ getCurrentPosition() : " + (mCurrentPlaylist.size() - 1));
-        return (mCurrentPlaylist.size() - 1);
+//        할당할 곳 = 비교문? 참일때값 : 거짓일때 값
+        return mCurrentPlaylist != null ? (mCurrentPlaylist.size() - 1) : 0;
     }
 
     private Uri switchIdToUri(long id) {
@@ -625,7 +655,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
         Notification notification = builder.setAutoCancel(true).build();
 
-            startForeground(1, notification);
+        startForeground(1, notification);
 
 
 //        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(1, notification);

@@ -97,7 +97,9 @@ public class SongsFragment extends Fragment {
             }
         }
 
-        mListView.setSelection(mAdapter.getCurrentPlayingPosition());
+        if(mAdapter != null) {
+            mListView.setSelection(mAdapter.getCurrentPlayingPosition());
+        }
 
     }
 }
