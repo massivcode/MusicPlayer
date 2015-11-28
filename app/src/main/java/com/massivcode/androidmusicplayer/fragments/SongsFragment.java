@@ -17,6 +17,9 @@ import com.massivcode.androidmusicplayer.adapters.SongAdapter;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
+import com.massivcode.androidmusicplayer.interfaces.Restore;
+import com.massivcode.androidmusicplayer.interfaces.SaveState;
+import com.massivcode.androidmusicplayer.models.MusicInfo;
 import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
 
 import de.greenrobot.event.EventBus;
@@ -29,6 +32,8 @@ public class SongsFragment extends Fragment {
     private static final String TAG = SongsFragment.class.getSimpleName();
     private ListView mListView;
     private SongAdapter mAdapter;
+
+    private SaveState mSaveState;
 
     public SongsFragment() {
     }
@@ -52,12 +57,21 @@ public class SongsFragment extends Fragment {
         mListView.addHeaderView(header);
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener((AdapterView.OnItemClickListener) getActivity());
+
+        if(mSaveState != null) {
+            MusicInfo musicInfo = mSaveState.getMusicInfo();
+            MusicEvent musicEvent = new MusicEvent();
+            musicEvent.setMusicInfo(musicInfo);
+            mAdapter.swapMusicEvent(musicEvent);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         EventBus.getDefault().register(this);
+        EventBus.getDefault().post(new Restore());
     }
 
     @Override
@@ -77,6 +91,10 @@ public class SongsFragment extends Fragment {
 //            Log.d(TAG, "노래에서 플레이백이벤트를 받았습니다.");
             mAdapter.swapPlayback((Playback) event);
             mAdapter.notifyDataSetChanged();
+        } else if(event instanceof SaveState) {
+            if(((SaveState) event).getMusicInfo() != null) {
+                mSaveState = (SaveState) event;
+            }
         }
 
         mListView.setSelection(mAdapter.getCurrentPlayingPosition());

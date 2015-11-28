@@ -1,7 +1,6 @@
 package com.massivcode.androidmusicplayer.services;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -23,6 +22,7 @@ import android.widget.Toast;
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.activities.MainActivity;
 import com.massivcode.androidmusicplayer.interfaces.Event;
+import com.massivcode.androidmusicplayer.interfaces.FinishActivity;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
 import com.massivcode.androidmusicplayer.interfaces.RequestEvent;
@@ -49,6 +49,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public static final String ACTION_PLAY_PREVIOUS = "ACTION_PLAY_PREVIOUS";
     public static final String ACTION_PAUSE = "ACTION_PAUSE";
     public static final String ACTION_PLAY_SELECTED = "ACTION_PLAY_SELECTED";
+    public static final String ACTION_FINISH = "ACTION_FINISH";
 
     private boolean isReady = false;
     private MediaSessionCompat mSession;
@@ -178,6 +179,22 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             case ACTION_PLAY_PREVIOUS:
                 mCurrentPosition = intent.getIntExtra("position", 0);
                 mCurrentMusicInfo = MusicInfoUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
+                break;
+            case ACTION_FINISH:
+
+                if(mMediaPlayer.isPlaying()) {
+                    mHandler.removeMessages(0);
+                    mMediaPlayer.stop();
+                    mMediaPlayer.release();
+                    mMediaPlayer = null;
+                } else {
+                    mHandler.removeMessages(0);
+                    mMediaPlayer.release();
+                    mMediaPlayer = null;
+                }
+                EventBus.getDefault().post(new FinishActivity());
+                stopForeground(true);
+                stopService(new Intent(getApplicationContext(), MusicService.class));
                 break;
         }
 
@@ -400,17 +417,17 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         if (event instanceof RequestEvent) {
             sendMusicEvent();
             sendPlayback();
-        } else if(event instanceof SaveState) {
-                mSaveState = new SaveState();
-                MusicInfo musicInfo = getCurrentInfo();
-                ArrayList<Long> currentPlaylist = getCurrentPlaylist();
-                int currentPlayPosition = getCurrentPosition();
-                mSaveState.setMusicInfo(musicInfo);
-                mSaveState.setCurrentPlaylist(currentPlaylist);
-                mSaveState.setCurrentPositionAtPlaylist(currentPlayPosition);
-                mSaveState.setCurrentPlayTime(mMediaPlayer.getCurrentPosition());
-        } else if(event instanceof Restore) {
-            if(mSaveState != null) {
+        } else if (event instanceof SaveState) {
+            mSaveState = new SaveState();
+            MusicInfo musicInfo = getCurrentInfo();
+            ArrayList<Long> currentPlaylist = getCurrentPlaylist();
+            int currentPlayPosition = getCurrentPosition();
+            mSaveState.setMusicInfo(musicInfo);
+            mSaveState.setCurrentPlaylist(currentPlaylist);
+            mSaveState.setCurrentPositionAtPlaylist(currentPlayPosition);
+            mSaveState.setCurrentPlayTime(mMediaPlayer.getCurrentPosition());
+        } else if (event instanceof Restore) {
+            if (mSaveState != null) {
                 EventBus.getDefault().post(mSaveState);
             }
         }
@@ -459,7 +476,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     public int getCurrentPlaylistSize() {
         Log.d(TAG, "mCurrentPlaylist.size @ getCurrentPlaylistSize() : " + mCurrentPlaylist.size());
-        Log.d(TAG, "getCurrentPosition @ getCurrentPosition() : " + (mCurrentPlaylist.size()-1));
+        Log.d(TAG, "getCurrentPosition @ getCurrentPosition() : " + (mCurrentPlaylist.size() - 1));
         return (mCurrentPlaylist.size() - 1);
     }
 
@@ -535,7 +552,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         builder.setContentText(mCurrentMusicInfo.getArtist());
 
 
-
         int icon;
         if (mMediaPlayer.isPlaying()) {
             Log.d(TAG, "is playing");
@@ -586,9 +602,17 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         builder.addAction(android.R.drawable.ic_media_next, "next", musicNextPendingIntent);
         // =========================================================================================
 
+        // 종료 버튼을 눌렀을 때 실행하는 작업
+        // =========================================================================================
+        Intent closeIntent = new Intent(getApplicationContext(), MusicService.class);
+        closeIntent.setAction(ACTION_FINISH);
 
+        PendingIntent closePendingIntent = PendingIntent.getService(getApplicationContext(), 3, closeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.addAction(android.R.drawable.arrow_up_float, "close", closePendingIntent);
+        // =========================================================================================
 
         // Notification 터치 했을 때 실행할 PendingIntent 지정
+        // =========================================================================================
         Intent activityStartIntent = new Intent(getApplicationContext(), MainActivity.class);
         activityStartIntent.putExtra("restore", getCurrentInfo());
         PendingIntent activityStartPendingIntent = PendingIntent.getActivity(getApplicationContext(),
@@ -596,23 +620,17 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 activityStartIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(activityStartPendingIntent);
-
+        // =========================================================================================
 
 
         Notification notification = builder.setAutoCancel(true).build();
 
-        if(mMediaPlayer.isPlaying()) {
-            notification.flags = Notification.FLAG_NO_CLEAR;
-            ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(1, notification);
-        } else {
-            notification.flags = Notification.FLAG_AUTO_CANCEL;
-            ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(1, notification);
-        }
+            startForeground(1, notification);
 
 
+//        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(1, notification);
 //        notification.flags = Notification.Flag
         // Notification 띄우기
-
 
 
 //        startForeground(1234, notification);

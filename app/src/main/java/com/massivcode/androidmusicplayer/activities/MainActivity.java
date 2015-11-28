@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.fragments.CurrentPlaylistFragment;
 import com.massivcode.androidmusicplayer.interfaces.Event;
+import com.massivcode.androidmusicplayer.interfaces.FinishActivity;
 import com.massivcode.androidmusicplayer.interfaces.LastPlayedSongs;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.managers.Manager;
@@ -132,6 +133,8 @@ public class MainActivity extends AppCompatActivity
     public void onEvent(Event event) {
         if (event instanceof LastPlayedSongs) {
             mLastPlayedSongs = (LastPlayedSongs) event;
+        } else if (event instanceof FinishActivity) {
+            finish();
         }
     }
 
