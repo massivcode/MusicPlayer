@@ -54,7 +54,7 @@ public class ArtistAdapter extends CursorTreeAdapter implements AsyncBitmapLoade
 
     @Override
     protected Cursor getChildrenCursor(Cursor groupCursor) {
-        return MusicInfoUtil.getArtistTrackInfo(mContext, groupCursor.getString(groupCursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST)));
+        return MusicInfoUtil.getArtistTrackInfoCursor(mContext, groupCursor.getString(groupCursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST)));
     }
 
     @Override

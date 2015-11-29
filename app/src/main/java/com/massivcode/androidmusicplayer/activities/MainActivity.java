@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -385,8 +386,11 @@ public class MainActivity extends AppCompatActivity
         switch (parent.getId()) {
 
             // 아티스트 프래그먼트의 확장 리스트뷰를 클릭하여 나오는 차일드 아이템을 클릭하면 해당 곡으로만 이루어진 리스트를 서비스에 전달하여 단일재생한다.
+            // 이 부분도 해당 아티스트의 모든 노래를 재생하도록 변경
             case R.id.artist_ExlistView: {
-                ArrayList<Long> list = MusicInfoUtil.getSelectedSongPlaylist(parent.getExpandableListAdapter().getChildId(groupPosition, childPosition));
+                Cursor parentData = (Cursor) parent.getExpandableListAdapter().getGroup(groupPosition);
+                String artist = parentData.getString(parentData.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+                ArrayList<Long> list = MusicInfoUtil.getArtistTrackInfoList(MainActivity.this, artist);
                 Intent intent = new Intent(MainActivity.this, MusicService.class);
                 intent.setAction(MusicService.ACTION_PLAY);
                 intent.putExtra("list", list);

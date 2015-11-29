@@ -170,9 +170,30 @@ public class MusicInfoUtil {
      * @param artist
      * @return
      */
-    public static Cursor getArtistTrackInfo(Context context, String artist) {
+    public static Cursor getArtistTrackInfoCursor(Context context, String artist) {
         return context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection_artist, new String[]{artist}, null);
     }
+
+    /**
+     * 해당 아티스트의 모든 음원 정보를 리턴한다.
+     * @param context
+     * @param artist
+     * @return
+     */
+    public static ArrayList<Long> getArtistTrackInfoList(Context context, String artist) {
+        ArrayList<Long> list = new ArrayList<>();
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection_artist, new String[]{artist}, null);
+
+        while(cursor.moveToNext()) {
+            list.add(cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)));
+        }
+
+        cursor.close();
+
+        return list;
+    }
+
+
 
 
 
