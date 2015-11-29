@@ -395,7 +395,7 @@ public class MainActivity extends AppCompatActivity
                 Intent intent = new Intent(MainActivity.this, MusicService.class);
                 intent.setAction(MusicService.ACTION_PLAY);
                 intent.putExtra("list", list);
-                intent.putExtra("position", 0);
+                intent.putExtra("position", childPosition);
                 startService(intent);
                 break;
             }
