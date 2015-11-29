@@ -20,7 +20,7 @@ import com.massivcode.androidmusicplayer.interfaces.Playback;
 import com.massivcode.androidmusicplayer.interfaces.Restore;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
-import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
+import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 
 import de.greenrobot.event.EventBus;
 
@@ -112,7 +112,7 @@ public class MiniPlayerFragment extends Fragment {
             MusicEvent musicEvent = (MusicEvent)event;
             MusicInfo musicInfo = musicEvent.getMusicInfo();
 
-            mPlayerMiniAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
+            mPlayerMiniAlbumArtImageView.setImageBitmap(MusicInfoLoadUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
             mPlayerArtistTextView.setText(musicInfo.getArtist());
             mPlayerTitleTextView.setText(musicInfo.getTitle());
         } else if(event instanceof Playback) {
@@ -146,7 +146,7 @@ public class MiniPlayerFragment extends Fragment {
             MusicInfo musicInfo = mSaveState.getMusicInfo();
             mPlayerTitleTextView.setText(musicInfo.getTitle());
             mPlayerArtistTextView.setText(musicInfo.getArtist());
-            mPlayerMiniAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
+            mPlayerMiniAlbumArtImageView.setImageBitmap(MusicInfoLoadUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
         }
 
         if(getActivity().getIntent() != null) {
@@ -154,7 +154,7 @@ public class MiniPlayerFragment extends Fragment {
             if(musicInfo != null) {
                 mPlayerTitleTextView.setText(musicInfo.getTitle());
                 mPlayerArtistTextView.setText(musicInfo.getArtist());
-                mPlayerMiniAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
+                mPlayerMiniAlbumArtImageView.setImageBitmap(MusicInfoLoadUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
             }
         }
     }

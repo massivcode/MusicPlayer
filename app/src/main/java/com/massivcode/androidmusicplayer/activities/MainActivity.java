@@ -39,7 +39,7 @@ import com.massivcode.androidmusicplayer.interfaces.LastPlayedSongs;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.managers.Manager;
 import com.massivcode.androidmusicplayer.services.MusicService;
-import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
+import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSaveInstanceState");
         if (mMusicService != null) {
             if (mMusicService.getCurrentInfo() != null & mMusicService.getCurrentPlaylist() != null & mMusicService.getCurrentPosition() != -1) {
                EventBus.getDefault().post(new SaveState());
@@ -155,7 +156,6 @@ public class MainActivity extends AppCompatActivity
     private void initViews() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -344,7 +344,7 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(MainActivity.this, "모두 재생 헤더 버튼 눌림", Toast.LENGTH_SHORT).show();
                 Intent playAllIntent = new Intent(MainActivity.this, MusicService.class);
                 playAllIntent.setAction(MusicService.ACTION_PLAY);
-                playAllIntent.putExtra("list", MusicInfoUtil.getPlayAllList(MainActivity.this));
+                playAllIntent.putExtra("list", MusicInfoLoadUtil.getPlayAllList(MainActivity.this));
                 playAllIntent.putExtra("position", 0);
                 startService(playAllIntent);
                 break;
@@ -359,7 +359,7 @@ public class MainActivity extends AppCompatActivity
         switch (parent.getId()) {
             // Songs ListView 를 클릭할 경우 : 해당 곡만 재생
             case R.id.songs_listView: {
-                ArrayList<Long> list = (ArrayList) MusicInfoUtil.getSelectedSongPlaylist(MainActivity.this, (Cursor) parent.getAdapter().getItem(position));
+                ArrayList<Long> list = (ArrayList) MusicInfoLoadUtil.getSelectedSongPlaylist(MainActivity.this, (Cursor) parent.getAdapter().getItem(position));
                 Intent intent = new Intent(MainActivity.this, MusicService.class);
                 intent.setAction(MusicService.ACTION_PLAY);
                 intent.putExtra("list", list);
@@ -391,7 +391,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.artist_ExlistView: {
                 Cursor parentData = (Cursor) parent.getExpandableListAdapter().getGroup(groupPosition);
                 String artist = parentData.getString(parentData.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
-                ArrayList<Long> list = MusicInfoUtil.getArtistTrackInfoList(MainActivity.this, artist);
+                ArrayList<Long> list = MusicInfoLoadUtil.getArtistTrackInfoList(MainActivity.this, artist);
                 Intent intent = new Intent(MainActivity.this, MusicService.class);
                 intent.setAction(MusicService.ACTION_PLAY);
                 intent.putExtra("list", list);

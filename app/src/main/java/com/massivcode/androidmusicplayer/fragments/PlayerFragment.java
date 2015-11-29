@@ -22,7 +22,7 @@ import com.massivcode.androidmusicplayer.interfaces.Playback;
 import com.massivcode.androidmusicplayer.interfaces.Restore;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
-import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
+import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 
 import de.greenrobot.event.EventBus;
 
@@ -86,9 +86,9 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         if(mSaveState != null) {
             MusicInfo musicInfo = mSaveState.getMusicInfo();
             mPlayerSeekBar.setMax(musicInfo.getDuration());
-            mPlayerDurationTextView.setText(MusicInfoUtil.getTime(String.valueOf(musicInfo.getDuration())));
-            mPlayerAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
-            mPlayerCurrentTimeTextView.setText(MusicInfoUtil.getTime(String.valueOf(mSaveState.getCurrentPlayTime())));
+            mPlayerDurationTextView.setText(MusicInfoLoadUtil.getTime(String.valueOf(musicInfo.getDuration())));
+            mPlayerAlbumArtImageView.setImageBitmap(MusicInfoLoadUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
+            mPlayerCurrentTimeTextView.setText(MusicInfoLoadUtil.getTime(String.valueOf(mSaveState.getCurrentPlayTime())));
             mPlayerSeekBar.setProgress(mSaveState.getCurrentPlayTime());
         }
 
@@ -96,8 +96,8 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             MusicInfo musicInfo = getActivity().getIntent().getParcelableExtra("restore");
             if(musicInfo != null) {
                 mPlayerSeekBar.setMax(musicInfo.getDuration());
-                mPlayerDurationTextView.setText(MusicInfoUtil.getTime(String.valueOf(musicInfo.getDuration())));
-                mPlayerAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
+                mPlayerDurationTextView.setText(MusicInfoLoadUtil.getTime(String.valueOf(musicInfo.getDuration())));
+                mPlayerAlbumArtImageView.setImageBitmap(MusicInfoLoadUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
             }
         }
     }
@@ -139,7 +139,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
                 @Override
                 public void run() {
                     //TODO 계속 값을 갱신해야 하는 부분 : CurrentTextView, setProgress
-                    mPlayerCurrentTimeTextView.setText(MusicInfoUtil.getTime(String.valueOf(mPlayback.getCurrentTime())));
+                    mPlayerCurrentTimeTextView.setText(MusicInfoLoadUtil.getTime(String.valueOf(mPlayback.getCurrentTime())));
                     mPlayerSeekBar.setProgress(mPlayback.getCurrentTime());
                 }
             });
@@ -149,8 +149,8 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             mMediaPlayer = ((MusicEvent) event).getMediaPlayer();
             MusicInfo musicInfo = ((MusicEvent) event).getMusicInfo();
 
-            mPlayerDurationTextView.setText(MusicInfoUtil.getTime(String.valueOf(musicInfo.getDuration())));
-            mPlayerAlbumArtImageView.setImageBitmap(MusicInfoUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
+            mPlayerDurationTextView.setText(MusicInfoLoadUtil.getTime(String.valueOf(musicInfo.getDuration())));
+            mPlayerAlbumArtImageView.setImageBitmap(MusicInfoLoadUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
             mPlayerSeekBar.setMax(musicInfo.getDuration());
 
         } else if(event instanceof SaveState) {
@@ -165,7 +165,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (fromUser) {
-            mPlayerCurrentTimeTextView.setText(MusicInfoUtil.getTime(String.valueOf(progress)));
+            mPlayerCurrentTimeTextView.setText(MusicInfoLoadUtil.getTime(String.valueOf(progress)));
             mMediaPlayer.pause();
             mMediaPlayer.seekTo(progress);
             mMediaPlayer.start();

@@ -19,9 +19,14 @@ public class MyPlaylistContract {
     }
 
     public static abstract class PlaylistNameEntry {
+        // 재생 목록 중 가장 많이 재생한 목록
         public static final String PLAYLIST_NAME_MOST_PLAYED = "most_played";
+        // 재생 목록 중 가장 최근에 재생한 목록
         public static final String PLAYLIST_NAME_RECENTLY_PLAYED = "recently_played";
+        // 사용자가 플레이어의 별 아이콘을 눌러 추가한 목록 == 즐겨찾기
         public static final String PLAYLIST_NAME_FAVORITE = "favorite";
+        // 바로 이전에 앱을 종료할 당시의 플레이리스트
+        public static final String PLAYLIST_NAME_LAST_PLAYED = "last_played";
     }
 
 }

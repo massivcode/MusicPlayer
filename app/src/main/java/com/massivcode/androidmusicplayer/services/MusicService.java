@@ -31,7 +31,7 @@ import com.massivcode.androidmusicplayer.interfaces.Restore;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
 import com.massivcode.androidmusicplayer.receiver.UnPlugReceiver;
-import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
+import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -151,7 +151,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mAllMusicData = MusicInfoUtil.getAllMusicInfo(getApplicationContext());
+                mAllMusicData = MusicInfoLoadUtil.getAllMusicInfo(getApplicationContext());
             }
         }).start();
 
@@ -181,17 +181,17 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         switch (mAction) {
             case ACTION_PLAY_SELECTED:
                 mCurrentPosition = intent.getIntExtra("position", 0);
-                mCurrentMusicInfo = MusicInfoUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
+                mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
                 break;
             case ACTION_PLAY:
                 mCurrentPlaylist = (ArrayList<Long>) intent.getSerializableExtra("list");
                 mCurrentPosition = intent.getIntExtra("position", 0);
-                mCurrentMusicInfo = MusicInfoUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
+                mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
                 break;
             case ACTION_PLAY_NEXT:
             case ACTION_PLAY_PREVIOUS:
                 mCurrentPosition = intent.getIntExtra("position", 0);
-                mCurrentMusicInfo = MusicInfoUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
+                mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
                 break;
             case ACTION_FINISH:
 
@@ -404,7 +404,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     private void setMetaData() {
         if (mCurrentMusicInfo != null) {
-            Bitmap bitmap = MusicInfoUtil.getBitmap(getApplicationContext(), mCurrentMusicInfo.getUri(), 4);
+            Bitmap bitmap = MusicInfoLoadUtil.getBitmap(getApplicationContext(), mCurrentMusicInfo.getUri(), 4);
 //        Log.d(TAG, "mCurrentMusicInfo.getTitle() : " + mCurrentMusicInfo.getTitle());
             mMetadata = new MediaMetadataCompat.Builder().putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
                     .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, mCurrentMusicInfo.getArtist())
@@ -487,7 +487,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public MusicInfo getCurrentInfo() {
         if (mCurrentPlaylist != null) {
 //            Log.d(TAG, "case1");
-            return MusicInfoUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
+            return MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
         } else {
 //            Log.d(TAG, "case2");
             return null;
@@ -572,7 +572,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         // Set the Notification color
         builder.setColor(0xFFDB4437);
         // Set the large and small icons
-        Bitmap bitmap = MusicInfoUtil.getBitmap(getApplicationContext(), mCurrentMusicInfo.getUri(), 4);
+        Bitmap bitmap = MusicInfoLoadUtil.getBitmap(getApplicationContext(), mCurrentMusicInfo.getUri(), 4);
         if (bitmap == null) {
             bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
         }

@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
-import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
+import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 import com.suwonsmartapp.abl.AsyncBitmapLoader;
 
 /**
@@ -54,7 +54,7 @@ public class ArtistAdapter extends CursorTreeAdapter implements AsyncBitmapLoade
 
     @Override
     protected Cursor getChildrenCursor(Cursor groupCursor) {
-        return MusicInfoUtil.getArtistTrackInfoCursor(mContext, groupCursor.getString(groupCursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST)));
+        return MusicInfoLoadUtil.getArtistTrackInfoCursor(mContext, groupCursor.getString(groupCursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST)));
     }
 
     @Override

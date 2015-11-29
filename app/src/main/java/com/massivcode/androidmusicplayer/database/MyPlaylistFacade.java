@@ -7,8 +7,11 @@ import android.content.Context;
  */
 public class MyPlaylistFacade {
     private DbHelper mHelper;
+    private Context mContext;
 
     public MyPlaylistFacade(Context context) {
         mHelper = DbHelper.getInstance(context);
+        mContext = context;
     }
+
 }

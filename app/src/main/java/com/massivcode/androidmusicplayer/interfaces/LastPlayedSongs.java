@@ -1,7 +1,5 @@
 package com.massivcode.androidmusicplayer.interfaces;
 
-import com.massivcode.androidmusicplayer.models.MusicInfo;
-
 import java.util.ArrayList;
 
 /**
@@ -9,15 +7,15 @@ import java.util.ArrayList;
  */
 public class LastPlayedSongs implements Event {
 
-    private MusicInfo currentPlayingMusicInfo;
     private ArrayList<Long> currentPlayingList;
+    private int currentPlayingPosition;
 
-    public MusicInfo getCurrentPlayingMusicInfo() {
-        return currentPlayingMusicInfo;
+    public int getCurrentPlayingPosition() {
+        return currentPlayingPosition;
     }
 
-    public void setCurrentPlayingMusicInfo(MusicInfo currentPlayingMusicInfo) {
-        this.currentPlayingMusicInfo = currentPlayingMusicInfo;
+    public void setCurrentPlayingPosition(int currentPlayingPosition) {
+        this.currentPlayingPosition = currentPlayingPosition;
     }
 
     public ArrayList<Long> getCurrentPlayingList() {

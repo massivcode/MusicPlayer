@@ -40,9 +40,9 @@ import java.util.Set;
 
  }
  */
-public class MusicInfoUtil {
+public class MusicInfoLoadUtil {
 
-    private static final String TAG = MusicInfoUtil.class.getSimpleName();
+    private static final String TAG = MusicInfoLoadUtil.class.getSimpleName();
 
     /**
      * 음원 ID, 음원 제목, 음원 가수, 음원 앨범, 음원 길이

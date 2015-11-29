@@ -28,7 +28,7 @@ import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
 import com.massivcode.androidmusicplayer.interfaces.RequestEvent;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
-import com.massivcode.androidmusicplayer.utils.MusicInfoUtil;
+import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 import com.suwonsmartapp.abl.AsyncBitmapLoader;
 
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mMusicDataList = MusicInfoUtil.switchAllMusicInfoToSelectedMusicInfo((HashMap<Long, MusicInfo>) getArguments().getSerializable("map"), mPlaylist);
+                mMusicDataList = MusicInfoLoadUtil.switchAllMusicInfoToSelectedMusicInfo((HashMap<Long, MusicInfo>) getArguments().getSerializable("map"), mPlaylist);
                 mAdapter = new CurrentPlaylistAdapter(getActivity(), mMusicDataList);
             }
         }).start();
