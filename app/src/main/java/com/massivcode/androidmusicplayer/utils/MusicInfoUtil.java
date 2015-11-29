@@ -93,7 +93,11 @@ public class MusicInfoUtil {
     public static ArrayList<MusicInfo> switchAllMusicInfoToSelectedMusicInfo(HashMap<Long, MusicInfo> origin, ArrayList<Long> keys) {
         ArrayList<MusicInfo> list = new ArrayList<>();
 
-            for (int i = 0; i < origin.size(); i++) {
+        Log.d(TAG, "allMusicInfo.size : " + origin.size());
+        Log.d(TAG, "keys.size : " + keys.size());
+
+
+            for (int i = 0; i < keys.size(); i++) {
 
                 long key;
 

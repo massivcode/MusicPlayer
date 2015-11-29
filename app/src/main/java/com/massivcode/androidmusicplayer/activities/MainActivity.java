@@ -249,6 +249,7 @@ public class MainActivity extends AppCompatActivity
             if (mMusicService != null && mMusicService.getCurrentPlaylist() != null) {
                 CurrentPlaylistFragment dialogFragment = new CurrentPlaylistFragment();
                 Bundle bundle = new Bundle();
+                Log.d(TAG, "getCurrentPlaylist.size : " + mMusicService.getCurrentPlaylist().size());
                 bundle.putSerializable("data", mMusicService.getCurrentPlaylist());
                 bundle.putSerializable("map", mMusicService.getAllMusicData());
                 dialogFragment.setArguments(bundle);

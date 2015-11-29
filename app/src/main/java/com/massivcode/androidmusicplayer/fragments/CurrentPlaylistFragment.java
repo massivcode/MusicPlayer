@@ -119,15 +119,17 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
         if (event instanceof MusicEvent) {
 //            Log.d(TAG, "재생목록에서 뮤직이벤트를 받았습니다.");
             mCurrentEvent = (MusicEvent) event;
-            mAdapter.notifyDataSetChanged();
 
         } else if(event instanceof Playback) {
 //            Log.d(TAG, "재생목록에서 플레이백이벤트를 받았습니다.");
             mPlayback = (Playback) event;
-            mAdapter.notifyDataSetChanged();
         }
 
-        mCurrentPlaylistListView.setSelection(mAdapter.getCurrentPlayingPosition());
+        if(mAdapter != null & mCurrentPlaylistListView != null) {
+            mAdapter.notifyDataSetChanged();
+            mCurrentPlaylistListView.setSelection(mAdapter.getCurrentPlayingPosition());
+        }
+
 
 
     }
