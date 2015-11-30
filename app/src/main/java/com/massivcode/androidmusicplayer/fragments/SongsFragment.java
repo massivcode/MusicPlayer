@@ -1,11 +1,15 @@
 package com.massivcode.androidmusicplayer.fragments;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +19,7 @@ import android.widget.ListView;
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.adapters.SongAdapter;
 import com.massivcode.androidmusicplayer.interfaces.Event;
+import com.massivcode.androidmusicplayer.interfaces.InitEvent;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
 import com.massivcode.androidmusicplayer.interfaces.Restore;
@@ -50,12 +55,24 @@ public class SongsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MusicInfoLoadUtil.projection, MediaStore.Audio.Media.ARTIST + " != ? ", new String[]{MediaStore.UNKNOWN_STRING}, null);
-        mAdapter = new SongAdapter(getActivity().getApplicationContext(), cursor, true);
+        if(Build.VERSION.SDK_INT < 23) {
+            Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MusicInfoLoadUtil.projection, MediaStore.Audio.Media.ARTIST + " != ? ", new String[]{MediaStore.UNKNOWN_STRING}, null);
+            mAdapter = new SongAdapter(getActivity().getApplicationContext(), cursor, true);
+            mListView.setAdapter(mAdapter);
+        } else {
+            if(getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                if(mAdapter == null) {
+                    EventBus.getDefault().post(new InitEvent());
+                }
+            }
+        }
+
+
+
         View header = getActivity().getLayoutInflater().inflate(R.layout.header, null, false);
         header.findViewById(R.id.songs_playAll_btn).setOnClickListener((View.OnClickListener) getActivity());
         mListView.addHeaderView(header);
-        mListView.setAdapter(mAdapter);
+
         mListView.setOnItemClickListener((AdapterView.OnItemClickListener) getActivity());
 
         if(mSaveState != null) {
@@ -95,6 +112,12 @@ public class SongsFragment extends Fragment {
             if(((SaveState) event).getMusicInfo() != null) {
                 mSaveState = (SaveState) event;
             }
+        } else if(event instanceof InitEvent) {
+            Log.d(TAG, "initEvent : SongsFragment");
+            Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MusicInfoLoadUtil.projection, MediaStore.Audio.Media.ARTIST + " != ? ", new String[]{MediaStore.UNKNOWN_STRING}, null);
+            mAdapter = new SongAdapter(getActivity().getApplicationContext(), cursor, true);
+            mListView.setAdapter(mAdapter);
+            mAdapter.notifyDataSetChanged();
         }
 
         if(mAdapter != null) {
@@ -102,4 +125,6 @@ public class SongsFragment extends Fragment {
         }
 
     }
+
+
 }

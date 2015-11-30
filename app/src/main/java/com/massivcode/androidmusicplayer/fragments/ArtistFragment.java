@@ -1,9 +1,13 @@
 package com.massivcode.androidmusicplayer.fragments;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +16,7 @@ import android.widget.ExpandableListView;
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.adapters.ArtistAdapter;
 import com.massivcode.androidmusicplayer.interfaces.Event;
+import com.massivcode.androidmusicplayer.interfaces.InitEvent;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
 import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
@@ -33,9 +38,6 @@ public class ArtistFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAdapter = new ArtistAdapter(MusicInfoLoadUtil.getArtistInfo(getActivity()), getActivity(), true);
-
-
     }
 
     @Nullable
@@ -43,17 +45,30 @@ public class ArtistFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_artist, container, false);
         mListView = (ExpandableListView)view.findViewById(R.id.artist_ExlistView);
-        mListView.setAdapter(mAdapter);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        if(Build.VERSION.SDK_INT < 23) {
+            mAdapter = new ArtistAdapter(MusicInfoLoadUtil.getArtistInfo(getActivity()), getActivity(), true);
+            mListView.setAdapter(mAdapter);
+        } else {
+            if(getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                if(mAdapter == null) {
+                    EventBus.getDefault().post(new InitEvent());
+                }
+            }
+        }
+
         mListView.setOnChildClickListener((ExpandableListView.OnChildClickListener) getActivity());
 
 
+
     }
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -78,9 +93,14 @@ public class ArtistFragment extends Fragment {
 //            Log.d(TAG, "아티스트에서 플레이백이벤트를 받았습니다.");
             mAdapter.swapPlayback((Playback) event);
             mAdapter.notifyDataSetChanged();
+        } else if(event instanceof InitEvent) {
+            Log.d(TAG, "InitEvent : ArtistFragment");
+            mAdapter = new ArtistAdapter(MusicInfoLoadUtil.getArtistInfo(getActivity()), getActivity(), true);
+            mListView.setAdapter(mAdapter);
         }
 
     }
+
 
 
 }

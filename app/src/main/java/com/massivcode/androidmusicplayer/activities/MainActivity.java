@@ -32,9 +32,11 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.massivcode.androidmusicplayer.R;
+import com.massivcode.androidmusicplayer.database.MyPlaylistFacade;
 import com.massivcode.androidmusicplayer.fragments.CurrentPlaylistFragment;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.FinishActivity;
+import com.massivcode.androidmusicplayer.interfaces.InitEvent;
 import com.massivcode.androidmusicplayer.interfaces.LastPlayedSongs;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.managers.Manager;
@@ -51,9 +53,13 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener, ExpandableListView.OnChildClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
+    public static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2;
+
     public static final String PREFERENCES_NAME = "LastPlayedSong";
     private SharedPreferences mPreferences;
     private LastPlayedSongs mLastPlayedSongs;
+    private MyPlaylistFacade mFacade;
 
 
     private ViewPager mViewPager;
@@ -71,6 +77,7 @@ public class MainActivity extends AppCompatActivity
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "serviceConnected");
             MusicService.LocalBinder binder = (MusicService.LocalBinder) service;
             mMusicService = binder.getService();
         }
@@ -90,14 +97,17 @@ public class MainActivity extends AppCompatActivity
         // EventBus 등록이 되어서 모든 이벤트를 수신 가능
         EventBus.getDefault().register(this);
 
-        checkPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, 1);
-
+        mFacade = new MyPlaylistFacade(getApplicationContext());
 
 
         mServiceIntent = new Intent(MainActivity.this, MusicService.class);
         bindService(mServiceIntent, mConnection, BIND_AUTO_CREATE);
 
+
         initViews();
+
+        checkPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+        checkPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
 
 
         // Restore preferences
@@ -120,13 +130,6 @@ public class MainActivity extends AppCompatActivity
         // We need an Editor object to make preference changes.
         // All objects are from android.context.Context
 
-        if (mLastPlayedSongs != null) {
-            mPreferences = getSharedPreferences(PREFERENCES_NAME, 0);
-            SharedPreferences.Editor editor = mPreferences.edit();
-
-            // Commit the edits!
-            editor.commit();
-        }
 
         // 해제 꼭 해주세요
         EventBus.getDefault().unregister(this);
@@ -147,7 +150,7 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "onSaveInstanceState");
         if (mMusicService != null) {
             if (mMusicService.getCurrentInfo() != null & mMusicService.getCurrentPlaylist() != null & mMusicService.getCurrentPosition() != -1) {
-               EventBus.getDefault().post(new SaveState());
+                EventBus.getDefault().post(new SaveState());
             }
         }
     }
@@ -278,7 +281,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void checkPermissions(String permission, int userPermission) {
+    public void checkPermissions(String permission, int userPermission) {
 
         if (ContextCompat.checkSelfPermission(this, permission)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -295,9 +298,46 @@ public class MainActivity extends AppCompatActivity
         // 사용자가 이전에 승인을 했을 경우
         else {
             Log.d(TAG, "사용자가 이전에 승인을 했을 경우");
+            switch (permission) {
+                case Manifest.permission.READ_EXTERNAL_STORAGE:
+                    EventBus.getDefault().post(new InitEvent());
+                    break;
+                case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                    mFacade.createDb();
+                    break;
+            }
         }
 
     }
+
+    /**
+     * 최초 권한 승인시 호출
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.d(TAG, "onRequestPermissionsResult @ MainActivity");
+        switch (requestCode) {
+            case MainActivity.MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    Log.d(TAG, "권한 승인됨");
+                    EventBus.getDefault().post(new InitEvent());
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    // 권한 거부 시 작업
+                }
+                return;
+        }
+    }
+
 
     @Override
     public void onClick(View v) {

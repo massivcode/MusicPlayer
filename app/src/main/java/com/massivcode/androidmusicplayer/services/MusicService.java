@@ -22,8 +22,10 @@ import android.widget.Toast;
 
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.activities.MainActivity;
+import com.massivcode.androidmusicplayer.database.MyPlaylistFacade;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.FinishActivity;
+import com.massivcode.androidmusicplayer.interfaces.InitEvent;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
 import com.massivcode.androidmusicplayer.interfaces.RequestEvent;
@@ -31,6 +33,7 @@ import com.massivcode.androidmusicplayer.interfaces.Restore;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
 import com.massivcode.androidmusicplayer.receiver.UnPlugReceiver;
+import com.massivcode.androidmusicplayer.utils.DataBackupUtil;
 import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 
 import java.io.IOException;
@@ -59,6 +62,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     private MediaMetadataCompat mMetadata;
 
     private SaveState mSaveState;
+    private MyPlaylistFacade mFacade;
+
 
 
     // 수행하는 곳
@@ -137,23 +142,16 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     private MusicInfo mCurrentMusicInfo;
     private UnPlugReceiver mUnPlugReceiver;
 
-    private HashMap<Long, MusicInfo> mAllMusicData;
+    private HashMap<Long, MusicInfo> mAllMusicData = null;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-//        Log.d(TAG, "MusicService started");
+        Log.d(TAG, "MusicService.onCreate()");
 
         // EventBus 등록이 되어서 모든 이벤트를 수신 가능
         EventBus.getDefault().register(this);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mAllMusicData = MusicInfoLoadUtil.getAllMusicInfo(getApplicationContext());
-            }
-        }).start();
 
         mMediaPlayer = new MediaPlayer();
 
@@ -171,11 +169,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
         if (intent != null && intent.getAction() != null) {
             mAction = intent.getAction();
-        }
-
-        if (mAction == null) {
-            onDestroy();
-            return 0;
         }
 
         switch (mAction) {
@@ -441,6 +434,13 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         // 해제 꼭 해주세요
         EventBus.getDefault().unregister(this);
 
+        if(mCurrentPlaylist != null && mCurrentPosition != -1) {
+            DataBackupUtil.getInstance(getApplicationContext()).saveCurrentPlayingMusicPosition(mCurrentPosition);
+            DataBackupUtil.getInstance(getApplicationContext()).saveCurrentPlaylist(mCurrentPlaylist);
+        }
+
+        Log.d(TAG, "MusicService.onDestroy()");
+
     }
 
     // EventBus 용 이벤트 수신
@@ -461,6 +461,17 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             if (mSaveState != null) {
                 EventBus.getDefault().post(mSaveState);
             }
+        } else if(event instanceof InitEvent) {
+            if(mAllMusicData == null) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "InitEvent @ service");
+                        mAllMusicData = MusicInfoLoadUtil.getAllMusicInfo(getApplicationContext());
+                    }
+                }).start();
+            }
+
         }
     }
 
@@ -686,5 +697,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         }
         return position;
     }
+
+
 
 }
