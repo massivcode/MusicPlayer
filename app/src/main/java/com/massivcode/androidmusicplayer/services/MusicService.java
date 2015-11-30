@@ -105,6 +105,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             boolean isShuffle = DataBackupUtil.getInstance(getApplicationContext()).loadIsShuffle();
             // 전부 재생하고 동작.
             boolean isRepeat = DataBackupUtil.getInstance(getApplicationContext()).loadIsRepeat();
+            Log.d(TAG, "컴플리션 -> 셔플 : " + isShuffle + " 반복 : " + isRepeat);
 
             if (mCurrentPlaylist != null) {
                 if (isShuffle) {
@@ -113,8 +114,10 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         if (mCurrentPosition < getCurrentPlaylistSize()) {
                             mCurrentPosition = shuffle(getCurrentPlaylist().size());
                             mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
+                            mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
                         } else {
                             mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(0)));
+                            mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(0));
                         }
                         mp.prepare();
                         isReady = true;
@@ -127,6 +130,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         if (mCurrentPosition < getCurrentPlaylistSize()) {
                             mCurrentPosition = shuffle(getCurrentPlaylist().size());
                             mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
+                            mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
                             mp.prepare();
                             isReady = true;
                             mp.start();
@@ -144,8 +148,10 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         if (mCurrentPosition < getCurrentPlaylistSize()) {
                             mCurrentPosition += 1;
                             mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
+                            mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
                         } else {
                             mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(0)));
+                            mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(0));
                         }
                         mp.prepare();
                         isReady = true;
@@ -157,6 +163,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                         if (mCurrentPosition < getCurrentPlaylistSize()) {
                             mCurrentPosition += 1;
                             mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
+                            mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
                             mp.prepare();
                             isReady = true;
                             mp.start();
@@ -262,7 +269,12 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 break;
             case ACTION_PLAY_NEXT:
             case ACTION_PLAY_PREVIOUS:
-                mCurrentPosition = intent.getIntExtra("position", 0);
+                boolean isShuffle = DataBackupUtil.getInstance(getApplicationContext()).loadIsShuffle();
+                if(isShuffle) {
+                    mCurrentPosition = shuffle(mCurrentPlaylist.size());
+                } else {
+                    mCurrentPosition = intent.getIntExtra("position", 0);
+                }
                 mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
                 break;
             case ACTION_FINISH:
@@ -788,11 +800,15 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public int shuffle(int range) {
         int result = -1;
 
+        if(range == 1) {
+            return 0;
+        }
+
         Random random = new Random();
         result = random.nextInt(range);
 
         if (result == mCurrentPosition) {
-            shuffle(range);
+            result = shuffle(range);
         }
 
         return result;
