@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity
 
         }
     };
+    private NavigationView mNavigationView;
 
 
     @Override
@@ -166,8 +167,8 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
 
         mMemuTitleList = Arrays.asList(getResources().getStringArray(R.array.nav_menu_array));
         mNavigationAdapter = new NavigationAdapter(getSupportFragmentManager());
@@ -191,10 +192,11 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onPageSelected(int position) {
+                Log.d(TAG, "onPageSelected : " + position);
                 toolbar.setTitle(mMemuTitleList.get(position));
 
                 // 네비게이션 드로워도 변경
-                navigationView.getMenu().getItem(position).setChecked(true);
+                mNavigationView.getMenu().getItem(position).setChecked(true);
             }
 
             @Override
@@ -206,6 +208,7 @@ public class MainActivity extends AppCompatActivity
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                Log.d(TAG, "onTabSelected : " + tab.getPosition());
                 mViewPager.setCurrentItem(tab.getPosition());
             }
 
@@ -270,6 +273,7 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        Log.d(TAG, "onNavigationItemSelected");
         // Handle navigation view item clicks here.
         String title = item.getTitle().toString();
         int index = mMemuTitleList.indexOf(title);
@@ -349,6 +353,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.player_title_tv:
             case R.id.player_artist_tv:
                 mViewPager.setCurrentItem(0);
+                mTabLayout.setScrollPosition(0, 0, true);
                 break;
             case R.id.player_previous_ib:
                 if (mMusicService != null & mMusicService.isReady()) {
