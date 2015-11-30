@@ -44,6 +44,26 @@ public class DataBackupUtil {
         return sInstance;
     }
 
+    public void saveIsShuffle(boolean isShuffle) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean("shuffle", isShuffle).commit();
+    }
+
+    public boolean loadIsShuffle() {
+        boolean result = mSharedPreferences.getBoolean("shuffle", false);
+        return result;
+    }
+
+    public void saveIsRepeat(boolean isRepeat) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean("repeat", isRepeat).commit();
+    }
+
+    public boolean loadIsRepeat() {
+        boolean result = mSharedPreferences.getBoolean("repeat", false);
+        return result;
+    }
+
     /**
      * 현재 플레이 중인 플레이리스트 상에서의 플레이 포지션을 저장한다.
      */

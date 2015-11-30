@@ -20,7 +20,7 @@
             android:id="@+id/player_repeat_ib"
             android:background="@null"
             android:layout_weight="1"
-            android:src="@mipmap/ic_repeat"
+            android:src="@drawable/selector_repeat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -36,7 +36,7 @@
             android:id="@+id/player_shuffle_ib"
             android:background="@null"
             android:layout_weight="1"
-            android:src="@mipmap/ic_shuffle"
+            android:src="@drawable/selector_shuffle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

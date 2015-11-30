@@ -41,6 +41,7 @@ import com.massivcode.androidmusicplayer.interfaces.LastPlayedSongs;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.managers.Manager;
 import com.massivcode.androidmusicplayer.services.MusicService;
+import com.massivcode.androidmusicplayer.utils.DataBackupUtil;
 import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 
 import java.util.ArrayList;
@@ -375,10 +376,27 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case R.id.player_shuffle_ib:
+                if(v.isSelected()) {
+                    v.setSelected(false);
+                } else {
+                    v.setSelected(true);
+                }
+                DataBackupUtil.getInstance(getApplicationContext()).saveIsShuffle(v.isSelected());
                 break;
             case R.id.player_repeat_ib:
+                if(v.isSelected()) {
+                    v.setSelected(false);
+                } else {
+                    v.setSelected(true);
+                }
+                DataBackupUtil.getInstance(getApplicationContext()).saveIsRepeat(v.isSelected());
                 break;
             case R.id.player_favorite_ib:
+                if(v.isSelected()) {
+                    v.setSelected(false);
+                } else {
+                    v.setSelected(true);
+                }
                 break;
             case R.id.songs_playAll_btn:
                 Toast.makeText(MainActivity.this, "모두 재생 헤더 버튼 눌림", Toast.LENGTH_SHORT).show();

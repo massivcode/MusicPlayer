@@ -23,6 +23,7 @@ import com.massivcode.androidmusicplayer.interfaces.RequestMusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Restore;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
+import com.massivcode.androidmusicplayer.utils.DataBackupUtil;
 import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 
 import de.greenrobot.event.EventBus;
@@ -79,8 +80,8 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         mPlayerShuffleImageButton.setOnClickListener((View.OnClickListener) getActivity());
 
         mPlayerSeekBar.setOnSeekBarChangeListener(this);
+        toggleControl();
         EventBus.getDefault().post(new RequestMusicEvent());
-
         refreshViewWhenActivityForcedTerminated();
     }
 
@@ -101,6 +102,21 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
                 mPlayerDurationTextView.setText(MusicInfoLoadUtil.getTime(String.valueOf(musicInfo.getDuration())));
                 mPlayerAlbumArtImageView.setImageBitmap(MusicInfoLoadUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
             }
+        }
+    }
+
+    private void toggleControl() {
+        boolean isShuffle = DataBackupUtil.getInstance(getActivity()).loadIsShuffle();
+        if(isShuffle) {
+            mPlayerShuffleImageButton.setSelected(true);
+        } else {
+            mPlayerShuffleImageButton.setSelected(false);
+        }
+        boolean isRepeat = DataBackupUtil.getInstance(getActivity()).loadIsRepeat();
+        if(isRepeat) {
+            mPlayerRepeatImageButton.setSelected(true);
+        } else {
+            mPlayerRepeatImageButton.setSelected(true);
         }
     }
 

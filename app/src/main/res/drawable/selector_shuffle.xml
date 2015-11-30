@@ -1,0 +1,7 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 선택되어있을 때 -->
+    <item android:drawable="@mipmap/ic_shuffle" android:state_selected="true" />
+
+    <!-- default -->
+    <item android:drawable="@mipmap/ic_unshuffle" />
+</selector>

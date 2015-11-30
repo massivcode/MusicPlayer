@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import de.greenrobot.event.EventBus;
 
@@ -62,7 +63,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     private MediaMetadataCompat mMetadata;
 
     private SaveState mSaveState;
-
 
 
     // 수행하는 곳
@@ -101,18 +101,75 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         mp.reset();
 
         try {
+            // 다음 곡의 포지션에 영향을 준다.
+            boolean isShuffle = DataBackupUtil.getInstance(getApplicationContext()).loadIsShuffle();
+            // 전부 재생하고 동작.
+            boolean isRepeat = DataBackupUtil.getInstance(getApplicationContext()).loadIsRepeat();
+
             if (mCurrentPlaylist != null) {
-                if (mCurrentPosition < getCurrentPlaylistSize()) {
-                    mCurrentPosition += 1;
-                    mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
+                if (isShuffle) {
+                    // 1. 셔플 O / 반복 O
+                    if (isRepeat) {
+                        if (mCurrentPosition < getCurrentPlaylistSize()) {
+                            mCurrentPosition = shuffle(getCurrentPlaylist().size());
+                            mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
+                        } else {
+                            mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(0)));
+                        }
+                        mp.prepare();
+                        isReady = true;
+                        mp.start();
+                        // TODO 프래그먼트들에 메세지 보내기
+                        sendMusicEvent();
+
+                    } else {
+                        // 2. 셔플 O / 반복 X
+                        if (mCurrentPosition < getCurrentPlaylistSize()) {
+                            mCurrentPosition = shuffle(getCurrentPlaylist().size());
+                            mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
+                            mp.prepare();
+                            isReady = true;
+                            mp.start();
+                        } else {
+                            mp.stop();
+                            mp.reset();
+                            isReady = false;
+                        }
+                        // TODO 프래그먼트들에 메세지 보내기
+                        sendMusicEvent();
+                    }
                 } else {
-                    mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(0)));
+                    // 3. 셔플 X / 반복 O
+                    if (isRepeat) {
+                        if (mCurrentPosition < getCurrentPlaylistSize()) {
+                            mCurrentPosition += 1;
+                            mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
+                        } else {
+                            mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(0)));
+                        }
+                        mp.prepare();
+                        isReady = true;
+                        mp.start();
+                        // TODO 프래그먼트들에 메세지 보내기
+                        sendMusicEvent();
+                    } else {
+                        // 4. 셔플 X / 반복 X
+                        if (mCurrentPosition < getCurrentPlaylistSize()) {
+                            mCurrentPosition += 1;
+                            mp.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
+                            mp.prepare();
+                            isReady = true;
+                            mp.start();
+                        } else {
+                            mp.stop();
+                            mp.reset();
+                            isReady = false;
+                        }
+
+                        // TODO 프래그먼트들에 메세지 보내기
+                        sendMusicEvent();
+                    }
                 }
-                mp.prepare();
-                isReady = true;
-                mp.start();
-                // TODO 프래그먼트들에 메세지 보내기
-                sendMusicEvent();
             }
 
 
@@ -161,13 +218,13 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         registerReceiver(mUnPlugReceiver, filter);
 
         int loadedPosition = DataBackupUtil.getInstance(getApplicationContext()).loadCurrentPlayingMusicPosition();
-        if(loadedPosition != -1) {
+        if (loadedPosition != -1) {
             mCurrentPosition = loadedPosition;
             Log.d(TAG, "로딩한 플레이 위치 : " + loadedPosition);
         }
 
         ArrayList<Long> loadedPlaylist = DataBackupUtil.getInstance(getApplicationContext()).loadLastPlayedSongs();
-        if(loadedPlaylist.size() != 0 && loadedPlaylist != null) {
+        if (loadedPlaylist.size() != 0 && loadedPlaylist != null) {
             mCurrentPlaylist = loadedPlaylist;
             Log.d(TAG, "로딩한 재생목록 : " + loadedPlaylist.size());
             mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
@@ -225,7 +282,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 stopService(new Intent(getApplicationContext(), MusicService.class));
                 break;
             case ACTION_PAUSE_UNPLUGGED:
-                if(mMediaPlayer.isPlaying()) {
+                if (mMediaPlayer.isPlaying()) {
                     mMediaPlayer.pause();
                     if (mCurrentMusicInfo != null & mCurrentPlaylist != null) {
                         sendAllEvent();
@@ -456,7 +513,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         // 해제 꼭 해주세요
         EventBus.getDefault().unregister(this);
 
-        if(mCurrentPlaylist != null && mCurrentPosition != -1) {
+        if (mCurrentPlaylist != null && mCurrentPosition != -1) {
             DataBackupUtil.getInstance(getApplicationContext()).saveCurrentPlayingMusicPosition(mCurrentPosition);
             DataBackupUtil.getInstance(getApplicationContext()).saveCurrentPlaylist(mCurrentPlaylist);
         }
@@ -483,8 +540,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             if (mSaveState != null) {
                 EventBus.getDefault().post(mSaveState);
             }
-        } else if(event instanceof InitEvent) {
-            if(mAllMusicData == null) {
+        } else if (event instanceof InitEvent) {
+            if (mAllMusicData == null) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -494,7 +551,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 }).start();
             }
 
-        } else if(event instanceof RequestMusicEvent) {
+        } else if (event instanceof RequestMusicEvent) {
             sendMusicEvent();
         }
     }
@@ -722,6 +779,24 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         return position;
     }
 
+    /**
+     * random.nextInt(range) -> 0 ~ range-1
+     *
+     * @param range
+     * @return
+     */
+    public int shuffle(int range) {
+        int result = -1;
+
+        Random random = new Random();
+        result = random.nextInt(range);
+
+        if (result == mCurrentPosition) {
+            shuffle(range);
+        }
+
+        return result;
+    }
 
 
 }
