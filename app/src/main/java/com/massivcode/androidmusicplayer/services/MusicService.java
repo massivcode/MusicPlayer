@@ -179,7 +179,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 }
             }
 
-
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
