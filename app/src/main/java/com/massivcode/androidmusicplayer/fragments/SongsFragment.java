@@ -120,9 +120,6 @@ public class SongsFragment extends Fragment {
             mAdapter.notifyDataSetChanged();
         }
 
-        if(mAdapter != null) {
-//            mListView.setSelection(mAdapter.getCurrentPlayingPosition());
-        }
 
     }
 

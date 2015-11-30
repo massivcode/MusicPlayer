@@ -95,7 +95,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
         int lastPosition = mp.getCurrentPosition();
         int duration = mp.getDuration();
-//        Log.d(TAG, "더 빨리 호출됨: " + (duration - lastPosition));
 
         mp.pause();
         mp.reset();
@@ -488,7 +487,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     private void setMetaData() {
         if (mCurrentMusicInfo != null) {
             Bitmap bitmap = MusicInfoLoadUtil.getBitmap(getApplicationContext(), mCurrentMusicInfo.getUri(), 4);
-//        Log.d(TAG, "mCurrentMusicInfo.getTitle() : " + mCurrentMusicInfo.getTitle());
             mMetadata = new MediaMetadataCompat.Builder().putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
                     .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, mCurrentMusicInfo.getArtist())
                     .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, mCurrentMusicInfo.getAlbum())
@@ -507,7 +505,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 });
             }
         }
-        // 세션에 메타데이터 셋 (Notification 에서 사용할 것임)
     }
 
 
@@ -589,10 +586,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
     public MusicInfo getCurrentInfo() {
         if (mCurrentPlaylist != null) {
-//            Log.d(TAG, "case1");
             return MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
         } else {
-//            Log.d(TAG, "case2");
             return null;
         }
 

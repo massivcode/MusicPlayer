@@ -149,7 +149,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d(TAG, "onSaveInstanceState");
         if (mMusicService != null) {
             if (mMusicService.getCurrentInfo() != null & mMusicService.getCurrentPlaylist() != null & mMusicService.getCurrentPosition() != -1) {
                 EventBus.getDefault().post(new SaveState());
@@ -192,7 +191,6 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onPageSelected(int position) {
-                Log.d(TAG, "onPageSelected : " + position);
                 toolbar.setTitle(mMemuTitleList.get(position));
 
                 // 네비게이션 드로워도 변경
@@ -208,7 +206,6 @@ public class MainActivity extends AppCompatActivity
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                Log.d(TAG, "onTabSelected : " + tab.getPosition());
                 mViewPager.setCurrentItem(tab.getPosition());
             }
 
@@ -273,7 +270,6 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        Log.d(TAG, "onNavigationItemSelected");
         // Handle navigation view item clicks here.
         String title = item.getTitle().toString();
         int index = mMemuTitleList.indexOf(title);
