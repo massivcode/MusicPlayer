@@ -19,6 +19,7 @@ import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
+import com.massivcode.androidmusicplayer.interfaces.RequestMusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Restore;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
@@ -78,6 +79,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         mPlayerShuffleImageButton.setOnClickListener((View.OnClickListener) getActivity());
 
         mPlayerSeekBar.setOnSeekBarChangeListener(this);
+        EventBus.getDefault().post(new RequestMusicEvent());
 
         refreshViewWhenActivityForcedTerminated();
     }
@@ -116,6 +118,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         // EventBus 등록이 되어서 모든 이벤트를 수신 가능
         EventBus.getDefault().register(this);
         EventBus.getDefault().post(new Restore());
+
     }
 
     @Override
@@ -147,14 +150,20 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         } else if (event instanceof MusicEvent) {
             // 현재 곡 정보 클래스 MusicEvent
             mMediaPlayer = ((MusicEvent) event).getMediaPlayer();
-            MusicInfo musicInfo = ((MusicEvent) event).getMusicInfo();
-
-            mPlayerDurationTextView.setText(MusicInfoLoadUtil.getTime(String.valueOf(musicInfo.getDuration())));
-            mPlayerAlbumArtImageView.setImageBitmap(MusicInfoLoadUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
-            mPlayerSeekBar.setMax(musicInfo.getDuration());
+            if(((MusicEvent) event).getMusicInfo() != null) {
+                MusicInfo musicInfo = ((MusicEvent) event).getMusicInfo();
+                Log.d(TAG, "getDuration : " + musicInfo.getDuration());
+                Log.d(TAG, "MiniPlayerFragment : get Music Event");
+                if(mPlayerDurationTextView != null) {
+                    mPlayerDurationTextView.setText(MusicInfoLoadUtil.getTime(String.valueOf(musicInfo.getDuration())));
+                    mPlayerAlbumArtImageView.setImageBitmap(MusicInfoLoadUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
+                    mPlayerSeekBar.setMax(musicInfo.getDuration());
+                }
+            }
 
         } else if(event instanceof SaveState) {
             if(((SaveState) event).getMusicInfo() != null) {
+                Log.d(TAG, "PlayerFragment : get Save State");
                 mSaveState = (SaveState) event;
             }
         }

@@ -58,7 +58,12 @@ public class DataBackupUtil {
      * @return
      */
     public int loadCurrentPlayingMusicPosition() {
-        return mSharedPreferences.getInt("position", -1);
+        int position = mSharedPreferences.getInt("position", -1);
+
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.remove("position").commit();
+
+        return position;
     }
 
     /**

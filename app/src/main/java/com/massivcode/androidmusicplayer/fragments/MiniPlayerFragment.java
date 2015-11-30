@@ -110,11 +110,15 @@ public class MiniPlayerFragment extends Fragment {
 
         if(event instanceof MusicEvent) {
             MusicEvent musicEvent = (MusicEvent)event;
-            MusicInfo musicInfo = musicEvent.getMusicInfo();
+            Log.d(TAG, "MiniPlayerFragment : get Music Event");
+            if(musicEvent.getMusicInfo() != null) {
+                MusicInfo musicInfo = musicEvent.getMusicInfo();
+                mPlayerMiniAlbumArtImageView.setImageBitmap(MusicInfoLoadUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
+                mPlayerArtistTextView.setText(musicInfo.getArtist());
+                mPlayerTitleTextView.setText(musicInfo.getTitle());
 
-            mPlayerMiniAlbumArtImageView.setImageBitmap(MusicInfoLoadUtil.getBitmap(getActivity(), musicInfo.getUri(), 4));
-            mPlayerArtistTextView.setText(musicInfo.getArtist());
-            mPlayerTitleTextView.setText(musicInfo.getTitle());
+            }
+
         } else if(event instanceof Playback) {
 //            Log.d(TAG, "Playback is coming");
             final Playback playback = (Playback) event;
@@ -134,6 +138,7 @@ public class MiniPlayerFragment extends Fragment {
 
         } else if(event instanceof SaveState) {
             if(((SaveState) event).getMusicInfo() != null) {
+                Log.d(TAG, "MiniPlayerFragment : get Save State");
                 mSaveState = (SaveState) event;
             }
         }

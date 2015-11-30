@@ -22,13 +22,13 @@ import android.widget.Toast;
 
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.activities.MainActivity;
-import com.massivcode.androidmusicplayer.database.MyPlaylistFacade;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.FinishActivity;
 import com.massivcode.androidmusicplayer.interfaces.InitEvent;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Playback;
 import com.massivcode.androidmusicplayer.interfaces.RequestEvent;
+import com.massivcode.androidmusicplayer.interfaces.RequestMusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Restore;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
@@ -62,7 +62,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     private MediaMetadataCompat mMetadata;
 
     private SaveState mSaveState;
-    private MyPlaylistFacade mFacade;
 
 
 
@@ -138,7 +137,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     private MediaPlayer mMediaPlayer;
     private String mAction = null;
     private ArrayList<Long> mCurrentPlaylist;
-    private int mCurrentPosition;
+    private int mCurrentPosition = -1;
     private MusicInfo mCurrentMusicInfo;
     private UnPlugReceiver mUnPlugReceiver;
 
@@ -160,6 +159,29 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         mUnPlugReceiver = new UnPlugReceiver();
         IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
         registerReceiver(mUnPlugReceiver, filter);
+
+        int loadedPosition = DataBackupUtil.getInstance(getApplicationContext()).loadCurrentPlayingMusicPosition();
+        if(loadedPosition != -1) {
+            mCurrentPosition = loadedPosition;
+            Log.d(TAG, "로딩한 플레이 위치 : " + loadedPosition);
+        }
+
+        ArrayList<Long> loadedPlaylist = DataBackupUtil.getInstance(getApplicationContext()).loadLastPlayedSongs();
+        if(loadedPlaylist.size() != 0 && loadedPlaylist != null) {
+            mCurrentPlaylist = loadedPlaylist;
+            Log.d(TAG, "로딩한 재생목록 : " + loadedPlaylist.size());
+            mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
+            try {
+                mMediaPlayer.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
+                mMediaPlayer.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            isReady = true;
+            // TODO 프래그먼트들에 메세지 보내기
+            sendAllEvent();
+            EventBus.getDefault().post(new RequestEvent());
+        }
 
 
     }
@@ -472,6 +494,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 }).start();
             }
 
+        } else if(event instanceof RequestMusicEvent) {
+            sendMusicEvent();
         }
     }
 
