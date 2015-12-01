@@ -15,6 +15,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.massivcode.androidmusicplayer.R;
+import com.massivcode.androidmusicplayer.database.MyPlaylistFacade;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.PlayBack;
@@ -44,11 +45,12 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
 
     private MediaPlayer mMediaPlayer;
     private SaveState mSaveState;
+    private MyPlaylistFacade mFacade;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mFacade = new MyPlaylistFacade(getActivity());
 
     }
 
@@ -89,6 +91,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
             mPlayerAlbumArtImageView.setImageBitmap(MusicInfoLoadUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
             mPlayerCurrentTimeTextView.setText(MusicInfoLoadUtil.getTime(String.valueOf(mSaveState.getCurrentPlayTime())));
             mPlayerSeekBar.setProgress(mSaveState.getCurrentPlayTime());
+            toggleFavorite(musicInfo.get_id());
         }
 
         if(getActivity().getIntent() != null) {
@@ -97,6 +100,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
                 mPlayerSeekBar.setMax(musicInfo.getDuration());
                 mPlayerDurationTextView.setText(MusicInfoLoadUtil.getTime(String.valueOf(musicInfo.getDuration())));
                 mPlayerAlbumArtImageView.setImageBitmap(MusicInfoLoadUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
+                toggleFavorite(musicInfo.get_id());
             }
         }
     }
@@ -112,8 +116,14 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         if(isRepeat) {
             mPlayerRepeatImageButton.setSelected(true);
         } else {
-            mPlayerRepeatImageButton.setSelected(true);
+            mPlayerRepeatImageButton.setSelected(false);
         }
+    }
+
+    private void toggleFavorite(long id) {
+        boolean isFavorited = mFacade.isFavorited(id);
+        Log.d(TAG, "toggleFavorite @ Player : " + isFavorited);
+        mPlayerFavoriteImageButton.setSelected(isFavorited);
     }
 
     @Override
@@ -164,6 +174,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
                     mPlayerDurationTextView.setText(MusicInfoLoadUtil.getTime(String.valueOf(musicInfo.getDuration())));
                     mPlayerAlbumArtImageView.setImageBitmap(MusicInfoLoadUtil.getBitmap(getActivity(), musicInfo.getUri(), 1));
                     mPlayerSeekBar.setMax(musicInfo.getDuration());
+                    toggleFavorite(musicInfo.get_id());
                 }
             }
 

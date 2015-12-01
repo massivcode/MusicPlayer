@@ -41,7 +41,28 @@ public class MyPlaylistFacade {
 //    MediaStore.Audio.Media.ARTIST + " != ? and " + MediaStore.Audio.Media.ARTIST + " != ? " , new String[]{MediaStore.UNKNOWN_STRING, "김경호"}
 
     /**
-     * 있으면 제거, 없으면 추가
+     * PlayerFragment 에서 Favorite Button 표시하기 위해 사용
+     * @param musicId
+     * @return
+     */
+    public boolean isFavorited(long musicId) {
+        SQLiteDatabase db = mHelper.getWritableDatabase();
+        boolean result = false;
+        Cursor cursor = db.query(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, projection, selection_toggle_favorite, new String[]{MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE, String.valueOf(musicId)}, null, null, null);
+
+        // 기존에 이런 데이터가 있을 때 -> true
+        if(cursor != null && cursor.getCount() != 0) {
+            result = true;
+        }
+
+        cursor.close();
+        db.close();
+
+        return result;
+    }
+    /**
+     * 즐겨찾기
+     * 기존 데이터 있으면 제거, 없으면 추가
      *
      * @param musicId
      */
@@ -69,7 +90,7 @@ public class MyPlaylistFacade {
     }
 
     /**
-     * 사용자 정의 플레이 리스트
+     * 사용자 정의 플레이 리스트 추가
      * @param userPlaylistName
      * @param userPlayList
      */

@@ -313,6 +313,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * 최초 권한 승인시 호출
+     *
      * @param requestCode
      * @param permissions
      * @param grantResults
@@ -377,7 +378,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case R.id.player_shuffle_ib:
-                if(v.isSelected()) {
+                if (v.isSelected()) {
                     v.setSelected(false);
                 } else {
                     v.setSelected(true);
@@ -385,7 +386,7 @@ public class MainActivity extends AppCompatActivity
                 DataBackupUtil.getInstance(getApplicationContext()).saveIsShuffle(v.isSelected());
                 break;
             case R.id.player_repeat_ib:
-                if(v.isSelected()) {
+                if (v.isSelected()) {
                     v.setSelected(false);
                 } else {
                     v.setSelected(true);
@@ -393,10 +394,14 @@ public class MainActivity extends AppCompatActivity
                 DataBackupUtil.getInstance(getApplicationContext()).saveIsRepeat(v.isSelected());
                 break;
             case R.id.player_favorite_ib:
-                if(v.isSelected()) {
-                    v.setSelected(false);
-                } else {
-                    v.setSelected(true);
+                if (mMusicService != null && mMusicService.isReady()) {
+                    if (v.isSelected()) {
+                        v.setSelected(false);
+                    } else {
+                        v.setSelected(true);
+                    }
+
+                    mFacade.toggleFavoriteList(mMusicService.getCurrentPlaylist().get(mMusicService.getCurrentPosition()));
                 }
                 break;
             case R.id.songs_playAll_btn:

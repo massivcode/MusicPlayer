@@ -178,6 +178,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         super.onCreate();
 
         Log.d(TAG, "MusicService.onCreate()");
+        Log.d(TAG, "셔플 : " + DataBackupUtil.getInstance(getApplicationContext()).loadIsShuffle() +
+        " 반복 : " + DataBackupUtil.getInstance(getApplicationContext()).loadIsRepeat());
 
         // EventBus 등록이 되어서 모든 이벤트를 수신 가능
         EventBus.getDefault().register(this);
@@ -221,6 +223,13 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
         if (intent != null && intent.getAction() != null) {
             mAction = intent.getAction();
+        }
+
+        if(mAction == null) {
+            EventBus.getDefault().post(new FinishActivity());
+            stopForeground(true);
+            stopService(new Intent(getApplicationContext(), MusicService.class));
+            return START_NOT_STICKY;
         }
 
         switch (mAction) {
