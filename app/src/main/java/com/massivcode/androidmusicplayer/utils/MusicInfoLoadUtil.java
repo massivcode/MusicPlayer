@@ -57,6 +57,23 @@ public class MusicInfoLoadUtil {
     public static String selection = "_id=?";
     public static String selection_artist = MediaStore.Audio.Media.ARTIST + "=?";
 
+//    MediaStore.Audio.Media.ARTIST + " != ? and " + MediaStore.Audio.Media.ARTIST + " != ? " , new String[]{MediaStore.UNKNOWN_STRING, "김경호"}
+
+    /**
+     * 모든 음원 중에서 <unknown>을 제외하고 Artist 또는 Title 이 KeyWord 와 동일한 것을 검색
+     * @param context
+     * @param keyWord
+     * @return
+     */
+    public static Cursor search(Context context, String keyWord) {
+        // 모든 음원 중에서 <unknown>을 제외하고 Artist 또는 Title 이 KeyWord 와 동일한 것을 검색
+//        String where = MediaStore.Audio.Media.ARTIST + " != ? " + " AND " + MediaStore.Audio.Media.ARTIST + " like '%"  + "?" + "%' OR " + MediaStore.Audio.Media.TITLE + " like '%" + "?" + "%'";
+//        new String[]{MediaStore.UNKNOWN_STRING, keyWord, keyWord}
+//        살려주세여
+        String where = MediaStore.Audio.Media.ARTIST + " != ? " + " AND " + MediaStore.Audio.Media.ARTIST + " like '%"  + keyWord + "%' OR " + MediaStore.Audio.Media.TITLE + " like '%" + keyWord + "%'";
+        return context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, where, new String[]{MediaStore.UNKNOWN_STRING}, null);
+    }
+
     /**
      * 앱이 실행하자마자 뮤직 서비스에서 실행하는 것으로, 기기내 모든 음원 정보를 담고 있는 맵을 리턴한다.
      * @param context

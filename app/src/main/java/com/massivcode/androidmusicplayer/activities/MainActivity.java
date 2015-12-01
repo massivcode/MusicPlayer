@@ -412,6 +412,11 @@ public class MainActivity extends AppCompatActivity
                 playAllIntent.putExtra("position", 0);
                 startService(playAllIntent);
                 break;
+            case R.id.fab:
+                Toast.makeText(MainActivity.this, "fab 클릭됨", Toast.LENGTH_SHORT).show();
+                Intent addPlaylistIntent = new Intent(MainActivity.this, AddPlaylistActivity.class);
+                startActivity(addPlaylistIntent);
+                break;
         }
 
     }

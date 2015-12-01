@@ -12,11 +12,20 @@
         android:layout_height="match_parent"/>
 
     <TextView
+        android:id="@+id/notify_noData_tv"
         android:gravity="center"
         android:layout_gravity="center_vertical"
         android:text="데이터가 없습니다!"
         android:textSize="30sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_input_add" />
 
 </FrameLayout>
