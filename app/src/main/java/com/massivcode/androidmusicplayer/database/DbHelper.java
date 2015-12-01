@@ -16,9 +16,7 @@ public class DbHelper extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS " + MyPlaylistContract.MyPlaylistEntry.TABLE_NAME + " (" +
                     MyPlaylistContract.MyPlaylistEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST + " TEXT NOT NULL, " +
-                    MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_MUSIC_ID + " INTEGER NOT NULL, " +
-                    MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_LAST_PLAYED_TIME + " TEXT , " +
-                    MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAY_COUNT + " INTEGER " +
+                    MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_MUSIC_ID + " INTEGER NOT NULL " +
                     ");";
 
     private static DbHelper sSingleton = null;

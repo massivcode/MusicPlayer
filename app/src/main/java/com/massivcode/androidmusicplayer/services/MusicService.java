@@ -719,12 +719,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         startForeground(1, notification);
 
 
-//        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(1, notification);
-//        notification.flags = Notification.Flag
-        // Notification 띄우기
-
-
-//        startForeground(1234, notification);
     }
 
     public int getPositionAtPreviousOrNext(String flag) {
