@@ -92,8 +92,8 @@ public class ArtistFragment extends Fragment {
         } else if(event instanceof PlayBack) {
 //            Log.d(TAG, "아티스트에서 플레이백이벤트를 받았습니다.");
             PlayBack playback = (PlayBack) event;
-            mAdapter.swapPlayback(playback);
-            if (mAdapter.getPlayback().isPlaying() != playback.isPlaying()) {
+            if (mAdapter.getPlayback() == null || mAdapter.getPlayback().isPlaying() != playback.isPlaying()) {
+                mAdapter.swapPlayback(playback);
                 mAdapter.notifyDataSetChanged();
             }
         } else if(event instanceof InitEvent) {
