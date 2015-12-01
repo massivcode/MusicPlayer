@@ -3,7 +3,7 @@ package com.massivcode.androidmusicplayer.interfaces;
 /**
  * Created by Ray Choe on 2015-11-24.
  */
-public class Playback implements Event {
+public class PlayBack implements Event {
 
     private boolean mPlaying;
     private int mCurrentTime;

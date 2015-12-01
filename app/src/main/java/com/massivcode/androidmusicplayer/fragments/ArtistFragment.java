@@ -18,7 +18,7 @@ import com.massivcode.androidmusicplayer.adapters.ArtistAdapter;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.InitEvent;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
-import com.massivcode.androidmusicplayer.interfaces.Playback;
+import com.massivcode.androidmusicplayer.interfaces.PlayBack;
 import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 
 import de.greenrobot.event.EventBus;
@@ -89,10 +89,13 @@ public class ArtistFragment extends Fragment {
 //            Log.d(TAG, "아티스트에서 뮤직이벤트를 받았습니다.");
             mAdapter.swapMusicEvent((MusicEvent) event);
             mAdapter.notifyDataSetChanged();
-        } else if(event instanceof Playback) {
+        } else if(event instanceof PlayBack) {
 //            Log.d(TAG, "아티스트에서 플레이백이벤트를 받았습니다.");
-            mAdapter.swapPlayback((Playback) event);
-            mAdapter.notifyDataSetChanged();
+            PlayBack playback = (PlayBack) event;
+            if (mAdapter.getPlayback() == null || mAdapter.getPlayback().isPlaying() != playback.isPlaying()) {
+                mAdapter.swapPlayback(playback);
+                mAdapter.notifyDataSetChanged();
+            }
         } else if(event instanceof InitEvent) {
             Log.d(TAG, "InitEvent : ArtistFragment");
             mAdapter = new ArtistAdapter(MusicInfoLoadUtil.getArtistInfo(getActivity()), getActivity(), true);

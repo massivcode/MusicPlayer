@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
-import com.massivcode.androidmusicplayer.interfaces.Playback;
+import com.massivcode.androidmusicplayer.interfaces.PlayBack;
 import com.massivcode.androidmusicplayer.interfaces.Restore;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
@@ -40,6 +40,8 @@ public class MiniPlayerFragment extends Fragment {
     private SaveState mSaveState;
 
     private Handler mHandler = new Handler();
+
+    private PlayBack mPlayBack;
 
     public MiniPlayerFragment() {
     }
@@ -119,22 +121,14 @@ public class MiniPlayerFragment extends Fragment {
 
             }
 
-        } else if(event instanceof Playback) {
-//            Log.d(TAG, "Playback is coming");
-            final Playback playback = (Playback) event;
+        } else if(event instanceof PlayBack) {
+//            Log.d(TAG, "PlayBack is coming");
+            final PlayBack playback = (PlayBack) event;
 
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if(playback.isPlaying()) {
-//                        Log.d(TAG, "playback.isPlaying() : true");
-                        mPlayerPlayImageButton.setSelected(true);
-                    } else {
-//                        Log.d(TAG, "playback.isPlaying() : false");
-                        mPlayerPlayImageButton.setSelected(false);
-                    }
-                }
-            });
+            if (mPlayBack == null || mPlayBack.isPlaying() != playback.isPlaying()) {
+                mPlayBack = playback;
+                mPlayerPlayImageButton.setSelected(playback.isPlaying());
+            }
 
         } else if(event instanceof SaveState) {
             if(((SaveState) event).getMusicInfo() != null) {
