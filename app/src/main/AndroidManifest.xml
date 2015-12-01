@@ -22,12 +22,18 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="com.massivcode.androidmusicplayer.MainActivity" />
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </activity>
 
+        <service android:name=".services.MusicService">
+            <intent-filter>
+                <action android:name="com.massivcode.androidmusicplayer.MusicService" />
+            </intent-filter>
+        </service>
         <activity android:name=".activities.AddPlaylistActivity"/>
-
-        <service android:name=".services.MusicService" />
-
 
     </application>
 
