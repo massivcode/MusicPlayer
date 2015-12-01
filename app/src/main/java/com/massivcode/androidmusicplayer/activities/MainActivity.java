@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mMusicService != null) {
-            if (mMusicService.getCurrentInfo() != null & mMusicService.getCurrentPlaylist() != null & mMusicService.getCurrentPosition() != -1) {
+            if (mMusicService.getCurrentInfo() != null && mMusicService.getCurrentPlaylist() != null && mMusicService.getCurrentPosition() != -1) {
                 EventBus.getDefault().post(new SaveState());
             }
         }
@@ -352,7 +352,7 @@ public class MainActivity extends AppCompatActivity
                 mTabLayout.setScrollPosition(0, 0, true);
                 break;
             case R.id.player_previous_ib:
-                if (mMusicService != null & mMusicService.isReady()) {
+                if (mMusicService != null && mMusicService.isReady()) {
 
                     Intent nextIntent = new Intent(MainActivity.this, MusicService.class);
                     nextIntent.setAction(MusicService.ACTION_PLAY_PREVIOUS);
@@ -361,14 +361,14 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case R.id.player_play_ib:
-                if (mMusicService != null & mMusicService.isReady()) {
+                if (mMusicService != null && mMusicService.isReady()) {
                     Intent pauseIntent = new Intent(MainActivity.this, MusicService.class);
                     pauseIntent.setAction(MusicService.ACTION_PAUSE);
                     startService(pauseIntent);
                 }
                 break;
             case R.id.player_next_ib:
-                if (mMusicService != null & mMusicService.isReady()) {
+                if (mMusicService != null && mMusicService.isReady()) {
 
                     Intent nextIntent = new Intent(MainActivity.this, MusicService.class);
                     nextIntent.setAction(MusicService.ACTION_PLAY_NEXT);

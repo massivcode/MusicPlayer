@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
-import com.massivcode.androidmusicplayer.interfaces.Playback;
+import com.massivcode.androidmusicplayer.interfaces.PlayBack;
 import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 import com.suwonsmartapp.abl.AsyncBitmapLoader;
 
@@ -29,7 +29,7 @@ public class ArtistAdapter extends CursorTreeAdapter implements AsyncBitmapLoade
     private LayoutInflater mInflater;
 
     private MusicEvent mMusicEvent;
-    private Playback mPlayback;
+    private PlayBack mPlayback;
 
     private Context mContext;
 
@@ -48,8 +48,12 @@ public class ArtistAdapter extends CursorTreeAdapter implements AsyncBitmapLoade
         mMusicEvent = musicEvent;
     }
 
-    public void swapPlayback(Playback playback) {
+    public void swapPlayback(PlayBack playback) {
         mPlayback = playback;
+    }
+
+    public PlayBack getPlayback() {
+        return mPlayback;
     }
 
     @Override

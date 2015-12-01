@@ -21,7 +21,7 @@ import com.massivcode.androidmusicplayer.adapters.SongAdapter;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.InitEvent;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
-import com.massivcode.androidmusicplayer.interfaces.Playback;
+import com.massivcode.androidmusicplayer.interfaces.PlayBack;
 import com.massivcode.androidmusicplayer.interfaces.Restore;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
@@ -39,6 +39,7 @@ public class SongsFragment extends Fragment {
     private SongAdapter mAdapter;
 
     private SaveState mSaveState;
+    private PlayBack mPlayBack;
 
     public SongsFragment() {
     }
@@ -104,10 +105,17 @@ public class SongsFragment extends Fragment {
 //            Log.d(TAG, "노래에서 뮤직이벤트를 받았습니다.");
             mAdapter.swapMusicEvent((MusicEvent) event);
             mAdapter.notifyDataSetChanged();
-        } else if(event instanceof Playback) {
+        } else if(event instanceof PlayBack) {
 //            Log.d(TAG, "노래에서 플레이백이벤트를 받았습니다.");
-            mAdapter.swapPlayback((Playback) event);
-            mAdapter.notifyDataSetChanged();
+
+            final PlayBack playback = (PlayBack) event;
+
+            if (mPlayBack == null || mPlayBack.isPlaying() != playback.isPlaying()) {
+                mPlayBack = playback;
+                mAdapter.swapPlayback((PlayBack) event);
+                mAdapter.notifyDataSetChanged();
+            }
+
         } else if(event instanceof SaveState) {
             if(((SaveState) event).getMusicInfo() != null) {
                 mSaveState = (SaveState) event;

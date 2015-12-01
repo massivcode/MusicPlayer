@@ -25,7 +25,7 @@ import android.widget.TextView;
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
-import com.massivcode.androidmusicplayer.interfaces.Playback;
+import com.massivcode.androidmusicplayer.interfaces.PlayBack;
 import com.massivcode.androidmusicplayer.interfaces.RequestEvent;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
 import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
@@ -49,11 +49,9 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
     private ArrayList<MusicInfo> mMusicDataList;
 
     public MusicEvent mCurrentEvent;
-    private Playback mPlayback;
+    private PlayBack mPlayback;
 
     private CurrentPlaylistAdapter mAdapter;
-
-    private int mCurrentPlayingPosition;
 
     private Handler mHandler = new Handler();
 
@@ -72,6 +70,8 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
                 mAdapter = new CurrentPlaylistAdapter(getActivity(), mMusicDataList);
             }
         }).start();
+
+        mPlayback = new PlayBack();
 
         EventBus.getDefault().post(new RequestEvent());
 //        Log.d(TAG, "재생목록에서 이벤트가 요청되었습니다.");
@@ -120,14 +120,19 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
 //            Log.d(TAG, "재생목록에서 뮤직이벤트를 받았습니다.");
             mCurrentEvent = (MusicEvent) event;
 
-        } else if(event instanceof Playback) {
-//            Log.d(TAG, "재생목록에서 플레이백이벤트를 받았습니다.");
-            mPlayback = (Playback) event;
-        }
+            if(mAdapter != null && mCurrentPlaylistListView != null) {
+                mAdapter.notifyDataSetChanged();
+            }
 
-        if(mAdapter != null & mCurrentPlaylistListView != null) {
-            mAdapter.notifyDataSetChanged();
-            mCurrentPlaylistListView.setSelection(mAdapter.getCurrentPlayingPosition());
+        } else if(event instanceof PlayBack) {
+//            Log.d(TAG, "재생목록에서 플레이백이벤트를 받았습니다.");
+            PlayBack playBack = (PlayBack) event;
+            if (mPlayback.isPlaying() != (playBack).isPlaying()) {
+                if (mAdapter != null && mCurrentPlaylistListView != null) {
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+            mPlayback = playBack;
         }
 
 
@@ -208,7 +213,6 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
             MusicInfo musicInfo = (MusicInfo) getItem(position);
             if(musicInfo.get_id() == mCurrentEvent.getMusicInfo().get_id()) {
                 viewHolder.mCurrentPlaylistIsPlayingImageView.setVisibility(View.VISIBLE);
-                mCurrentPlayingPosition = position;
                 if(mPlayback.isPlaying()) {
                     viewHolder.mCurrentPlaylistIsPlayingImageView.setSelected(true);
                 } else {
@@ -224,11 +228,6 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
 
             return convertView;
         }
-
-        public int getCurrentPlayingPosition() {
-            return mCurrentPlayingPosition;
-        }
-
 
         @Override
         public Bitmap getBitmap(int position) {

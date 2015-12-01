@@ -26,7 +26,7 @@ import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.FinishActivity;
 import com.massivcode.androidmusicplayer.interfaces.InitEvent;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
-import com.massivcode.androidmusicplayer.interfaces.Playback;
+import com.massivcode.androidmusicplayer.interfaces.PlayBack;
 import com.massivcode.androidmusicplayer.interfaces.RequestEvent;
 import com.massivcode.androidmusicplayer.interfaces.RequestMusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Restore;
@@ -294,7 +294,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             case ACTION_PAUSE_UNPLUGGED:
                 if (mMediaPlayer.isPlaying()) {
                     mMediaPlayer.pause();
-                    if (mCurrentMusicInfo != null & mCurrentPlaylist != null) {
+                    if (mCurrentMusicInfo != null && mCurrentPlaylist != null) {
                         sendAllEvent();
                         setMetaData();
                         showNotification(mMetadata);
@@ -389,14 +389,14 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             case ACTION_PAUSE:
                 if (mMediaPlayer.isPlaying()) {
                     mMediaPlayer.pause();
-                    if (mCurrentMusicInfo != null & mCurrentPlaylist != null) {
+                    if (mCurrentMusicInfo != null && mCurrentPlaylist != null) {
                         sendAllEvent();
                         setMetaData();
                         showNotification(mMetadata);
                     }
                 } else {
                     mMediaPlayer.start();
-                    if (mCurrentMusicInfo != null & mCurrentPlaylist != null) {
+                    if (mCurrentMusicInfo != null && mCurrentPlaylist != null) {
                         sendAllEvent();
                         setMetaData();
                         showNotification(mMetadata);
@@ -613,7 +613,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     }
 
     private void sendPlayback() {
-        Playback playback = new Playback();
+        PlayBack playback = new PlayBack();
         playback.setCurrentTime(mMediaPlayer.getCurrentPosition());
         playback.setPlaying(mMediaPlayer.isPlaying());
         EventBus.getDefault().post(playback);
@@ -642,7 +642,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     private void sendEvents() {
         if (mMediaPlayer.isPlaying()) {
 //            Log.d(TAG, "UIRefresher is running");
-            Playback playback = new Playback();
+            PlayBack playback = new PlayBack();
             playback.setPlaying(mMediaPlayer.isPlaying());
             playback.setCurrentTime(mMediaPlayer.getCurrentPosition());
             EventBus.getDefault().post(playback);
@@ -651,7 +651,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
         } else {
 //            Log.d(TAG, "UIRefresher is stopped");
-            Playback playback = new Playback();
+            PlayBack playback = new PlayBack();
             playback.setPlaying(mMediaPlayer.isPlaying());
             playback.setCurrentTime(mMediaPlayer.getCurrentPosition());
             EventBus.getDefault().post(playback);

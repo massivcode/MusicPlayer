@@ -3,7 +3,6 @@ package com.massivcode.androidmusicplayer.fragments;
 import android.app.Activity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -18,7 +17,7 @@ import android.widget.TextView;
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
-import com.massivcode.androidmusicplayer.interfaces.Playback;
+import com.massivcode.androidmusicplayer.interfaces.PlayBack;
 import com.massivcode.androidmusicplayer.interfaces.RequestMusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Restore;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
@@ -43,10 +42,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     private TextView mPlayerCurrentTimeTextView;
     private TextView mPlayerDurationTextView;
 
-    private Handler mHandler = new Handler();
-
     private MediaPlayer mMediaPlayer;
-    private Playback mPlayback;
     private SaveState mSaveState;
 
     @Override
@@ -150,18 +146,12 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     // EventBus 용 이벤트 수신
     public void onEvent(Event event) {
 
-        if (event instanceof Playback) {
-            // 실시간 재생정보 클래스 Playback
-            mPlayback = (Playback) event;
+        if (event instanceof PlayBack) {
+            // 실시간 재생정보 클래스 PlayBack
+            PlayBack playBack = (PlayBack) event;
 
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    //TODO 계속 값을 갱신해야 하는 부분 : CurrentTextView, setProgress
-                    mPlayerCurrentTimeTextView.setText(MusicInfoLoadUtil.getTime(String.valueOf(mPlayback.getCurrentTime())));
-                    mPlayerSeekBar.setProgress(mPlayback.getCurrentTime());
-                }
-            });
+            mPlayerCurrentTimeTextView.setText(MusicInfoLoadUtil.getTime(String.valueOf(playBack.getCurrentTime())));
+            mPlayerSeekBar.setProgress(playBack.getCurrentTime());
 
         } else if (event instanceof MusicEvent) {
             // 현재 곡 정보 클래스 MusicEvent
