@@ -8,6 +8,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.massivcode.androidmusicplayer.R;
+import com.massivcode.androidmusicplayer.fragments.AddPlaylistFragment;
 import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 import com.suwonsmartapp.abl.AsyncBitmapLoader;
 
@@ -34,11 +36,12 @@ import java.util.ArrayList;
 /**
  * Created by massivCode on 2015-12-01.
  */
-public class AddPlaylistActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, View.OnFocusChangeListener, AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener {
+public class AddPlaylistActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, View.OnFocusChangeListener, AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener, View.OnClickListener {
 
     private static final String TAG = AddPlaylistActivity.class.getSimpleName();
     private ListView mAddPlaylistListView;
     private TextView mNotifyTextView;
+    private FloatingActionButton mAddPlaylistFab;
 
     private SearchView mSearchView;
     private SearchAdapter mSearchAdapter;
@@ -60,6 +63,8 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
         mAddPlaylistListView.setOnItemSelectedListener(this);
         mAddPlaylistListView.setOnItemClickListener(this);
         mNotifyTextView = (TextView) findViewById(R.id.add_playlist_tv);
+        mAddPlaylistFab = (FloatingActionButton)findViewById(R.id.add_playlist_fab);
+        mAddPlaylistFab.setOnClickListener(this);
 
         mCheckedArray = new SparseArray<>();
     }
@@ -157,6 +162,22 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
             Log.d(TAG, "현재 리스트의 개수 : " + mUserDefinitionPlaylist.size());
         }
         mSearchAdapter.notifyDataSetChanged();
+
+        if(mUserDefinitionPlaylist.size() == 0) {
+            mAddPlaylistFab.setVisibility(View.GONE);
+        } else {
+            mAddPlaylistFab.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        Toast.makeText(AddPlaylistActivity.this, "FAB 클릭됨", Toast.LENGTH_SHORT).show();
+        AddPlaylistFragment fragment = new AddPlaylistFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("playlist", mUserDefinitionPlaylist);
+        fragment.setArguments(args);
+        fragment.show(getSupportFragmentManager(), "AddPlaylistFragment");
     }
 
 

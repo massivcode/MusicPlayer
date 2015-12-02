@@ -29,7 +29,8 @@
         </activity>
 
         <service android:name=".services.MusicService"/>
-        <activity android:name=".activities.AddPlaylistActivity"/>
+        <activity android:name=".activities.AddPlaylistActivity" android:launchMode="singleTop"
+            />
 
     </application>
 

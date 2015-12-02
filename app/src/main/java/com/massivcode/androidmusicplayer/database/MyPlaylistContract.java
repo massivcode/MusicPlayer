@@ -16,6 +16,7 @@ public class MyPlaylistContract {
         public static final String COLUMN_NAME_MUSIC_ID = "music_id";
         public static final String COLUMN_NAME_LAST_PLAYED_TIME = "last_played_time";
         public static final String COLUMN_NAME_PLAY_COUNT = "play_count";
+        public static final String COLUMN_NAME_PLAYLIST_TYPE = "playlist_type";
     }
 
     public static abstract class PlaylistNameEntry {
@@ -23,6 +24,8 @@ public class MyPlaylistContract {
         public static final String PLAYLIST_NAME_FAVORITE = "favorite";
         // 바로 이전에 앱을 종료할 당시의 플레이리스트
         public static final String PLAYLIST_NAME_LAST_PLAYED = "last_played";
+        // 사용자 정의 플레이리스트
+        public static final String PLAYLIST_NAME_USER_DEFINITION = "user_definition";
     }
 
 }

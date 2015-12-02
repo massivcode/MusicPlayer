@@ -130,7 +130,6 @@ public class DataBackupUtil {
         } finally {
             if (db != null) {
                 db.endTransaction();
-                db.close();
             }
         }
 
@@ -156,7 +155,6 @@ public class DataBackupUtil {
 
         db.delete(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, selection, selectionArgs);
 
-        db.close();
 
         return lastPlayedSongs;
     }

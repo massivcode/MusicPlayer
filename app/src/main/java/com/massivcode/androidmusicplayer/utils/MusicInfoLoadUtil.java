@@ -140,6 +140,45 @@ public class MusicInfoLoadUtil {
         return list;
     }
 
+    public static ArrayList<MusicInfo> getMusicInfoByIds(Context context, ArrayList<Long> ids) {
+        ArrayList<MusicInfo> list = new ArrayList<>();
+
+        for(Long id : ids) {
+            MusicInfo musicInfo = new MusicInfo();
+            Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, MediaStore.Audio.Media._ID + " = ?", new String[]{String.valueOf(id)}, null);
+            while (cursor.moveToNext()) {
+                long _id = id;
+                Uri uri = Uri.parse("content://media/external/audio/media/" + _id);
+                String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+                String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+                String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
+                String duration = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+
+                musicInfo.set_id(_id);
+                musicInfo.setUri(uri);
+                musicInfo.setArtist(artist);
+                musicInfo.setTitle(title);
+                musicInfo.setAlbum(album);
+                musicInfo.setDuration(Integer.parseInt(duration));
+                list.add(musicInfo);
+            }
+        }
+
+        return list;
+    }
+
+    public static ArrayList<Long> getIdListByMusicInfoList(ArrayList<MusicInfo> origin) {
+        ArrayList<Long> list = new ArrayList<>();
+
+        for(int i = 0; i < origin.size(); i++) {
+            MusicInfo musicInfo = origin.get(i);
+            list.add(musicInfo.get_id());
+        }
+
+        return list;
+
+    }
+
 
     /**
      * 서비스에서 해당 곡의 정보를 얻을 때 사용한다.
