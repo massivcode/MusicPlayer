@@ -72,7 +72,7 @@ public class MyPlaylistFacade {
         Cursor cursor = db.query(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, projection, selection_toggle_favorite, new String[]{MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE, String.valueOf(musicId)}, null, null, null);
 
         // 1. 기존에 이런 데이터가 없을 때 -> Insert
-        if (cursor == null && cursor.getCount() == 0) {
+        if (cursor == null || cursor.getCount() == 0) {
             ContentValues values = new ContentValues();
             values.put(MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE, MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE);
             values.put(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_MUSIC_ID, musicId);

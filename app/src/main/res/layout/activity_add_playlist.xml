@@ -2,21 +2,23 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="16dp">
 
 
     <ListView
         android:id="@+id/add_playlist_lv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:choiceMode="multipleChoice"
+        />
 
     <TextView
         android:id="@+id/add_playlist_tv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center"
         android:text="검색해 주세요!"
-        android:textSize="36sp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:textSize="36sp" />
 
 </FrameLayout>

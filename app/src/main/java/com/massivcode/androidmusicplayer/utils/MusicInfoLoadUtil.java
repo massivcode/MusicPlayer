@@ -67,7 +67,9 @@ public class MusicInfoLoadUtil {
      */
     public static Cursor search(Context context, String keyWord) {
         // 모든 음원 중에서 <unknown>을 제외하고 Artist 또는 Title 이 KeyWord 와 동일한 것을 검색
-//        String where = MediaStore.Audio.Media.ARTIST + " != ? " + " AND " + MediaStore.Audio.Media.ARTIST + " like '%"  + "?" + "%' OR " + MediaStore.Audio.Media.TITLE + " like '%" + "?" + "%'";
+//        String where = MediaStore.Audio.Media.ARTIST + " != ? " + " AND "
+//          + MediaStore.Audio.Media.ARTIST + " like '%?%' OR "
+//          + MediaStore.Audio.Media.TITLE + " like '%" + "?" + "%'";
 //        new String[]{MediaStore.UNKNOWN_STRING, keyWord, keyWord}
 //        살려주세여
         String where = MediaStore.Audio.Media.ARTIST + " != ? " + " AND " + MediaStore.Audio.Media.ARTIST + " like '%"  + keyWord + "%' OR " + MediaStore.Audio.Media.TITLE + " like '%" + keyWord + "%'";

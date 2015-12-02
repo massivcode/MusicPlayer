@@ -50,7 +50,6 @@ import de.greenrobot.event.EventBus;
 public class MusicService extends Service implements MediaPlayer.OnCompletionListener {
     private static final String TAG = MusicService.class.getSimpleName();
 
-    public static final String ACTION_NAME = "com.massivcode.androidmusicplayer.MusicService";
 
     public static final String ACTION_PLAY = "ACTION_PLAY";
     public static final String ACTION_PLAY_NEXT = "ACTION_PLAY_NEXT";

@@ -9,13 +9,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -25,10 +29,12 @@ import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 import com.suwonsmartapp.abl.AsyncBitmapLoader;
 
+import java.util.ArrayList;
+
 /**
  * Created by massivCode on 2015-12-01.
  */
-public class AddPlaylistActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, View.OnFocusChangeListener {
+public class AddPlaylistActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, View.OnFocusChangeListener, AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener {
 
     private static final String TAG = AddPlaylistActivity.class.getSimpleName();
     private ListView mAddPlaylistListView;
@@ -37,14 +43,25 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
     private SearchView mSearchView;
     private SearchAdapter mSearchAdapter;
 
+    private ArrayList<Long> mUserDefinitionPlaylist;
+
+
+    private SparseArray<Boolean> mCheckedArray;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_playlist);
         setTitle("재생목록 추가");
 
+        mUserDefinitionPlaylist = new ArrayList<>();
+
         mAddPlaylistListView = (ListView) findViewById(R.id.add_playlist_lv);
+        mAddPlaylistListView.setOnItemSelectedListener(this);
+        mAddPlaylistListView.setOnItemClickListener(this);
         mNotifyTextView = (TextView) findViewById(R.id.add_playlist_tv);
+
+        mCheckedArray = new SparseArray<>();
     }
 
     @Override
@@ -97,7 +114,7 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
             Toast.makeText(AddPlaylistActivity.this, "검색 결과가 없습니다!", Toast.LENGTH_SHORT).show();
         } else {
             mNotifyTextView.setVisibility(View.GONE);
-            mSearchAdapter = new SearchAdapter(getApplicationContext(), result, false);
+            mSearchAdapter = new SearchAdapter(getApplicationContext(), result, true);
             mAddPlaylistListView.setAdapter(mSearchAdapter);
             mSearchAdapter.notifyDataSetChanged();
 
@@ -115,6 +132,34 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
 
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        // 이미 리스트에 존재할 경우 제거
+        if(mUserDefinitionPlaylist.contains(id)) {
+            Log.d(TAG, id + " 가 제거되었습니다.");
+            mUserDefinitionPlaylist.remove(id);
+            Log.d(TAG, "현재 리스트의 개수 : " + mUserDefinitionPlaylist.size());
+        }
+        // 리스트에 존재하지 않을 경우 추가
+        else {
+            mUserDefinitionPlaylist.add(id);
+            Log.d(TAG, id + " 가 추가되었습니다.");
+            Log.d(TAG, "현재 리스트의 개수 : " + mUserDefinitionPlaylist.size());
+        }
+        mSearchAdapter.notifyDataSetChanged();
+    }
+
+
     private class SearchAdapter extends CursorAdapter implements AsyncBitmapLoader.BitmapLoadListener {
 
         private LayoutInflater mInflater;
@@ -122,22 +167,25 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
 
         private AsyncBitmapLoader mAsyncBitmapLoader;
 
+
         public SearchAdapter(Context context, Cursor c, boolean autoRequery) {
             super(context, c, autoRequery);
             mContext = context;
             mInflater = LayoutInflater.from(context);
             mAsyncBitmapLoader = new AsyncBitmapLoader(context);
             mAsyncBitmapLoader.setBitmapLoadListener(this);
+
         }
 
         @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            ViewHolder viewHolder = new ViewHolder();
+        public View newView(Context context, final Cursor cursor, ViewGroup parent) {
+            final ViewHolder viewHolder = new ViewHolder();
             View view = mInflater.inflate(R.layout.item_search, parent, false);
 
             viewHolder.searchArtistTextView = (TextView)view.findViewById(R.id.item_search_artist_tv);
             viewHolder.searchTitleTextView = (TextView)view.findViewById(R.id.item_search_title_tv);
             viewHolder.searchAlbumImageView = (ImageView)view.findViewById(R.id.item_search_album_iv);
+            viewHolder.searchBorder = (LinearLayout)view.findViewById(R.id.item_search_border);
 
             view.setTag(viewHolder);
 
@@ -145,11 +193,19 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
         }
 
         @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            ViewHolder viewHolder = (ViewHolder)view.getTag();
+        public void bindView(View view, Context context, final Cursor cursor) {
+            final ViewHolder viewHolder = (ViewHolder)view.getTag();
             viewHolder.searchArtistTextView.setText(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)));
             viewHolder.searchTitleTextView.setText(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)));
             mAsyncBitmapLoader.loadBitmap(cursor.getPosition(), viewHolder.searchAlbumImageView);
+
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+            if(mUserDefinitionPlaylist.contains(id)) {
+                viewHolder.searchBorder.setBackgroundResource(R.drawable.image_border);
+            } else {
+                viewHolder.searchBorder.setBackgroundResource(R.color.white);
+            }
+
         }
 
         @Override
@@ -178,7 +234,9 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
             return bitmap;
         }
 
+
         private class ViewHolder {
+            LinearLayout searchBorder;
             ImageView searchAlbumImageView;
             TextView searchArtistTextView;
             TextView searchTitleTextView;
