@@ -1,5 +1,6 @@
 package com.massivcode.androidmusicplayer.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,11 +27,15 @@ import android.widget.TextView;
 
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.database.MyPlaylistFacade;
+import com.massivcode.androidmusicplayer.interfaces.Event;
+import com.massivcode.androidmusicplayer.interfaces.ReloadPlaylist;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
 import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 import com.suwonsmartapp.abl.AsyncBitmapLoader;
 
 import java.util.ArrayList;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by Ray Choe on 2015-12-02.
@@ -93,6 +98,22 @@ public class AddPlaylistFragment extends DialogFragment implements View.OnClickL
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        EventBus.getDefault().unregister(this);
+    }
+
+    public void onEvent(Event event) {
+
+    }
+
+    @Override
     public void onClick(View v) {
 
         switch (v.getId()) {
@@ -104,12 +125,14 @@ public class AddPlaylistFragment extends DialogFragment implements View.OnClickL
                     mTil.setError("재생목록 이름을 입력해주세요!");
                     mTil.setHint("");
                 } else {
-                    if(mFacade.isAlreadyExist(mPlaylistNameEditText.getText().toString())) {
+                    String playListName = mPlaylistNameEditText.getText().toString();
+                    if(mFacade.isAlreadyExist(playListName)) {
                         mTil.setError("이미 존재하는 재생목록 입니다.");
                         mTil.setHint("");
                     } else {
                         ArrayList<Long> idList = MusicInfoLoadUtil.getIdListByMusicInfoList(mMusicInfoList);
-                        mFacade.addUserPlaylist(mPlaylistNameEditText.getText().toString(), idList);
+                        mFacade.addUserPlaylist(playListName, idList);
+                        EventBus.getDefault().post(new ReloadPlaylist());
                         dismiss();
                         getActivity().finish();
                     }

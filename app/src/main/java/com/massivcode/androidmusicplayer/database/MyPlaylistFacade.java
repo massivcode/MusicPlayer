@@ -26,8 +26,11 @@ public class MyPlaylistFacade {
     public static String selection_music_id = MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_MUSIC_ID + "=?";
     public static String selection_playlist_name = MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST + "=?";
     public static String selection_playlist_type = MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST_TYPE + "=?";
-    public static String selection_playlist_type_all = MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST_TYPE + "=? OR" +
+    public static String selection_playlist_type_all = MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST_TYPE + "=? OR " +
             MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST_TYPE + "=?";
+    public static String selection_playlist_type_and_name ="( " +  MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST_TYPE + " =? OR " +
+            MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST_TYPE + " =? ) AND " +
+            MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST + "=?";
 
     public static String selection_toggle_favorite = MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST + " = ? and " +
             MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_MUSIC_ID + " = ? ";
@@ -92,6 +95,20 @@ public class MyPlaylistFacade {
         cursor.close();
     }
 
+    public int getSelectedPlaylistTotal(String userPlaylistName) {
+        SQLiteDatabase db = mHelper.getReadableDatabase();
+        int result = -1;
+
+        Cursor cursor = db.query(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, projection, selection_playlist_type_and_name, new String[]{MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_USER_DEFINITION, MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_USER_DEFINITION, userPlaylistName}, null, null, null);
+        if(cursor == null || cursor.getCount() == 0) {
+            result = 0;
+        } else {
+            result = cursor.getCount();
+        }
+        cursor.close();
+        return result;
+    }
+
     /**
      * 유저가 추가한 모든 플레이리스트를 리턴
      * 플레이리스트 타입이 Favorite 이거나 User_Def 일 경우
@@ -153,6 +170,7 @@ public class MyPlaylistFacade {
 
             // 사용자가 추가하고자 하는 플레이리스트가 1곡일 때
             if (userPlayList.size() == 1) {
+                Log.d(TAG, "case1");
                 db = mHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
                 values.put(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST, userPlaylistName);
@@ -164,6 +182,7 @@ public class MyPlaylistFacade {
 
             // 사용자가 추가하고자 하는 플레이리스트가 1곡 이상일 때
             else {
+                Log.d(TAG, "case2 : " + userPlaylistName);
                 db = mHelper.getWritableDatabase();
                 db.beginTransaction();
 

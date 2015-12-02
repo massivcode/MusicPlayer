@@ -66,8 +66,8 @@ public class ArtistAdapter extends CursorTreeAdapter implements AsyncBitmapLoade
         ViewHolder viewHolder = new ViewHolder();
 
         View view = mInflater.inflate(R.layout.item_artist_group, parent, false);
-        viewHolder.mGroupArtistTextView = (TextView) view.findViewById(R.id.item_artist_group_artist_tv);
-        viewHolder.mGroupSongsNumberTextView = (TextView) view.findViewById(R.id.item_artist_group_total_tv);
+        viewHolder.mGroupArtistTextView = (TextView) view.findViewById(R.id.item_playlist_group_name_tv);
+        viewHolder.mGroupSongsNumberTextView = (TextView) view.findViewById(R.id.item_playlist_group_total_tv);
         view.setTag(viewHolder);
 
         return view;

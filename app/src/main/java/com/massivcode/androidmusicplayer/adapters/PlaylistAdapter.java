@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.massivcode.androidmusicplayer.R;
+import com.massivcode.androidmusicplayer.database.MyPlaylistContract;
+import com.massivcode.androidmusicplayer.database.MyPlaylistFacade;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.PlayBack;
 import com.suwonsmartapp.abl.AsyncBitmapLoader;
@@ -26,6 +28,7 @@ public class PlaylistAdapter extends CursorTreeAdapter implements AsyncBitmapLoa
     private LayoutInflater mInflater;
     private Context mContext;
     private AsyncBitmapLoader mAsyncBitmapLoader;
+    private MyPlaylistFacade mFacade;
 
     private MusicEvent mMusicEvent;
     private PlayBack mPlayback;
@@ -36,6 +39,7 @@ public class PlaylistAdapter extends CursorTreeAdapter implements AsyncBitmapLoa
         mContext = context;
         mAsyncBitmapLoader = new AsyncBitmapLoader(context);
         mAsyncBitmapLoader.setBitmapLoadListener(this);
+        mFacade = new MyPlaylistFacade(context);
     }
 
 
@@ -61,8 +65,8 @@ public class PlaylistAdapter extends CursorTreeAdapter implements AsyncBitmapLoa
         ViewHolder viewHolder = new ViewHolder();
 
         View view = mInflater.inflate(R.layout.item_playlist_group, parent, false);
-        viewHolder.mGroupArtistTextView = (TextView) view.findViewById(R.id.item_artist_group_artist_tv);
-        viewHolder.mGroupSongsNumberTextView = (TextView) view.findViewById(R.id.item_artist_group_total_tv);
+        viewHolder.mGroupPlaylistNameTextView = (TextView) view.findViewById(R.id.item_playlist_group_name_tv);
+        viewHolder.mGroupSongsNumberTextView = (TextView) view.findViewById(R.id.item_playlist_group_total_tv);
         view.setTag(viewHolder);
 
         return view;
@@ -71,9 +75,9 @@ public class PlaylistAdapter extends CursorTreeAdapter implements AsyncBitmapLoa
     @Override
     protected void bindGroupView(View view, Context context, Cursor cursor, boolean isExpanded) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
-        String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST));
-        String total = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.NUMBER_OF_TRACKS));
-        viewHolder.mGroupArtistTextView.setText(artist);
+        String playlistName = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST));
+        int total = mFacade.getSelectedPlaylistTotal(playlistName);
+        viewHolder.mGroupPlaylistNameTextView.setText(playlistName);
         viewHolder.mGroupSongsNumberTextView.setText(total + " 곡");
     }
 
@@ -147,7 +151,7 @@ public class PlaylistAdapter extends CursorTreeAdapter implements AsyncBitmapLoa
     }
 
     static class ViewHolder {
-        TextView mGroupArtistTextView;
+        TextView mGroupPlaylistNameTextView;
         TextView mGroupSongsNumberTextView;
 
         ImageView mChildAlbumArtImageView;
