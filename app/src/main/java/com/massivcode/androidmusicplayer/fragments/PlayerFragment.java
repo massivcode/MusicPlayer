@@ -121,7 +121,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
     }
 
     private void toggleFavorite(long id) {
-        boolean isFavorited = mFacade.isFavorited(id);
+        boolean isFavorited = mFacade.isFavoritted(id);
         Log.d(TAG, "toggleFavorite @ Player : " + isFavorited);
         mPlayerFavoriteImageButton.setSelected(isFavorited);
     }

@@ -53,7 +53,7 @@ public class MyPlaylistFacade {
      * @param musicId
      * @return
      */
-    public boolean isFavorited(long musicId) {
+    public boolean isFavoritted(long musicId) {
         SQLiteDatabase db = mHelper.getWritableDatabase();
         boolean result = false;
         Cursor cursor = db.query(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, projection, selection_toggle_favorite, new String[]{MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE, String.valueOf(musicId)}, null, null, null);
@@ -115,6 +115,13 @@ public class MyPlaylistFacade {
      */
     public Cursor getAllUserPlaylist() {
         SQLiteDatabase db = mHelper.getWritableDatabase();
+        Cursor cursor = db.query(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, projection, selection_playlist_type_all, new String[]{MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE, MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_USER_DEFINITION}, null, null, null);
+        while (cursor.moveToNext()) {
+            long id = cursor.getInt(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_MUSIC_ID));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST));
+            String type = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST_TYPE));
+            Log.d(TAG, "아이디 : " + id + " 플레이리스트_이름 : " + name + " 플레이리스트 타입 : " + type);
+        }
         return db.query(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, projection, selection_playlist_type_all, new String[]{MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE, MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_USER_DEFINITION}, null, null, null);
     }
 

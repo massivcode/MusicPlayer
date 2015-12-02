@@ -55,6 +55,7 @@ public class PlaylistAdapter extends CursorTreeAdapter implements AsyncBitmapLoa
         return mPlayback;
     }
 
+
     @Override
     protected Cursor getChildrenCursor(Cursor groupCursor) {
         return null;
