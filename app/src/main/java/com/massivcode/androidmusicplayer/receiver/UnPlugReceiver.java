@@ -23,7 +23,7 @@ public class UnPlugReceiver extends BroadcastReceiver{
                 // 헤드셋 플러그가 빠짐
                 if(mHeadSetState == 0) {
                     Log.d(TAG, "헤드셋 플러그가 빠짐");
-                    Intent startServiceIntent = new Intent(context, MusicService.class);
+                    Intent startServiceIntent = new Intent(MusicService.ACTION_NAME);
                     startServiceIntent.setAction(MusicService.ACTION_PAUSE_UNPLUGGED);
                     context.startService(startServiceIntent);
                     // 헤드셋 플러그가 껴짐

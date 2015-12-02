@@ -54,6 +54,9 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener, ExpandableListView.OnChildClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    public static final String ACTION_NAME = "com.massivcode.androidmusicplayer.MainActivity";
+
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     public static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2;
 
@@ -128,7 +131,6 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
 
         unbindService(mConnection);
-
         // We need an Editor object to make preference changes.
         // All objects are from android.context.Context
 
