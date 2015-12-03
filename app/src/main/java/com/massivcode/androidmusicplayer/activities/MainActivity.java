@@ -39,6 +39,7 @@ import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.FinishActivity;
 import com.massivcode.androidmusicplayer.interfaces.InitEvent;
 import com.massivcode.androidmusicplayer.interfaces.LastPlayedSongs;
+import com.massivcode.androidmusicplayer.interfaces.ReloadPlaylist;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.managers.Manager;
 import com.massivcode.androidmusicplayer.services.MusicService;
@@ -404,8 +405,8 @@ public class MainActivity extends AppCompatActivity
                         v.setSelected(true);
                     }
 
-
                     mFacade.toggleFavoriteList(mMusicService.getCurrentPlaylist().get(mMusicService.getCurrentPosition()));
+                    EventBus.getDefault().post(new ReloadPlaylist());
                 }
                 break;
             case R.id.songs_playAll_btn:
