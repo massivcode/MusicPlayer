@@ -475,9 +475,13 @@ public class MainActivity extends AppCompatActivity
             }
             case R.id.playlist_listView: {
                 Log.d(TAG, "클릭함");
+                Log.d(TAG, "그룹 포지션 : " + groupPosition);
                 Cursor parentData = (Cursor) parent.getExpandableListAdapter().getGroup(groupPosition);
-                parentData.moveToFirst();
+                Log.d(TAG, "커서 사이즈 : " + parentData.getCount());
+                parentData.moveToPosition(groupPosition);
+                Log.d(TAG, "현재 커서 위치 : " + parentData.getPosition());
                 String playlistName = parentData.getString(parentData.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST));
+                Log.d(TAG, "플레이리스트 네임 : " + playlistName);
                 ArrayList<Long> list = MusicInfoLoadUtil.getMusicIdListFromPlaylistName(playlistName, getApplicationContext());
                 Intent intent = new Intent(MainActivity.this, MusicService.class);
                 intent.setAction(MusicService.ACTION_PLAY);
