@@ -16,6 +16,7 @@ import java.util.ArrayList;
  */
 public class DataBackupUtil {
 
+    private static final String TAG = DataBackupUtil.class.getSimpleName();
     private static DataBackupUtil sInstance = null;
     private static Context mContext = null;
     private static SharedPreferences mSharedPreferences = null;
@@ -106,15 +107,16 @@ public class DataBackupUtil {
 
                         "INSERT INTO " + MyPlaylistContract.MyPlaylistEntry.TABLE_NAME + " ( " +
                                 MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST + " , " +
-                                MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_MUSIC_ID + " ) " +
-                                "values(?, ?)"
+                                MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_MUSIC_ID + " , " +
+                                MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST_TYPE + " ) " +
+                                "values(?, ?, ?)"
                 );
 
                 for (long id : currentPlaylist) {
                     int column = 1;
                     statement.bindString(column++, MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_LAST_PLAYED);
                     statement.bindLong(column++, id);
-
+                    statement.bindString(column++, MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_LAST_PLAYED);
                     statement.execute();
                 }
 
