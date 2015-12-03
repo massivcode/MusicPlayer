@@ -2,20 +2,26 @@ package com.massivcode.androidmusicplayer.fragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.adapters.PlaylistAdapter;
+import com.massivcode.androidmusicplayer.database.MyPlaylistContract;
 import com.massivcode.androidmusicplayer.database.MyPlaylistFacade;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
@@ -27,7 +33,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by Ray Choe on 2015-11-23.
  */
-public class PlaylistFragment extends Fragment {
+public class PlaylistFragment extends Fragment implements AdapterView.OnItemLongClickListener {
 
     private static final String TAG = PlayerFragment.class.getSimpleName();
     private FloatingActionButton mFab;
@@ -82,6 +88,7 @@ public class PlaylistFragment extends Fragment {
         }
 
         mListView.setOnChildClickListener((ExpandableListView.OnChildClickListener) getActivity());
+        mListView.setOnItemLongClickListener(this);
     }
 
     @Override
@@ -117,8 +124,47 @@ public class PlaylistFragment extends Fragment {
                 mAdapter.changeCursor(mFacade.getAllUserPlaylist());
                 mAdapter.notifyDataSetChanged();
             }
+            mNotifyNoDataTextView.setVisibility(View.GONE);
             mListView.setAdapter(mAdapter);
         }
 
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        int itemType = mListView.getPackedPositionType(id);
+        if(itemType == 0) {
+            Log.d(TAG, "그룹뷰가 롱클릭되었습니다.");
+            Cursor cursor = mAdapter.getGroup(position);
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST));
+            showConfirmDialog(name);
+                Log.d(TAG, "이름 : " + name);
+        } else {
+            Log.d(TAG, "자식뷰가 롱클릭되었습니다.");
+            Log.d(TAG, "포지션 : " + position);
+        }
+        return true;
+    }
+
+    private void showConfirmDialog(final String name) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("재생목록 삭제").setMessage(name + "을 삭제하시겠습니까?").setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d(TAG, "삭제 눌림");
+                mFacade.deleteUserPlaylist(name);
+                mAdapter.changeCursor(mFacade.getAllUserPlaylist());
+
+                if(mFacade.isAlreadyExist()) {
+                    Log.d(TAG, "데이터가 있습니다.");
+                    mNotifyNoDataTextView.setVisibility(View.GONE);
+                } else {
+                    Log.d(TAG, "데이터가 없습니다.");
+                    mNotifyNoDataTextView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        builder.setNegativeButton("취소", null);
+        builder.show();
     }
 }

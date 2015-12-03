@@ -140,6 +140,17 @@ public class MusicInfoLoadUtil {
         return list;
     }
 
+    public static String[] getArtistAndTitleFromId(Context context, int id) {
+        String[] result = new String[2];
+
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, MediaStore.Audio.Media._ID + " = ?", new String[]{String.valueOf(id)}, null);
+        cursor.moveToFirst();
+        result[0] = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+        result[1] = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+        cursor.close();
+        return result;
+    }
+
     public static ArrayList<MusicInfo> getMusicInfoByIds(Context context, ArrayList<Long> ids) {
         ArrayList<MusicInfo> list = new ArrayList<>();
 

@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +18,14 @@ import com.massivcode.androidmusicplayer.database.MyPlaylistContract;
 import com.massivcode.androidmusicplayer.database.MyPlaylistFacade;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.PlayBack;
+import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 import com.suwonsmartapp.abl.AsyncBitmapLoader;
 
 /**
  * Created by Ray Choe on 2015-12-02.
  */
 public class PlaylistAdapter extends CursorTreeAdapter implements AsyncBitmapLoader.BitmapLoadListener {
+    private static final String TAG = PlaylistAdapter.class.getSimpleName();
     private LayoutInflater mInflater;
     private Context mContext;
     private AsyncBitmapLoader mAsyncBitmapLoader;
@@ -56,9 +57,14 @@ public class PlaylistAdapter extends CursorTreeAdapter implements AsyncBitmapLoa
     }
 
 
+//    public Cursor getChildrenCursor(String playlist_name) {
+//        SQLiteDatabase db = mHelper.getReadableDatabase();
+//        return db.rawQuery(getChildrenPlaylist_SQL + playlist_name, null);
+//    }
+
     @Override
     protected Cursor getChildrenCursor(Cursor groupCursor) {
-        return null;
+        return mFacade.getChildrenCursor(groupCursor.getString(groupCursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST)));
     }
 
     @Override
@@ -76,9 +82,9 @@ public class PlaylistAdapter extends CursorTreeAdapter implements AsyncBitmapLoa
     @Override
     protected void bindGroupView(View view, Context context, Cursor cursor, boolean isExpanded) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
-        String playlistName = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST));
-        int total = mFacade.getSelectedPlaylistTotal(playlistName);
-        viewHolder.mGroupPlaylistNameTextView.setText(playlistName);
+        String name = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST));
+        int total = cursor.getInt(cursor.getColumnIndexOrThrow("music_count"));
+        viewHolder.mGroupPlaylistNameTextView.setText(name);
         viewHolder.mGroupSongsNumberTextView.setText(total + " 곡");
     }
 
@@ -97,13 +103,15 @@ public class PlaylistAdapter extends CursorTreeAdapter implements AsyncBitmapLoa
         return view;
     }
 
+
     @Override
     protected void bindChildView(View view, Context context, Cursor cursor, boolean isLastChild) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
-        int id = (int) cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
-        String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
-        String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+        int id = cursor.getInt(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_MUSIC_ID));
+        String[] info = MusicInfoLoadUtil.getArtistAndTitleFromId(mContext, id);
+        String artist = info[0];
+        String title = info[1];
         viewHolder.mChildArtistTextView.setText(artist);
         viewHolder.mChildTitleTextView.setText(title);
         mAsyncBitmapLoader.loadBitmap(id, viewHolder.mChildAlbumArtImageView);

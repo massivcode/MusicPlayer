@@ -470,6 +470,11 @@ public class MainActivity extends AppCompatActivity
                 startService(intent);
                 break;
             }
+            case R.id.playlist_listView: {
+                Log.d(TAG, "클릭함");
+                break;
+            }
+
         }
         return false;
     }
