@@ -10,6 +10,8 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import com.massivcode.androidmusicplayer.R;
+import com.massivcode.androidmusicplayer.database.MyPlaylistContract;
+import com.massivcode.androidmusicplayer.database.MyPlaylistFacade;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
 
 import java.util.ArrayList;
@@ -100,6 +102,26 @@ public class MusicInfoLoadUtil {
         }
 
         return map;
+    }
+
+    /**
+     * playlistFragment 의 ListView 에서 자식 아이템을 클릭하면 해당 플레이리스트의 모든 뮤직 아이디를 리스트에 담아 리턴함.
+     * @param playlistName
+     * @return
+     */
+    public static ArrayList<Long> getMusicIdListFromPlaylistName(String playlistName, Context context) {
+        ArrayList<Long> list = new ArrayList<>();
+
+        MyPlaylistFacade facade = new MyPlaylistFacade(context);
+        Cursor cursor = facade.getSelectedPlaylistMusicIds(playlistName);
+
+        while(cursor.moveToNext()) {
+            long id = cursor.getInt(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_MUSIC_ID));
+            list.add(id);
+        }
+
+        cursor.close();
+        return list;
     }
 
     /**

@@ -37,7 +37,7 @@ public class MyPlaylistFacade {
 
     private static String getAllUserPlaylist_SQL = "select _id, playlist_name, _id, (select count(music_id) from MyPlaylist as b where b.playlist_name = MyPlaylist.playlist_name) as music_count from MyPlaylist group by playlist_name order by _id asc";
     private static String getChildrenPlaylist_SQL = "select _id, music_id from MyPlaylist where playlist_name = '";
-
+    private static String getMusicIdsFromSelectedPlaylist_SQL = "select music_id from MyPlaylist where playlist_name = '";
 
 
     public MyPlaylistFacade(Context context) {
@@ -163,6 +163,11 @@ public class MyPlaylistFacade {
         cursor.close();
 
         return result;
+    }
+
+    public Cursor getSelectedPlaylistMusicIds(String userPlaylistName) {
+        SQLiteDatabase db = mHelper.getReadableDatabase();
+        return db.rawQuery(getMusicIdsFromSelectedPlaylist_SQL + userPlaylistName + "'", null);
     }
 
     /**

@@ -32,6 +32,7 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.massivcode.androidmusicplayer.R;
+import com.massivcode.androidmusicplayer.database.MyPlaylistContract;
 import com.massivcode.androidmusicplayer.database.MyPlaylistFacade;
 import com.massivcode.androidmusicplayer.fragments.CurrentPlaylistFragment;
 import com.massivcode.androidmusicplayer.interfaces.Event;
@@ -472,6 +473,15 @@ public class MainActivity extends AppCompatActivity
             }
             case R.id.playlist_listView: {
                 Log.d(TAG, "클릭함");
+                Cursor parentData = (Cursor) parent.getExpandableListAdapter().getGroup(groupPosition);
+                parentData.moveToFirst();
+                String playlistName = parentData.getString(parentData.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST));
+                ArrayList<Long> list = MusicInfoLoadUtil.getMusicIdListFromPlaylistName(playlistName, getApplicationContext());
+                Intent intent = new Intent(MainActivity.this, MusicService.class);
+                intent.setAction(MusicService.ACTION_PLAY);
+                intent.putExtra("list", list);
+                intent.putExtra("position", childPosition);
+                startService(intent);
                 break;
             }
 
