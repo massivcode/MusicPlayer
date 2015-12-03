@@ -11,7 +11,6 @@ import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,7 +48,6 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
     private ArrayList<Long> mUserDefinitionPlaylist;
 
 
-    private SparseArray<Boolean> mCheckedArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +64,6 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
         mAddPlaylistFab = (FloatingActionButton)findViewById(R.id.add_playlist_fab);
         mAddPlaylistFab.setOnClickListener(this);
 
-        mCheckedArray = new SparseArray<>();
     }
 
     @Override
@@ -82,26 +79,22 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            if (mMusicService != null && mMusicService.getCurrentPlaylist() != null) {
-//                CurrentPlaylistFragment dialogFragment = new CurrentPlaylistFragment();
-//                Bundle bundle = new Bundle();
-//                Log.d(TAG, "getCurrentPlaylist.size : " + mMusicService.getCurrentPlaylist().size());
-//                bundle.putSerializable("data", mMusicService.getCurrentPlaylist());
-//                bundle.putSerializable("map", mMusicService.getAllMusicData());
-//                dialogFragment.setArguments(bundle);
-//                dialogFragment.show(getSupportFragmentManager(), "ManageDbFragment");
-//            } else {
-//                Toast.makeText(MainActivity.this, "재생 중인 노래가 없습니다.", Toast.LENGTH_SHORT).show();
-//            }
-//            return true;
-//        }
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_songs:
+                Log.d(TAG, "노래 눌림");
+                Cursor cursor = getApplicationContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MusicInfoLoadUtil.projection, MediaStore.Audio.Media.ARTIST + " != ? ", new String[]{MediaStore.UNKNOWN_STRING}, null);
+                mSearchAdapter = new SearchAdapter(getApplicationContext(), cursor, true);
+                mAddPlaylistListView.setAdapter(mSearchAdapter);
+                mNotifyTextView.setVisibility(View.GONE);
+                mUserDefinitionPlaylist.clear();
+                mAddPlaylistFab.setVisibility(View.GONE);
+                break;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -111,7 +104,8 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
     public boolean onQueryTextSubmit(String query) {
         Toast.makeText(AddPlaylistActivity.this, "검색어 : " + query, Toast.LENGTH_SHORT).show();
         Cursor result = MusicInfoLoadUtil.search(getApplicationContext(), query);
-
+        mUserDefinitionPlaylist.clear();
+        mAddPlaylistFab.setVisibility(View.GONE);
         if (result == null || result.getCount() == 0) {
             mNotifyTextView.setVisibility(View.VISIBLE);
             mNotifyTextView.setText("검색 결과가 없습니다!");
@@ -161,6 +155,7 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
             Log.d(TAG, id + " 가 추가되었습니다.");
             Log.d(TAG, "현재 리스트의 개수 : " + mUserDefinitionPlaylist.size());
         }
+
         mSearchAdapter.notifyDataSetChanged();
 
         if(mUserDefinitionPlaylist.size() == 0) {
