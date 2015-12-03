@@ -32,7 +32,7 @@ public class MyPlaylistFacade {
             MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST_TYPE + " =? ) AND " +
             MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST + "=?";
 
-    public static String selection_toggle_favorite = MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST + " = ? and " +
+    public static String selection_toggle_favorite = MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST_TYPE + " = ? and " +
             MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_MUSIC_ID + " = ? ";
 
     private static String getAllUserPlaylist_SQL = "select _id, playlist_name, _id, (select count(music_id) from MyPlaylist as b where b.playlist_name = MyPlaylist.playlist_name) as music_count from MyPlaylist group by playlist_name order by _id asc";
@@ -67,6 +67,7 @@ public class MyPlaylistFacade {
         boolean result = false;
         Cursor cursor = db.query(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, projection, selection_toggle_favorite, new String[]{MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE, String.valueOf(musicId)}, null, null, null);
 
+        Log.d(TAG, "커서 사이즈 : " + cursor.getCount());
         // 기존에 이런 데이터가 있을 때 -> true
         if(cursor != null && cursor.getCount() != 0) {
             result = true;
@@ -83,6 +84,7 @@ public class MyPlaylistFacade {
      * @param musicId
      */
     public void toggleFavoriteList(long musicId) {
+        Log.d(TAG, "뮤직아이디 : " + musicId);
         SQLiteDatabase db = mHelper.getWritableDatabase();
 
         Cursor cursor = db.query(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, projection, selection_toggle_favorite, new String[]{MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE, String.valueOf(musicId)}, null, null, null);
@@ -90,8 +92,9 @@ public class MyPlaylistFacade {
         // 1. 기존에 이런 데이터가 없을 때 -> Insert
         if (cursor == null || cursor.getCount() == 0) {
             ContentValues values = new ContentValues();
-            values.put(MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE, "즐겨찾기");
+            values.put(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST, "즐겨찾기");
             values.put(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_MUSIC_ID, musicId);
+            values.put(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST_TYPE, MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE);
             db.insert(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, null, values);
             Log.d(TAG, "즐겨찾기에 " + musicId + " 를 추가하였습니다.");
         }

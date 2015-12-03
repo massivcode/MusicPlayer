@@ -119,13 +119,15 @@ public class PlaylistFragment extends Fragment implements AdapterView.OnItemLong
             }
         } else if(event instanceof ReloadPlaylist) {
             if(mAdapter == null) {
+                Log.d(TAG, "어댑터 널");
                 mAdapter = new PlaylistAdapter(mFacade.getAllUserPlaylist(), getActivity(), true);
+                mListView.setAdapter(mAdapter);
             } else {
+                Log.d(TAG, "어댑터 널이 아님");
                 mAdapter.changeCursor(mFacade.getAllUserPlaylist());
-                mAdapter.notifyDataSetChanged();
+                mListView.setAdapter(mAdapter);
             }
             mNotifyNoDataTextView.setVisibility(View.GONE);
-            mListView.setAdapter(mAdapter);
         }
 
     }

@@ -19,6 +19,7 @@ import com.massivcode.androidmusicplayer.database.MyPlaylistFacade;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.PlayBack;
+import com.massivcode.androidmusicplayer.interfaces.ReloadPlaylist;
 import com.massivcode.androidmusicplayer.interfaces.RequestMusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.Restore;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
@@ -124,6 +125,7 @@ public class PlayerFragment extends Fragment implements SeekBar.OnSeekBarChangeL
         boolean isFavorited = mFacade.isFavoritted(id);
         Log.d(TAG, "toggleFavorite @ Player : " + isFavorited);
         mPlayerFavoriteImageButton.setSelected(isFavorited);
+        EventBus.getDefault().post(new ReloadPlaylist());
     }
 
     @Override

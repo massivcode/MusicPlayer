@@ -404,6 +404,7 @@ public class MainActivity extends AppCompatActivity
                         v.setSelected(true);
                     }
 
+
                     mFacade.toggleFavoriteList(mMusicService.getCurrentPlaylist().get(mMusicService.getCurrentPosition()));
                 }
                 break;
