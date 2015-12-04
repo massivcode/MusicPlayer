@@ -56,11 +56,11 @@ public class PlaylistFragment extends Fragment implements AdapterView.OnItemLong
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_playlist, container, false);
-        mFab = (FloatingActionButton)view.findViewById(R.id.fab);
+        mFab = (FloatingActionButton) view.findViewById(R.id.fab);
         mFab.setOnClickListener((View.OnClickListener) getActivity());
 
-        mNotifyNoDataTextView = (TextView)view.findViewById(R.id.notify_noData_tv);
-        mListView = (ExpandableListView)view.findViewById(R.id.playlist_listView);
+        mNotifyNoDataTextView = (TextView) view.findViewById(R.id.notify_noData_tv);
+        mListView = (ExpandableListView) view.findViewById(R.id.playlist_listView);
 
         return view;
     }
@@ -70,14 +70,13 @@ public class PlaylistFragment extends Fragment implements AdapterView.OnItemLong
         super.onActivityCreated(savedInstanceState);
 
 
-
-        if(Build.VERSION.SDK_INT < 23) {
-//            mAdapter = new ArtistAdapter(MusicInfoLoadUtil.getArtistInfo(getActivity()), getActivity(), true);
+        if (Build.VERSION.SDK_INT < 23) {
+            mAdapter = new PlaylistAdapter(mFacade.getAllUserPlaylist(), getActivity(), true);
             mListView.setAdapter(mAdapter);
         } else {
-            if(getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                if(mAdapter == null) {
-                    if(mFacade.isAlreadyExist()) {
+            if (getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                if (mAdapter == null) {
+                    if (mFacade.isAlreadyExist()) {
                         mNotifyNoDataTextView.setVisibility(View.GONE);
                         EventBus.getDefault().post(new ReloadPlaylist());
                     } else {
@@ -107,25 +106,24 @@ public class PlaylistFragment extends Fragment implements AdapterView.OnItemLong
     public void onEvent(Event event) {
 
         if (event instanceof MusicEvent) {
-//            Log.d(TAG, "아티스트에서 뮤직이벤트를 받았습니다.");
+//            Log.d(TAG, "플레이리스트에서 뮤직이벤트를 받았습니다.");
             mAdapter.swapMusicEvent((MusicEvent) event);
             mAdapter.notifyDataSetChanged();
-        } else if(event instanceof PlayBack) {
-//            Log.d(TAG, "아티스트에서 플레이백이벤트를 받았습니다.");
+        } else if (event instanceof PlayBack) {
+//            Log.d(TAG, "플레이리스트에서 플레이백이벤트를 받았습니다.");
             PlayBack playback = (PlayBack) event;
             if (mAdapter.getPlayback() == null || mAdapter.getPlayback().isPlaying() != playback.isPlaying()) {
                 mAdapter.swapPlayback(playback);
                 mAdapter.notifyDataSetChanged();
             }
-        } else if(event instanceof ReloadPlaylist) {
-            if(mAdapter == null) {
+        } else if (event instanceof ReloadPlaylist) {
+            if (mAdapter == null) {
                 Log.d(TAG, "어댑터 널");
                 mAdapter = new PlaylistAdapter(mFacade.getAllUserPlaylist(), getActivity(), true);
                 mListView.setAdapter(mAdapter);
             } else {
                 Log.d(TAG, "어댑터 널이 아님");
                 mAdapter.changeCursor(mFacade.getAllUserPlaylist());
-                mListView.setAdapter(mAdapter);
             }
             mNotifyNoDataTextView.setVisibility(View.GONE);
         }
@@ -135,12 +133,12 @@ public class PlaylistFragment extends Fragment implements AdapterView.OnItemLong
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         int itemType = mListView.getPackedPositionType(id);
-        if(itemType == 0) {
+        if (itemType == 0) {
             Log.d(TAG, "그룹뷰가 롱클릭되었습니다.");
             Cursor cursor = mAdapter.getGroup(position);
-                String name = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST));
             showConfirmDialog(name);
-                Log.d(TAG, "이름 : " + name);
+            Log.d(TAG, "이름 : " + name);
         } else {
             Log.d(TAG, "자식뷰가 롱클릭되었습니다.");
             Log.d(TAG, "포지션 : " + position);
@@ -157,7 +155,7 @@ public class PlaylistFragment extends Fragment implements AdapterView.OnItemLong
                 mFacade.deleteUserPlaylist(name);
                 mAdapter.changeCursor(mFacade.getAllUserPlaylist());
 
-                if(mFacade.isAlreadyExist()) {
+                if (mFacade.isAlreadyExist()) {
                     Log.d(TAG, "데이터가 있습니다.");
                     mNotifyNoDataTextView.setVisibility(View.GONE);
                 } else {

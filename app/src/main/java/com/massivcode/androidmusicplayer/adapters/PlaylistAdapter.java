@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,10 +47,12 @@ public class PlaylistAdapter extends CursorTreeAdapter implements AsyncBitmapLoa
 
     public void swapMusicEvent(MusicEvent musicEvent) {
         mMusicEvent = musicEvent;
+        Log.d(TAG, "플레이리스트.스왑 뮤직이벤트");
     }
 
     public void swapPlayback(PlayBack playback) {
         mPlayback = playback;
+        Log.d(TAG, "플레이리스트.스왑 플레이백");
     }
 
     public PlayBack getPlayback() {
@@ -118,6 +121,7 @@ public class PlaylistAdapter extends CursorTreeAdapter implements AsyncBitmapLoa
 
         if (mMusicEvent != null && mPlayback != null) {
 
+            Log.d(TAG, "현재 뮤직 아이디 : " + id + " 뮤직인포에서 얻어온 아이디 : " + mMusicEvent.getMusicInfo().get_id());
             if (id == mMusicEvent.getMusicInfo().get_id()) {
                 viewHolder.mChildIsPlayingImageView.setVisibility(View.VISIBLE);
 
