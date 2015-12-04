@@ -227,7 +227,7 @@ public class AddPlaylistFragment extends DialogFragment implements View.OnClickL
             if (null != albumArt) {
                 bitmap = BitmapFactory.decodeByteArray(albumArt, 0, albumArt.length, options);
             } else {
-                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_no_image);
             }
 
             // id 로부터 bitmap 생성

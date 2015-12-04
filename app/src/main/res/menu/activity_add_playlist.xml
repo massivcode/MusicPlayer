@@ -10,7 +10,7 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/action_songs"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_musics"
         android:orderInCategory="2"
         android:title="@string/songs"
         app:showAsAction="always" />
