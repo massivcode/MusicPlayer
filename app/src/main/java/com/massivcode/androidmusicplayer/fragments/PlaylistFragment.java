@@ -148,7 +148,7 @@ public class PlaylistFragment extends Fragment implements AdapterView.OnItemLong
 
     private void showConfirmDialog(final String name) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("재생목록 삭제").setMessage(name + "을 삭제하시겠습니까?").setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.delete_dialog_title).setMessage(name + getActivity().getString(R.string.delete_dialog_message)).setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.d(TAG, "삭제 눌림");
@@ -164,7 +164,7 @@ public class PlaylistFragment extends Fragment implements AdapterView.OnItemLong
                 }
             }
         });
-        builder.setNegativeButton("취소", null);
+        builder.setNegativeButton(R.string.cancel, null);
         builder.show();
     }
 }

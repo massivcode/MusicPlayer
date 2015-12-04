@@ -33,7 +33,7 @@
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
             android:singleLine="true"
-            android:text="Title"
+            android:text="@string/title"
             android:textColor="#000000"
             android:textSize="15sp" />
 
@@ -43,7 +43,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:singleLine="true"
-            android:text="Artist"
+            android:text="@string/artist"
             android:textColor="#65000000"
             android:textSize="12sp" />
 

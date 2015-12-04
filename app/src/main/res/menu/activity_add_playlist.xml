@@ -5,14 +5,14 @@
         android:id="@+id/action_search"
         android:icon="@android:drawable/ic_search_category_default"
         android:orderInCategory="1"
-        android:title="검색"
+        android:title="@string/search"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_songs"
-        android:orderInCategory="2"
         android:icon="@mipmap/ic_launcher"
-        android:title="노래"
+        android:orderInCategory="2"
+        android:title="@string/songs"
         app:showAsAction="always" />
 
 </menu>

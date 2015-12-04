@@ -79,7 +79,7 @@ public class ArtistAdapter extends CursorTreeAdapter implements AsyncBitmapLoade
         String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST));
         String total = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.NUMBER_OF_TRACKS));
         viewHolder.mGroupArtistTextView.setText(artist);
-        viewHolder.mGroupSongsNumberTextView.setText(total + " 곡");
+        viewHolder.mGroupSongsNumberTextView.setText(total + mContext.getString(R.string.adapter_songs));
 
     }
 

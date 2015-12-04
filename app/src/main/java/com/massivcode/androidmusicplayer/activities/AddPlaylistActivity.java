@@ -53,7 +53,7 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_playlist);
-        setTitle("재생목록 추가");
+        setTitle(getString(R.string.add_playlist));
 
         mUserDefinitionPlaylist = new ArrayList<>();
 
@@ -102,15 +102,15 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        Toast.makeText(AddPlaylistActivity.this, "검색어 : " + query, Toast.LENGTH_SHORT).show();
+        Toast.makeText(AddPlaylistActivity.this, getString(R.string.keyword) + query, Toast.LENGTH_SHORT).show();
         Cursor result = MusicInfoLoadUtil.search(getApplicationContext(), query);
         mUserDefinitionPlaylist.clear();
         mAddPlaylistFab.setVisibility(View.GONE);
         if (result == null || result.getCount() == 0) {
             mNotifyTextView.setVisibility(View.VISIBLE);
-            mNotifyTextView.setText("검색 결과가 없습니다!");
+            mNotifyTextView.setText(R.string.notify_no_search_result);
             result.close();
-            Toast.makeText(AddPlaylistActivity.this, "검색 결과가 없습니다!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddPlaylistActivity.this, R.string.notify_no_search_result, Toast.LENGTH_SHORT).show();
         } else {
             mNotifyTextView.setVisibility(View.GONE);
             mSearchAdapter = new SearchAdapter(getApplicationContext(), result, true);
@@ -167,7 +167,6 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
 
     @Override
     public void onClick(View v) {
-        Toast.makeText(AddPlaylistActivity.this, "FAB 클릭됨", Toast.LENGTH_SHORT).show();
         AddPlaylistFragment fragment = new AddPlaylistFragment();
         Bundle args = new Bundle();
         args.putSerializable("playlist", mUserDefinitionPlaylist);

@@ -2,7 +2,6 @@ package com.massivcode.androidmusicplayer.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -38,9 +37,6 @@ public class MiniPlayerFragment extends Fragment {
     private ImageButton mPlayerNextImageButton;
 
     private SaveState mSaveState;
-
-    private Handler mHandler = new Handler();
-
     private PlayBack mPlayBack;
 
     public MiniPlayerFragment() {

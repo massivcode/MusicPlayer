@@ -122,12 +122,12 @@ public class AddPlaylistFragment extends DialogFragment implements View.OnClickL
                 break;
             case R.id.add_playlist_save_btn:
                 if(TextUtils.isEmpty(mPlaylistNameEditText.getText().toString())) {
-                    mTil.setError("재생목록 이름을 입력해주세요!");
+                    mTil.setError(getActivity().getString(R.string.error_no_playlist_name));
                     mTil.setHint("");
                 } else {
                     String playListName = mPlaylistNameEditText.getText().toString();
                     if(mFacade.isAlreadyExist(playListName)) {
-                        mTil.setError("이미 존재하는 재생목록 입니다.");
+                        mTil.setError(getActivity().getString(R.string.error_already_exists));
                         mTil.setHint("");
                     } else {
                         ArrayList<Long> idList = MusicInfoLoadUtil.getIdListByMusicInfoList(mMusicInfoList);

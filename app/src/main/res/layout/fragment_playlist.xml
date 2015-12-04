@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-
+    android:layout_height="match_parent">
 
 
     <ExpandableListView
         android:id="@+id/playlist_listView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/notify_noData_tv"
-        android:gravity="center"
-        android:layout_gravity="center_vertical"
-        android:text="데이터가 없습니다!"
-        android:textSize="30sp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:text="@string/notify_nodata"
+        android:textSize="30sp" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

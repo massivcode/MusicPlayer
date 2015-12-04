@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">뮤직</string>
+    <string name="nav_menu_title_1">플레이어</string>
+    <string name="nav_menu_title_2">재생목록</string>
+    <string name="nav_menu_title_3">아티스트</string>
+    <string name="nav_menu_title_4">노래</string>
+</resources>

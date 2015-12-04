@@ -3,8 +3,8 @@
     android:id="@+id/item_search_border"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="3dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="3dp">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -33,7 +33,7 @@
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
             android:singleLine="true"
-            android:text="Title"
+            android:text="@string/title"
             android:textColor="#000000"
             android:textSize="15sp" />
 
@@ -43,13 +43,12 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:singleLine="true"
-            android:text="Artist"
+            android:text="@string/artist"
             android:textColor="#65000000"
             android:textSize="12sp" />
 
 
     </LinearLayout>
-
 
 
 </LinearLayout>

@@ -11,17 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:errorEnabled="true"
-        app:errorTextAppearance="@style/ErrorText"
-        >
+        app:errorTextAppearance="@style/ErrorText">
+
         <EditText
             android:id="@+id/add_playlist_name_et"
-            android:singleLine="true"
-            android:hint="재생목록 이름을 입력해주세요."
-            android:textColor="@color/ErrorColor"
-            android:textColorHint="@color/ErrorColor"
-            android:textColorHighlight="@color/ErrorColor"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:hint="@string/add_playlist_hint"
+            android:singleLine="true"
+            android:textColor="@color/ErrorColor"
+            android:textColorHighlight="@color/ErrorColor"
+            android:textColorHint="@color/ErrorColor" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -30,10 +30,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:fastScrollEnabled="true"
         android:fastScrollAlwaysVisible="true"
-        android:scrollbarStyle="outsideInset"
-        />
+        android:fastScrollEnabled="true"
+        android:scrollbarStyle="outsideInset" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -46,14 +45,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="취소" />
+            android:text="@string/cancel" />
 
         <Button
             android:id="@+id/add_playlist_save_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="저장" />
+            android:text="@string/save" />
 
     </LinearLayout>
 

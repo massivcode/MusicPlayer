@@ -8,15 +8,14 @@
         android:id="@+id/current_playlistView"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:fastScrollEnabled="true"
         android:fastScrollAlwaysVisible="true"
-        android:scrollbarStyle="outsideInset"
-        />
+        android:fastScrollEnabled="true"
+        android:scrollbarStyle="outsideInset" />
 
     <Button
         android:id="@+id/current_playlist_closeBtn"
-        android:text="닫기"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="@string/close" />
 
 </LinearLayout>

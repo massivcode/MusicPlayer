@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -38,7 +37,6 @@ import com.massivcode.androidmusicplayer.fragments.CurrentPlaylistFragment;
 import com.massivcode.androidmusicplayer.interfaces.Event;
 import com.massivcode.androidmusicplayer.interfaces.FinishActivity;
 import com.massivcode.androidmusicplayer.interfaces.InitEvent;
-import com.massivcode.androidmusicplayer.interfaces.LastPlayedSongs;
 import com.massivcode.androidmusicplayer.interfaces.ReloadPlaylist;
 import com.massivcode.androidmusicplayer.interfaces.SaveState;
 import com.massivcode.androidmusicplayer.managers.Manager;
@@ -62,9 +60,6 @@ public class MainActivity extends AppCompatActivity
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     public static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 2;
 
-    public static final String PREFERENCES_NAME = "LastPlayedSong";
-    private SharedPreferences mPreferences;
-    private LastPlayedSongs mLastPlayedSongs;
     private MyPlaylistFacade mFacade;
 
 
@@ -117,15 +112,6 @@ public class MainActivity extends AppCompatActivity
         checkPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
 
 
-        // Restore preferences
-        mPreferences = getSharedPreferences(PREFERENCES_NAME, 0);
-        long lastPlayedSongId = mPreferences.getLong("lastPlayedSongId", 0);
-
-        if (lastPlayedSongId != 0) {
-
-        }
-
-
     }
 
     @Override
@@ -143,9 +129,7 @@ public class MainActivity extends AppCompatActivity
 
     // EventBus 용 이벤트 수신
     public void onEvent(Event event) {
-        if (event instanceof LastPlayedSongs) {
-            mLastPlayedSongs = (LastPlayedSongs) event;
-        } else if (event instanceof FinishActivity) {
+        if (event instanceof FinishActivity) {
             finish();
         }
     }
@@ -177,10 +161,10 @@ public class MainActivity extends AppCompatActivity
         mNavigationAdapter = new NavigationAdapter(getSupportFragmentManager());
 
         mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        mTabLayout.addTab(mTabLayout.newTab().setText("플레이어"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("재생목록"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("아티스트"));
-        mTabLayout.addTab(mTabLayout.newTab().setText("노래"));
+        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.tab_player));
+        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.tab_playlist));
+        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.tab_artist));
+        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.tab_songs));
 
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager.setAdapter(mNavigationAdapter);
@@ -257,13 +241,12 @@ public class MainActivity extends AppCompatActivity
             if (mMusicService != null && mMusicService.getCurrentPlaylist() != null) {
                 CurrentPlaylistFragment dialogFragment = new CurrentPlaylistFragment();
                 Bundle bundle = new Bundle();
-                Log.d(TAG, "getCurrentPlaylist.size : " + mMusicService.getCurrentPlaylist().size());
                 bundle.putSerializable("data", mMusicService.getCurrentPlaylist());
                 bundle.putSerializable("map", mMusicService.getAllMusicData());
                 dialogFragment.setArguments(bundle);
                 dialogFragment.show(getSupportFragmentManager(), "ManageDbFragment");
             } else {
-                Toast.makeText(MainActivity.this, "재생 중인 노래가 없습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.notify_no_playing, Toast.LENGTH_SHORT).show();
             }
             return true;
         }
@@ -410,7 +393,6 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case R.id.songs_playAll_btn:
-                Toast.makeText(MainActivity.this, "모두 재생 헤더 버튼 눌림", Toast.LENGTH_SHORT).show();
                 Intent playAllIntent = new Intent(MainActivity.this, MusicService.class);
                 playAllIntent.setAction(MusicService.ACTION_PLAY);
                 playAllIntent.putExtra("list", MusicInfoLoadUtil.getPlayAllList(MainActivity.this));
@@ -418,7 +400,6 @@ public class MainActivity extends AppCompatActivity
                 startService(playAllIntent);
                 break;
             case R.id.fab:
-                Toast.makeText(MainActivity.this, "fab 클릭됨", Toast.LENGTH_SHORT).show();
                 Intent addPlaylistIntent = new Intent(MainActivity.this, AddPlaylistActivity.class);
                 startActivity(addPlaylistIntent);
                 break;
@@ -474,14 +455,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             }
             case R.id.playlist_listView: {
-                Log.d(TAG, "클릭함");
-                Log.d(TAG, "그룹 포지션 : " + groupPosition);
                 Cursor parentData = (Cursor) parent.getExpandableListAdapter().getGroup(groupPosition);
-                Log.d(TAG, "커서 사이즈 : " + parentData.getCount());
                 parentData.moveToPosition(groupPosition);
-                Log.d(TAG, "현재 커서 위치 : " + parentData.getPosition());
                 String playlistName = parentData.getString(parentData.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST));
-                Log.d(TAG, "플레이리스트 네임 : " + playlistName);
                 ArrayList<Long> list = MusicInfoLoadUtil.getMusicIdListFromPlaylistName(playlistName, getApplicationContext());
                 Intent intent = new Intent(MainActivity.this, MusicService.class);
                 intent.setAction(MusicService.ACTION_PLAY);

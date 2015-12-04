@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:text="Artist"
+        android:text="@string/artist"
         android:textColor="#000000"
         android:textSize="15sp" />
 

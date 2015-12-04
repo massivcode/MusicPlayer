@@ -88,7 +88,7 @@ public class PlaylistAdapter extends CursorTreeAdapter implements AsyncBitmapLoa
         String name = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST));
         int total = cursor.getInt(cursor.getColumnIndexOrThrow("music_count"));
         viewHolder.mGroupPlaylistNameTextView.setText(name);
-        viewHolder.mGroupSongsNumberTextView.setText(total + " 곡");
+        viewHolder.mGroupSongsNumberTextView.setText(total + mContext.getString(R.string.adapter_songs));
     }
 
     @Override
