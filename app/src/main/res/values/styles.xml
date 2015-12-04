@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">#2196F3</item>
+        <item name="android:fastScrollThumbDrawable">@drawable/fast_thumb</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

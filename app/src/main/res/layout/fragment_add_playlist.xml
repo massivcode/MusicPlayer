@@ -29,7 +29,11 @@
         android:id="@+id/add_playlist_confirm_lv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:fastScrollEnabled="true"
+        android:fastScrollAlwaysVisible="true"
+        android:scrollbarStyle="outsideInset"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"

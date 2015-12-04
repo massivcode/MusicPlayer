@@ -7,6 +7,10 @@
     <ExpandableListView
         android:id="@+id/artist_ExlistView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:fastScrollEnabled="true"
+        android:fastScrollAlwaysVisible="true"
+        android:scrollbarStyle="outsideInset"
+        />
 
 </LinearLayout>
