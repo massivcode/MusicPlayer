@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Música</string>
+    <string name="adapter_songs">" Músicas"</string>
+    <string name="add_playlist">Adicionar Playlist</string>
+    <string name="add_playlist_hint">Por favor, indique um nome para a lista.</string>
+    <string name="artist">Artistas</string>
+    <string name="cancel">Cancelar</string>
+    <string name="close">Fechar</string>
+    <string name="delete">Excluir</string>
+    <string name="delete_dialog_message">: Será apagado!</string>
+    <string name="delete_dialog_title">Excluir Playlist</string>
+    <string name="error_already_exists">O nome da lista que já existe.</string>
+    <string name="error_no_playlist_name">Por favor, indique um nome para a lista!</string>
+    <string name="keyword">"Pesquisar palavra : "</string>
+    <string name="nav_menu_title_1">Jogador</string>
+    <string name="nav_menu_title_2">Listas de reprodução</string>
+    <string name="nav_menu_title_3">Artistas</string>
+    <string name="nav_menu_title_4">Música</string>
+    <string name="notify_no_playing">Não há nenhuma música sendo tocada.</string>
+    <string name="notify_no_search_result">Não foram encontrados resultados para a sua pesquisa!</string>
+    <string name="notify_nodata">Não há dados!</string>
+    <string name="notify_search">Por favor, procure!</string>
+    <string name="play_all">Jogar todos</string>
+    <string name="save">Guardar</string>
+    <string name="search">Pesquisar</string>
+    <string name="songs">Música</string>
+    <string name="tab_artist">Artistas</string>
+    <string name="tab_player">Jogador</string>
+    <string name="tab_playlist">Listas de reprodução</string>
+    <string name="tab_songs">Música</string>
+    <string name="title">Título</string>
+</resources>

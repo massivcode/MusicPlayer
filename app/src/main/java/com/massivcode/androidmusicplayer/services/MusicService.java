@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
@@ -641,14 +642,14 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 .setMediaSession(mSession.getSessionToken())
                 .setShowActionsInCompactView(0, 1, 2));
         // Set the Notification color
-        builder.setColor(0xFFDB4437);
+        builder.setColor(Color.parseColor("#2196F3"));
         // Set the large and small icons
         Bitmap bitmap = MusicInfoLoadUtil.getBitmap(getApplicationContext(), mCurrentMusicInfo.getUri(), 4);
         if (bitmap == null) {
-            bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+            bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_no_image);
         }
         builder.setLargeIcon(bitmap);
-        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setSmallIcon(R.mipmap.ic_no_image);
         builder.setContentTitle(mCurrentMusicInfo.getTitle());
         builder.setContentText(mCurrentMusicInfo.getArtist());
 
