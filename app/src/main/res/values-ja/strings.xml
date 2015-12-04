@@ -16,18 +16,18 @@
     <string name="nav_menu_title_1">プレイヤー</string>
     <string name="nav_menu_title_2">プレイリスト</string>
     <string name="nav_menu_title_3">アーティスト</string>
-    <string name="nav_menu_title_4">トラック</string>
+    <string name="nav_menu_title_4">曲</string>
     <string name="notify_no_playing">再生中の曲がありません。</string>
     <string name="notify_no_search_result">検索結果がありません！</string>
     <string name="notify_nodata">データがありません！</string>
     <string name="notify_search">検索してください！</string>
     <string name="play_all">すべて再生</string>
-    <string name="save">セーブ</string>
-    <string name="search">サーチ</string>
-    <string name="songs">トラック</string>
+    <string name="save">保存</string>
+    <string name="search">検索</string>
+    <string name="songs">曲</string>
     <string name="tab_artist">アーティスト</string>
     <string name="tab_player">プレーヤー</string>
     <string name="tab_playlist">プレイリスト</string>
-    <string name="tab_songs">トラック</string>
+    <string name="tab_songs">曲</string>
     <string name="title">タイトル</string>
 </resources>
