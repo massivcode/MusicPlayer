@@ -64,7 +64,6 @@ public class MyPlaylistFacade {
         mHelper.onCreate(db);
     }
 
-//    MediaStore.Audio.Media.ARTIST + " != ? and " + MediaStore.Audio.Media.ARTIST + " != ? " , new String[]{MediaStore.UNKNOWN_STRING, "김경호"}
 
     public void deleteUserPlaylist(String name) {
         SQLiteDatabase db = mHelper.getWritableDatabase();
@@ -82,7 +81,7 @@ public class MyPlaylistFacade {
         Cursor cursor = db.query(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, projection, selection_toggle_favorite, new String[]{MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE, String.valueOf(musicId)}, null, null, null);
 
         // 기존에 이런 데이터가 있을 때 -> true
-        if(cursor != null || cursor.getCount() != 0) {
+        if(cursor != null && cursor.getCount() != 0) {
             result = true;
         }
 
@@ -151,21 +150,6 @@ public class MyPlaylistFacade {
         SQLiteDatabase db = mHelper.getReadableDatabase();
         return db.rawQuery(getAllUserPlaylist_SQL, null);
     }
-//    /**
-//     * 유저가 추가한 모든 플레이리스트를 리턴
-//     * 플레이리스트 타입이 Favorite 이거나 User_Def 일 경우
-//     */
-//    public Cursor getAllUserPlaylist() {
-//        SQLiteDatabase db = mHelper.getWritableDatabase();
-//        Cursor cursor = db.query(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, projection, selection_playlist_type_all, new String[]{MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE, MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_USER_DEFINITION}, null, null, null);
-//        while (cursor.moveToNext()) {
-//            long id = cursor.getInt(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_MUSIC_ID));
-//            String name = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST));
-//            String type = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaylistContract.MyPlaylistEntry.COLUMN_NAME_PLAYLIST_TYPE));
-//            Log.d(TAG, "아이디 : " + id + " 플레이리스트_이름 : " + name + " 플레이리스트 타입 : " + type);
-//        }
-//        return db.query(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, projection, selection_playlist_type_all, new String[]{MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE, MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_USER_DEFINITION}, null, null, null);
-//    }
 
     /**
      * 사용자 플레이리스트(즐겨찾기, 사용자 정의 재생목록)가 존재할 경우 true, 없을 경우 false
