@@ -75,7 +75,7 @@ public class SongsFragment extends Fragment {
         mListView.addHeaderView(header);
 
         if(Build.VERSION.SDK_INT < 23) {
-            Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MusicInfoLoadUtil.projection, MediaStore.Audio.Media.ARTIST + " != ? ", new String[]{MediaStore.UNKNOWN_STRING}, null);
+            Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MusicInfoLoadUtil.projection, MediaStore.Audio.Media.ARTIST + " != ? AND " + MediaStore.Audio.Media.TITLE + " NOT LIKE '%" + "hangout" + "%'" , new String[]{MediaStore.UNKNOWN_STRING}, null);
             mAdapter = new SongAdapter(getActivity().getApplicationContext(), cursor, true);
             mListView.setAdapter(mAdapter);
         } else {

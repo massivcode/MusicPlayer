@@ -91,7 +91,6 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
 //        Log.d(TAG, "재생목록에서 이벤트가 요청되었습니다.");
 
 
-
     }
 
     @Nullable
@@ -134,11 +133,11 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
 //            Log.d(TAG, "재생목록에서 뮤직이벤트를 받았습니다.");
             mCurrentEvent = (MusicEvent) event;
 
-            if(mAdapter != null && mCurrentPlaylistListView != null) {
+            if (mAdapter != null && mCurrentPlaylistListView != null) {
                 mAdapter.notifyDataSetChanged();
             }
 
-        } else if(event instanceof PlayBack) {
+        } else if (event instanceof PlayBack) {
 //            Log.d(TAG, "재생목록에서 플레이백이벤트를 받았습니다.");
             PlayBack playBack = (PlayBack) event;
             if (mPlayback.isPlaying() != (playBack).isPlaying()) {
@@ -148,7 +147,6 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
             }
             mPlayback = playBack;
         }
-
 
 
     }
@@ -209,7 +207,6 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
             final ViewHolder viewHolder;
 
 
-
             if (convertView == null) {
                 convertView = LayoutInflater.from(mContext).inflate(R.layout.item_current_playlist, parent, false);
 
@@ -225,17 +222,23 @@ public class CurrentPlaylistFragment extends DialogFragment implements View.OnCl
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             MusicInfo musicInfo = (MusicInfo) getItem(position);
-            if(musicInfo.get_id() == mCurrentEvent.getMusicInfo().get_id()) {
-                viewHolder.mCurrentPlaylistIsPlayingImageView.setVisibility(View.VISIBLE);
-                if(mPlayback.isPlaying()) {
-                    viewHolder.mCurrentPlaylistIsPlayingImageView.setSelected(true);
-                } else {
-                    viewHolder.mCurrentPlaylistIsPlayingImageView.setSelected(false);
-                }
+            if (mCurrentEvent != null) {
+                if (mCurrentEvent.getMusicInfo() != null) {
+                    if (musicInfo.get_id() == mCurrentEvent.getMusicInfo().get_id()) {
+                        viewHolder.mCurrentPlaylistIsPlayingImageView.setVisibility(View.VISIBLE);
+                        if (mPlayback.isPlaying()) {
+                            viewHolder.mCurrentPlaylistIsPlayingImageView.setSelected(true);
+                        } else {
+                            viewHolder.mCurrentPlaylistIsPlayingImageView.setSelected(false);
+                        }
 
-            } else {
-                viewHolder.mCurrentPlaylistIsPlayingImageView.setVisibility(View.GONE);
+                    } else {
+                        viewHolder.mCurrentPlaylistIsPlayingImageView.setVisibility(View.GONE);
+                    }
+                }
             }
+
+
             mAsyncBitmapLoader.loadBitmap(position, viewHolder.mCurrentPlaylistAlbumArtImageView);
             viewHolder.mCurrentPlaylistArtistTextView.setText(musicInfo.getArtist());
             viewHolder.mCurrentPlaylistTitleTextView.setText(musicInfo.getTitle());

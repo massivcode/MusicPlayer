@@ -86,17 +86,19 @@ public class SongAdapter extends CursorAdapter implements AsyncBitmapLoader.Bitm
 
         if (mMusicEvent != null && mPlayback != null) {
 
-            if (id == mMusicEvent.getMusicInfo().get_id()) {
-                holder.IsPlayImageView.setVisibility(View.VISIBLE);
-                mCurrentPlayingPosition = cursor.getPosition();
-                if (mPlayback.isPlaying()) {
-                    holder.IsPlayImageView.setSelected(true);
-                } else {
-                    holder.IsPlayImageView.setSelected(false);
-                }
+            if(mMusicEvent.getMusicInfo() != null) {
+                if (id == mMusicEvent.getMusicInfo().get_id()) {
+                    holder.IsPlayImageView.setVisibility(View.VISIBLE);
+                    mCurrentPlayingPosition = cursor.getPosition();
+                    if (mPlayback.isPlaying()) {
+                        holder.IsPlayImageView.setSelected(true);
+                    } else {
+                        holder.IsPlayImageView.setSelected(false);
+                    }
 
-            } else {
-                holder.IsPlayImageView.setVisibility(View.GONE);
+                } else {
+                    holder.IsPlayImageView.setVisibility(View.GONE);
+                }
             }
 
         }

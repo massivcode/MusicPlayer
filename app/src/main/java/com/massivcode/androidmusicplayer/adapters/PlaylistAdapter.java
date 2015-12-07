@@ -135,17 +135,20 @@ public class PlaylistAdapter extends CursorTreeAdapter implements AsyncBitmapLoa
 
         if (mMusicEvent != null && mPlayback != null) {
 
-            if (id == mMusicEvent.getMusicInfo().get_id()) {
-                viewHolder.mChildIsPlayingImageView.setVisibility(View.VISIBLE);
+            if(mMusicEvent.getMusicInfo() != null) {
 
-                if (mPlayback.isPlaying()) {
-                    viewHolder.mChildIsPlayingImageView.setSelected(true);
+                if (id == mMusicEvent.getMusicInfo().get_id()) {
+                    viewHolder.mChildIsPlayingImageView.setVisibility(View.VISIBLE);
+
+                    if (mPlayback.isPlaying()) {
+                        viewHolder.mChildIsPlayingImageView.setSelected(true);
+                    } else {
+                        viewHolder.mChildIsPlayingImageView.setSelected(false);
+                    }
+
                 } else {
-                    viewHolder.mChildIsPlayingImageView.setSelected(false);
+                    viewHolder.mChildIsPlayingImageView.setVisibility(View.GONE);
                 }
-
-            } else {
-                viewHolder.mChildIsPlayingImageView.setVisibility(View.GONE);
             }
 
         }

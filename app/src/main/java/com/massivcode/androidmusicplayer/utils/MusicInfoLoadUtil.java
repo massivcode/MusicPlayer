@@ -81,7 +81,7 @@ public class MusicInfoLoadUtil {
      */
     public static HashMap<Long, MusicInfo> getAllMusicInfo(Context context) {
         HashMap<Long, MusicInfo> map = new HashMap<>();
-        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, MediaStore.Audio.Media.ARTIST + " != ? ", new String[]{MediaStore.UNKNOWN_STRING}, null);
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, MediaStore.Audio.Media.ARTIST + " != ? AND " + MediaStore.Audio.Media.TITLE + " NOT LIKE '%" + "hangout" + "%'" , new String[]{MediaStore.UNKNOWN_STRING}, null);
 
 
         if (cursor != null || cursor.getCount() != 0)
@@ -197,7 +197,9 @@ public class MusicInfoLoadUtil {
                     musicInfo.setArtist(artist);
                     musicInfo.setTitle(title);
                     musicInfo.setAlbum(album);
-                    musicInfo.setDuration(Integer.parseInt(duration));
+                    if(duration != null) {
+                        musicInfo.setDuration(Integer.parseInt(duration));
+                    }
                     list.add(musicInfo);
                 }
             }
@@ -245,7 +247,10 @@ public class MusicInfoLoadUtil {
 
             byte[] albumArt = retriever.getEmbeddedPicture();
 
-            musicInfo = new MusicInfo(_id, uri, artist, title, album, albumArt, Integer.parseInt(duration));
+            if(duration != null) {
+                musicInfo = new MusicInfo(_id, uri, artist, title, album, albumArt, Integer.parseInt(duration));
+            }
+
             cursor.close();
         }
 
@@ -366,7 +371,7 @@ public class MusicInfoLoadUtil {
      */
     public static ArrayList<Long> getPlayAllList(Context context) {
         ArrayList<Long> list = new ArrayList<>();
-        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, MediaStore.Audio.Media.ARTIST + " != ? ", new String[]{MediaStore.UNKNOWN_STRING}, null);
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, MediaStore.Audio.Media.ARTIST + " != ? AND " + MediaStore.Audio.Media.TITLE + " NOT LIKE '%" + "hangout" + "%'", new String[]{MediaStore.UNKNOWN_STRING}, null);
 
         if(cursor != null || cursor.getCount() != 0) {
             while (cursor.moveToNext()) {

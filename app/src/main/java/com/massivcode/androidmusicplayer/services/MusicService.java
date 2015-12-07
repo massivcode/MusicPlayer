@@ -852,15 +852,21 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         builder.setContentIntent(activityStartPendingIntent);
         // =========================================================================================
 
-
-        Bitmap bitmap = MusicInfoLoadUtil.getBitmap(getApplicationContext(), mCurrentMusicInfo.getUri(), 4);
+        Bitmap bitmap = null;
+        if(mCurrentMusicInfo != null) {
+            if(mCurrentMusicInfo.getUri() != null) {
+                bitmap = MusicInfoLoadUtil.getBitmap(getApplicationContext(), mCurrentMusicInfo.getUri(), 4);
+            }
+        }
         if (bitmap == null) {
             bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_no_image);
         }
 
         remoteViews.setImageViewBitmap(R.id.noti_album_art_iv, bitmap);
-        remoteViews.setTextViewText(R.id.noti_artist_tv, mCurrentMusicInfo.getArtist());
-        remoteViews.setTextViewText(R.id.noti_title_tv, mCurrentMusicInfo.getTitle());
+        if(mCurrentMusicInfo != null) {
+            remoteViews.setTextViewText(R.id.noti_artist_tv, mCurrentMusicInfo.getArtist());
+            remoteViews.setTextViewText(R.id.noti_title_tv, mCurrentMusicInfo.getTitle());
+        }
 
         builder.setContent(remoteViews);
         builder.setLargeIcon(bitmap);
