@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015. Pureum Choe
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.massivcode.androidmusicplayer.services;
 
 import android.app.Notification;
@@ -47,9 +63,7 @@ import java.util.Random;
 
 import de.greenrobot.event.EventBus;
 
-/**
- * Created by Ray Choe on 2015-11-24.
- */
+
 public class MusicService extends Service implements MediaPlayer.OnCompletionListener {
     private static final String TAG = MusicService.class.getSimpleName();
 
@@ -214,9 +228,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         }
 
         ArrayList<Long> loadedPlaylist = DataBackupUtil.getInstance(getApplicationContext()).loadLastPlayedSongs();
-        if (loadedPlaylist.size() != 0 && loadedPlaylist != null) {
+        if (loadedPlaylist != null && loadedPlaylist.size() != 0 ) {
             mCurrentPlaylist = loadedPlaylist;
-            Log.d(TAG, "로딩한 재생목록 : " + loadedPlaylist.size());
             mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
             try {
                 mMediaPlayer.setDataSource(getApplicationContext(), switchIdToUri(mCurrentPlaylist.get(mCurrentPosition)));
@@ -249,11 +262,11 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
         switch (mAction) {
             case ACTION_PLAY_SELECTED:
-                mCurrentPosition = intent.getIntExtra("position", 0);
+                mCurrentPosition = intent != null ? intent.getIntExtra("position", 0) : 0;
                 mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
                 break;
             case ACTION_PLAY:
-                mCurrentPlaylist = (ArrayList<Long>) intent.getSerializableExtra("list");
+                mCurrentPlaylist = (ArrayList<Long>) (intent != null ? intent.getSerializableExtra("list") : null);
                 mCurrentPosition = intent.getIntExtra("position", 0);
                 mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
                 break;
@@ -263,7 +276,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 if (isShuffle) {
                     mCurrentPosition = shuffle(mCurrentPlaylist.size());
                 } else {
-                    mCurrentPosition = intent.getIntExtra("position", 0);
+                    mCurrentPosition = intent != null ? intent.getIntExtra("position", 0) : 0;
                 }
                 mCurrentMusicInfo = MusicInfoLoadUtil.getSelectedMusicInfo(getApplicationContext(), mCurrentPlaylist.get(mCurrentPosition));
                 break;
@@ -763,7 +776,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
      * @return
      */
     public int shuffle(int range) {
-        int result = -1;
+        int result;
 
         if (range == 1) {
             return 0;

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015. Pureum Choe
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.massivcode.androidmusicplayer.activities;
 
 import android.content.Context;
@@ -32,9 +48,6 @@ import com.suwonsmartapp.abl.AsyncBitmapLoader;
 
 import java.util.ArrayList;
 
-/**
- * Created by massivCode on 2015-12-01.
- */
 public class AddPlaylistActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, View.OnFocusChangeListener, AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener, View.OnClickListener {
 
     private static final String TAG = AddPlaylistActivity.class.getSimpleName();
@@ -109,7 +122,9 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
         if (result == null || result.getCount() == 0) {
             mNotifyTextView.setVisibility(View.VISIBLE);
             mNotifyTextView.setText(R.string.notify_no_search_result);
-            result.close();
+            if (result != null) {
+                result.close();
+            }
             Toast.makeText(AddPlaylistActivity.this, R.string.notify_no_search_result, Toast.LENGTH_SHORT).show();
         } else {
             mNotifyTextView.setVisibility(View.GONE);
@@ -145,15 +160,11 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         // 이미 리스트에 존재할 경우 제거
         if(mUserDefinitionPlaylist.contains(id)) {
-            Log.d(TAG, id + " 가 제거되었습니다.");
             mUserDefinitionPlaylist.remove(id);
-            Log.d(TAG, "현재 리스트의 개수 : " + mUserDefinitionPlaylist.size());
         }
         // 리스트에 존재하지 않을 경우 추가
         else {
             mUserDefinitionPlaylist.add(id);
-            Log.d(TAG, id + " 가 추가되었습니다.");
-            Log.d(TAG, "현재 리스트의 개수 : " + mUserDefinitionPlaylist.size());
         }
 
         mSearchAdapter.notifyDataSetChanged();
@@ -238,7 +249,7 @@ public class AddPlaylistActivity extends AppCompatActivity implements SearchView
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 4; // 2의 배수
 
-            Bitmap bitmap = null;
+            Bitmap bitmap;
             if (null != albumArt) {
                 bitmap = BitmapFactory.decodeByteArray(albumArt, 0, albumArt.length, options);
             } else {

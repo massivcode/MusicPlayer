@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015. Pureum Choe
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.massivcode.androidmusicplayer.adapters;
 
 import android.content.Context;
@@ -19,9 +35,7 @@ import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
 import com.massivcode.androidmusicplayer.interfaces.PlayBack;
 import com.suwonsmartapp.abl.AsyncBitmapLoader;
 
-/**
- * Created by massivcode on 15. 10. 8.
- */
+
 public class SongAdapter extends CursorAdapter implements AsyncBitmapLoader.BitmapLoadListener {
 
     private static final String TAG = SongAdapter.class.getSimpleName();
@@ -117,7 +131,7 @@ public class SongAdapter extends CursorAdapter implements AsyncBitmapLoader.Bitm
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 4; // 2의 배수
 
-        Bitmap bitmap = null;
+        Bitmap bitmap;
         if (null != albumArt) {
             bitmap = BitmapFactory.decodeByteArray(albumArt, 0, albumArt.length, options);
         } else {

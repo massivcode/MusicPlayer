@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015. Pureum Choe
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.massivcode.androidmusicplayer.database;
 
 import android.content.ContentValues;
@@ -9,9 +25,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-/**
- * Created by Ray Choe on 2015-11-27.
- */
+
 public class MyPlaylistFacade {
     private static final String TAG = MyPlaylistFacade.class.getSimpleName();
     private DbHelper mHelper;
@@ -67,9 +81,8 @@ public class MyPlaylistFacade {
         boolean result = false;
         Cursor cursor = db.query(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, projection, selection_toggle_favorite, new String[]{MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_FAVORITE, String.valueOf(musicId)}, null, null, null);
 
-        Log.d(TAG, "커서 사이즈 : " + cursor.getCount());
         // 기존에 이런 데이터가 있을 때 -> true
-        if(cursor != null && cursor.getCount() != 0) {
+        if(cursor != null || cursor.getCount() != 0) {
             result = true;
         }
 
@@ -104,12 +117,14 @@ public class MyPlaylistFacade {
             Log.d(TAG, "즐겨찾기에서 " + musicId + " 를 제거하였습니다.");
         }
 
-        cursor.close();
+        if (cursor != null) {
+            cursor.close();
+        }
     }
 
     public int getSelectedPlaylistTotal(String userPlaylistName) {
         SQLiteDatabase db = mHelper.getReadableDatabase();
-        int result = -1;
+        int result;
 
         Cursor cursor = db.query(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, projection, selection_playlist_type_and_name, new String[]{MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_USER_DEFINITION, MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_USER_DEFINITION, userPlaylistName}, null, null, null);
         if(cursor == null || cursor.getCount() == 0) {
@@ -117,7 +132,9 @@ public class MyPlaylistFacade {
         } else {
             result = cursor.getCount();
         }
-        cursor.close();
+        if (cursor != null) {
+            cursor.close();
+        }
         return result;
     }
 
@@ -163,7 +180,9 @@ public class MyPlaylistFacade {
             result = false;
         }
 
-        cursor.close();
+        if (cursor != null) {
+            cursor.close();
+        }
 
         return result;
     }
@@ -189,7 +208,9 @@ public class MyPlaylistFacade {
           result = false;
         }
 
-        cursor.close();
+        if (cursor != null) {
+            cursor.close();
+        }
 
         return result;
     }
@@ -200,7 +221,7 @@ public class MyPlaylistFacade {
      * @param userPlayList
      */
     public void addUserPlaylist(String userPlaylistName, ArrayList<Long> userPlayList) {
-        SQLiteDatabase db = null;
+        SQLiteDatabase db;
         SQLiteStatement statement;
 
         if (userPlayList != null && userPlayList.size() != 0) {
