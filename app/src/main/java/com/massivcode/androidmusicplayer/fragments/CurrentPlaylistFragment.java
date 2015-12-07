@@ -39,10 +39,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.massivcode.androidmusicplayer.R;
-import com.massivcode.androidmusicplayer.interfaces.Event;
-import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
-import com.massivcode.androidmusicplayer.interfaces.PlayBack;
-import com.massivcode.androidmusicplayer.interfaces.RequestEvent;
+import com.massivcode.androidmusicplayer.events.Event;
+import com.massivcode.androidmusicplayer.events.MusicEvent;
+import com.massivcode.androidmusicplayer.events.PlayBack;
+import com.massivcode.androidmusicplayer.events.RequestEvent;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
 import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 import com.suwonsmartapp.abl.AsyncBitmapLoader;

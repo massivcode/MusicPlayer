@@ -1,4 +1,4 @@
-package com.massivcode.androidmusicplayer.interfaces;
+package com.massivcode.androidmusicplayer.events;
 
 import android.media.MediaPlayer;
 

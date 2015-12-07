@@ -34,12 +34,12 @@ import android.widget.ListView;
 
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.adapters.SongAdapter;
-import com.massivcode.androidmusicplayer.interfaces.Event;
-import com.massivcode.androidmusicplayer.interfaces.InitEvent;
-import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
-import com.massivcode.androidmusicplayer.interfaces.PlayBack;
-import com.massivcode.androidmusicplayer.interfaces.Restore;
-import com.massivcode.androidmusicplayer.interfaces.SaveState;
+import com.massivcode.androidmusicplayer.events.Event;
+import com.massivcode.androidmusicplayer.events.InitEvent;
+import com.massivcode.androidmusicplayer.events.MusicEvent;
+import com.massivcode.androidmusicplayer.events.PlayBack;
+import com.massivcode.androidmusicplayer.events.Restore;
+import com.massivcode.androidmusicplayer.events.SaveState;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
 import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 

@@ -43,8 +43,8 @@ import android.widget.TextView;
 
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.database.MyPlaylistFacade;
-import com.massivcode.androidmusicplayer.interfaces.Event;
-import com.massivcode.androidmusicplayer.interfaces.ReloadPlaylist;
+import com.massivcode.androidmusicplayer.events.Event;
+import com.massivcode.androidmusicplayer.events.ReloadPlaylist;
 import com.massivcode.androidmusicplayer.models.MusicInfo;
 import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 import com.suwonsmartapp.abl.AsyncBitmapLoader;

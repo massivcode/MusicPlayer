@@ -31,10 +31,10 @@ import android.widget.ExpandableListView;
 
 import com.massivcode.androidmusicplayer.R;
 import com.massivcode.androidmusicplayer.adapters.ArtistAdapter;
-import com.massivcode.androidmusicplayer.interfaces.Event;
-import com.massivcode.androidmusicplayer.interfaces.InitEvent;
-import com.massivcode.androidmusicplayer.interfaces.MusicEvent;
-import com.massivcode.androidmusicplayer.interfaces.PlayBack;
+import com.massivcode.androidmusicplayer.events.Event;
+import com.massivcode.androidmusicplayer.events.InitEvent;
+import com.massivcode.androidmusicplayer.events.MusicEvent;
+import com.massivcode.androidmusicplayer.events.PlayBack;
 import com.massivcode.androidmusicplayer.utils.MusicInfoLoadUtil;
 
 import de.greenrobot.event.EventBus;

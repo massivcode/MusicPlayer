@@ -1,4 +1,4 @@
-package com.massivcode.androidmusicplayer.interfaces;
+package com.massivcode.androidmusicplayer.events;
 
 /**
  * Created by massivCode on 2015-11-27.
