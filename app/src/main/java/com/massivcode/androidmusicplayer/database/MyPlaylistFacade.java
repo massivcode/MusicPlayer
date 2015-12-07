@@ -121,21 +121,6 @@ public class MyPlaylistFacade {
         }
     }
 
-    public int getSelectedPlaylistTotal(String userPlaylistName) {
-        SQLiteDatabase db = mHelper.getReadableDatabase();
-        int result;
-
-        Cursor cursor = db.query(MyPlaylistContract.MyPlaylistEntry.TABLE_NAME, projection, selection_playlist_type_and_name, new String[]{MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_USER_DEFINITION, MyPlaylistContract.PlaylistNameEntry.PLAYLIST_NAME_USER_DEFINITION, userPlaylistName}, null, null, null);
-        if(cursor == null || cursor.getCount() == 0) {
-            result = 0;
-        } else {
-            result = cursor.getCount();
-        }
-        if (cursor != null) {
-            cursor.close();
-        }
-        return result;
-    }
 
     public Cursor getChildrenCursor(String playlist_name) {
         SQLiteDatabase db = mHelper.getReadableDatabase();
