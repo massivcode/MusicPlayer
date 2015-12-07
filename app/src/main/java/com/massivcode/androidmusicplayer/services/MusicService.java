@@ -780,8 +780,6 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     }
 
     private void showNotificationUnderLollipop() {
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-
         Notification.Builder builder = new Notification.Builder(this);
         RemoteViews remoteViews = new RemoteViews(this.getPackageName(), R.layout.notification);
 
@@ -861,45 +859,9 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             remoteViews.setImageViewResource(R.id.noti_play_ib, android.R.drawable.ic_media_play);
         }
 
-//        builder.setContentTitle(mCurrentMusicInfo.getTitle());
-//        builder.setContentText(mCurrentMusicInfo.getArtist());
-//        builder.setStyle(new Notification.BigTextStyle().bigText("11"));
-
-        // 작은 아이콘 이미지.
-//        builder.setSmallIcon(R.mipmap.ic_launcher);
-
-
-        // 알림이 출력될 때 상단에 나오는 문구.
-//        builder.setTicker("미리보기 입니다.");
-
-
-        // 알림 출력 시간.
-//        builder.setWhen(System.currentTimeMillis());
-
-        // 알림 제목.
-//        builder.setContentTitle("내용보다 조금 큰 제목!");
-
-//        // 프로그래스 바.
-//        builder.setProgress(100, 50, false);
-
-        // 알림 내용.
-//        builder.setContentText("제목 하단에 출력될 내용!");
-
-//        // 알림시 사운드, 진동, 불빛을 설정 가능.
-//        builder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_LIGHTS);
-
-        // 알림 터치시 반응.
-//        builder.setContentIntent(pendingIntent);
-
-        // 알림 터치시 반응 후 알림 삭제 여부.
         builder.setAutoCancel(false);
 
-//        // 우선순위.
-//        builder.setPriority(NotificationCompat.PRIORITY_MAX);
-
-        // 행동 최대3개 등록 가능.
         Notification notification = builder.build();
-        // 고유ID로 알림을 생성.
 
         startForeground(1, notification);
     }

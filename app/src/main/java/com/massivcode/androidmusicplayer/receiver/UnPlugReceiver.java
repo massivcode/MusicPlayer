@@ -17,7 +17,8 @@ public class UnPlugReceiver extends BroadcastReceiver{
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
+//        intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)
+        if(Intent.ACTION_HEADSET_PLUG.equals(intent.getAction())) {
             if(intent.hasExtra("state")) {
                 mHeadSetState = intent.getIntExtra("state", -1);
                 // 헤드셋 플러그가 빠짐
