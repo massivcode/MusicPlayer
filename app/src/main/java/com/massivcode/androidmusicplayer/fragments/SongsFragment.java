@@ -56,6 +56,10 @@ public class SongsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        View header = getActivity().getLayoutInflater().inflate(R.layout.header, null, false);
+        header.findViewById(R.id.songs_playAll_btn).setOnClickListener((View.OnClickListener) getActivity());
+        mListView.addHeaderView(header);
+
         if(Build.VERSION.SDK_INT < 23) {
             Cursor cursor = getActivity().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MusicInfoLoadUtil.projection, MediaStore.Audio.Media.ARTIST + " != ? ", new String[]{MediaStore.UNKNOWN_STRING}, null);
             mAdapter = new SongAdapter(getActivity().getApplicationContext(), cursor, true);
@@ -70,9 +74,8 @@ public class SongsFragment extends Fragment {
 
 
 
-        View header = getActivity().getLayoutInflater().inflate(R.layout.header, null, false);
-        header.findViewById(R.id.songs_playAll_btn).setOnClickListener((View.OnClickListener) getActivity());
-        mListView.addHeaderView(header);
+
+
 
         mListView.setOnItemClickListener((AdapterView.OnItemClickListener) getActivity());
 

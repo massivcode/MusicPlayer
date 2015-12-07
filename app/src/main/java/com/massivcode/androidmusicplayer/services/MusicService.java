@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -19,6 +20,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.massivcode.androidmusicplayer.R;
@@ -113,8 +115,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             e.printStackTrace();
         } finally {
             if (mCurrentMusicInfo != null) {
-                setMetaData();
-                showNotification(mMetadata);
+                showNotification();
                 sendMusicEvent();
             }
         }
@@ -181,7 +182,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
         Log.d(TAG, "MusicService.onCreate()");
         Log.d(TAG, "셔플 : " + DataBackupUtil.getInstance(getApplicationContext()).loadIsShuffle() +
-        " 반복 : " + DataBackupUtil.getInstance(getApplicationContext()).loadIsRepeat());
+                " 반복 : " + DataBackupUtil.getInstance(getApplicationContext()).loadIsRepeat());
 
         // EventBus 등록이 되어서 모든 이벤트를 수신 가능
         EventBus.getDefault().register(this);
@@ -193,6 +194,18 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         mUnPlugReceiver = new UnPlugReceiver();
         IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
         registerReceiver(mUnPlugReceiver, filter);
+
+        if (Build.VERSION.SDK_INT < 23) {
+            if (mAllMusicData == null) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "InitEvent @ service");
+                        mAllMusicData = MusicInfoLoadUtil.getAllMusicInfo(getApplicationContext());
+                    }
+                }).start();
+            }
+        }
 
         int loadedPosition = DataBackupUtil.getInstance(getApplicationContext()).loadCurrentPlayingMusicPosition();
         if (loadedPosition != -1) {
@@ -227,7 +240,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             mAction = intent.getAction();
         }
 
-        if(mAction == null) {
+        if (mAction == null) {
             EventBus.getDefault().post(new FinishActivity());
             stopForeground(true);
             stopService(new Intent(getApplicationContext(), MusicService.class));
@@ -247,7 +260,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
             case ACTION_PLAY_NEXT:
             case ACTION_PLAY_PREVIOUS:
                 boolean isShuffle = DataBackupUtil.getInstance(getApplicationContext()).loadIsShuffle();
-                if(isShuffle) {
+                if (isShuffle) {
                     mCurrentPosition = shuffle(mCurrentPlaylist.size());
                 } else {
                     mCurrentPosition = intent.getIntExtra("position", 0);
@@ -275,8 +288,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                     mMediaPlayer.pause();
                     if (mCurrentMusicInfo != null && mCurrentPlaylist != null) {
                         sendAllEvent();
-                        setMetaData();
-                        showNotification(mMetadata);
+                        showNotification();
                     }
                 }
                 break;
@@ -306,8 +318,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
-                        setMetaData();
-                        showNotification(mMetadata);
+                        showNotification();
                     }
                 } else {
                     mMediaPlayer.reset();
@@ -322,8 +333,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
-                        setMetaData();
-                        showNotification(mMetadata);
+                        showNotification();
                     }
                 }
                 break;
@@ -344,8 +354,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
-                        setMetaData();
-                        showNotification(mMetadata);
+                        showNotification();
                     }
                 } else {
                     mMediaPlayer.reset();
@@ -360,8 +369,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
-                        setMetaData();
-                        showNotification(mMetadata);
+                        showNotification();
                     }
                 }
                 break;
@@ -373,8 +381,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 }
                 if (mCurrentMusicInfo != null && mCurrentPlaylist != null) {
                     sendAllEvent();
-                    setMetaData();
-                    showNotification(mMetadata);
+                    showNotification();
                 }
                 break;
             case ACTION_PLAY_NEXT:
@@ -393,8 +400,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
-                        setMetaData();
-                        showNotification(mMetadata);
+                        showNotification();
                     }
 
                 } else {
@@ -410,8 +416,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
-                        setMetaData();
-                        showNotification(mMetadata);
+                        showNotification();
                     }
                 }
 
@@ -431,8 +436,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
-                        setMetaData();
-                        showNotification(mMetadata);
+                        showNotification();
                     }
 
                 } else {
@@ -447,8 +451,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
-                        setMetaData();
-                        showNotification(mMetadata);
+                        showNotification();
                     }
                 }
                 break;
@@ -632,7 +635,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         }
     }
 
-    private void showNotification(MediaMetadataCompat metadata) {
+    private void showNotificationUpperKitKat(MediaMetadataCompat metadata) {
         // Notification 작성
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
         // Hide the timestamp
@@ -762,7 +765,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public int shuffle(int range) {
         int result = -1;
 
-        if(range == 1) {
+        if (range == 1) {
             return 0;
         }
 
@@ -774,6 +777,140 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         }
 
         return result;
+    }
+
+    private void showNotificationUnderLollipop() {
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification.Builder builder = new Notification.Builder(this);
+        RemoteViews remoteViews = new RemoteViews(this.getPackageName(), R.layout.notification);
+
+        // 이전 버튼을 눌렀을 때 실행하는 작업
+        // =========================================================================================
+
+
+        Intent musicPreviousIntent = new Intent(getApplicationContext(), MusicService.class);
+        musicPreviousIntent.setAction(ACTION_PLAY_PREVIOUS);
+        musicPreviousIntent.putExtra("position", getPositionAtPreviousOrNext(ACTION_PLAY_PREVIOUS));
+
+        PendingIntent musicPreviousPendingIntent = PendingIntent.getService(getApplicationContext(),
+                0, musicPreviousIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.noti_previous_ib, musicPreviousPendingIntent);
+        // =========================================================================================
+
+        // 재생 버튼을 눌렀을 때 실행하는 작업
+        // =========================================================================================
+        Intent musicStopIntent = new Intent(getApplicationContext(), MusicService.class);
+        musicStopIntent.setAction(ACTION_PAUSE);
+
+        PendingIntent musicStopPendingIntent = PendingIntent.getService(getApplicationContext(),
+                1,
+                musicStopIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.noti_play_ib, musicStopPendingIntent);
+        // =========================================================================================
+
+        // 다음 버튼을 눌렀을 때 실행하는 작업
+        // =========================================================================================
+        Intent musicNextIntent = new Intent(getApplicationContext(), MusicService.class);
+        musicNextIntent.setAction(ACTION_PLAY_NEXT);
+        musicNextIntent.putExtra("position", getPositionAtPreviousOrNext(ACTION_PLAY_NEXT));
+
+        PendingIntent musicNextPendingIntent = PendingIntent.getService(getApplicationContext(),
+                2, musicNextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.noti_next_ib, musicNextPendingIntent);
+        // =========================================================================================
+
+        // 종료 버튼을 눌렀을 때 실행하는 작업
+        // =========================================================================================
+        Intent closeIntent = new Intent(getApplicationContext(), MusicService.class);
+        closeIntent.setAction(ACTION_FINISH);
+
+        PendingIntent closePendingIntent = PendingIntent.getService(getApplicationContext(), 3, closeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.noti_close_ib, closePendingIntent);
+        // =========================================================================================
+
+        // Notification 터치 했을 때 실행할 PendingIntent 지정
+        // =========================================================================================
+        Intent activityStartIntent = new Intent(MainActivity.ACTION_NAME);
+        activityStartIntent.putExtra("restore", getCurrentInfo());
+        PendingIntent activityStartPendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                1,
+                activityStartIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(activityStartPendingIntent);
+        // =========================================================================================
+
+
+        Bitmap bitmap = MusicInfoLoadUtil.getBitmap(getApplicationContext(), mCurrentMusicInfo.getUri(), 4);
+        if (bitmap == null) {
+            bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_no_image);
+        }
+
+        remoteViews.setImageViewBitmap(R.id.noti_album_art_iv, bitmap);
+        remoteViews.setTextViewText(R.id.noti_artist_tv, mCurrentMusicInfo.getArtist());
+        remoteViews.setTextViewText(R.id.noti_title_tv, mCurrentMusicInfo.getTitle());
+
+        builder.setContent(remoteViews);
+        builder.setLargeIcon(bitmap);
+        builder.setSmallIcon(R.mipmap.ic_no_image);
+
+        if(mMediaPlayer.isPlaying()) {
+            remoteViews.setImageViewResource(R.id.noti_play_ib, android.R.drawable.ic_media_pause);
+        } else {
+            remoteViews.setImageViewResource(R.id.noti_play_ib, android.R.drawable.ic_media_play);
+        }
+
+//        builder.setContentTitle(mCurrentMusicInfo.getTitle());
+//        builder.setContentText(mCurrentMusicInfo.getArtist());
+//        builder.setStyle(new Notification.BigTextStyle().bigText("11"));
+
+        // 작은 아이콘 이미지.
+//        builder.setSmallIcon(R.mipmap.ic_launcher);
+
+
+        // 알림이 출력될 때 상단에 나오는 문구.
+//        builder.setTicker("미리보기 입니다.");
+
+
+        // 알림 출력 시간.
+//        builder.setWhen(System.currentTimeMillis());
+
+        // 알림 제목.
+//        builder.setContentTitle("내용보다 조금 큰 제목!");
+
+//        // 프로그래스 바.
+//        builder.setProgress(100, 50, false);
+
+        // 알림 내용.
+//        builder.setContentText("제목 하단에 출력될 내용!");
+
+//        // 알림시 사운드, 진동, 불빛을 설정 가능.
+//        builder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_LIGHTS);
+
+        // 알림 터치시 반응.
+//        builder.setContentIntent(pendingIntent);
+
+        // 알림 터치시 반응 후 알림 삭제 여부.
+        builder.setAutoCancel(false);
+
+//        // 우선순위.
+//        builder.setPriority(NotificationCompat.PRIORITY_MAX);
+
+        // 행동 최대3개 등록 가능.
+        Notification notification = builder.build();
+        // 고유ID로 알림을 생성.
+
+        startForeground(1, notification);
+    }
+
+    private void showNotification() {
+        if (Build.VERSION.SDK_INT < 21) {
+            showNotificationUnderLollipop();
+        } else {
+            setMetaData();
+            showNotificationUpperKitKat(mMetadata);
+        }
     }
 
 
