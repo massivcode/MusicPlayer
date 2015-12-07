@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright 2015. Pureum Choe
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <resources>
     <string name="app_name">Music</string>
 
@@ -8,7 +24,7 @@
 
     <!-- TODO: 네비게이션 드로워 메뉴 순서대로 작성, ViewPager 순서와 맞춤 -->
     <string name="nav_menu_title_1">Player</string>
-    <string name="nav_menu_title_2">Playlists</string>
+    <string name="nav_menu_title_2">Playlist</string>
     <string name="nav_menu_title_3">Artists</string>
     <string name="nav_menu_title_4">Tracks</string>
     <string name="notify_search">Please Search!</string>
@@ -26,7 +42,7 @@
     <string name="notify_no_search_result">No results were found for your search!</string>
     <string name="keyword">"Search Word : "</string>
     <string name="tab_player">Player</string>
-    <string name="tab_playlist">Playlists</string>
+    <string name="tab_playlist">Playlist</string>
     <string name="tab_artist">Artists</string>
     <string name="tab_songs">Tracks</string>
     <string name="notify_no_playing">There is no song being played.</string>
