@@ -121,14 +121,18 @@ public class PlaylistFragment extends Fragment implements AdapterView.OnItemLong
 
         if (event instanceof MusicEvent) {
 //            Log.d(TAG, "플레이리스트에서 뮤직이벤트를 받았습니다.");
-            mAdapter.swapMusicEvent((MusicEvent) event);
-            mAdapter.notifyDataSetChanged();
+            if(mAdapter != null) {
+                mAdapter.swapMusicEvent((MusicEvent) event);
+                mAdapter.notifyDataSetChanged();
+            }
         } else if (event instanceof PlayBack) {
 //            Log.d(TAG, "플레이리스트에서 플레이백이벤트를 받았습니다.");
             PlayBack playback = (PlayBack) event;
-            if (mAdapter.getPlayback() == null || mAdapter.getPlayback().isPlaying() != playback.isPlaying()) {
-                mAdapter.swapPlayback(playback);
-                mAdapter.notifyDataSetChanged();
+            if(mAdapter != null) {
+                if (mAdapter.getPlayback() == null || mAdapter.getPlayback().isPlaying() != playback.isPlaying()) {
+                    mAdapter.swapPlayback(playback);
+                    mAdapter.notifyDataSetChanged();
+                }
             }
         } else if (event instanceof ReloadPlaylist) {
             if (mAdapter == null) {
